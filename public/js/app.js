@@ -35,7 +35,7 @@ async function protectRoute() {
     } else {
         if (path === '/' || path === '/index.html' || path === '') {
             window.location.href = user.role === 'admin' ? '/manager-dashboard.html' : '/intern-dashboard.html';
-        } else if (user.role === 'admin' && (path.includes('intern-dashboard') || path.includes('daily-log') || path.includes('attendance'))) {
+        } else if (user.role === 'admin' && (path.includes('intern-dashboard') || path.includes('daily-log'))) {
             window.location.href = '/manager-dashboard.html';
         } else if (user.role === 'intern' && path.includes('manager-dashboard')) {
             window.location.href = '/intern-dashboard.html';
@@ -366,114 +366,5 @@ document.addEventListener('DOMContentLoaded', async () => {
         };
 
         loadManagerData();
-    }
-
-    if (path.includes('attendance')) {
-        let currentDate = new Date();
-        let allAttendance = [];
-        let allLogs = [];
-
-        const loadCalendarData = async () => {
-            try {
-                const data = await apiCall('/api/intern/calendar');
-                allAttendance = data.attendance;
-                allLogs = data.logs;
-                renderCalendar();
-            } catch (err) {
-                console.error('Error loading calendar data:', err);
-            }
-        };
-
-        const renderCalendar = () => {
-            const year = currentDate.getFullYear();
-            const month = currentDate.getMonth();
-            document.getElementById('calendar-month-year').textContent = new Intl.DateTimeFormat('en-US', { month: 'long', year: 'numeric' }).format(currentDate);
-
-            const grid = document.getElementById('calendar-grid');
-            grid.innerHTML = '';
-
-            const firstDay = new Date(year, month, 1).getDay();
-            const daysInMonth = new Date(year, month + 1, 0).getDate();
-
-            // Fill empty cells before start of month
-            for (let i = 0; i < firstDay; i++) {
-                grid.innerHTML += `<div class="calendar-cell bg-surface-container-low opacity-50"></div>`;
-            }
-
-            // Fill days
-            for (let day = 1; day <= daysInMonth; day++) {
-                const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-                
-                // Find attendance for this date
-                const att = allAttendance.find(a => a.date.startsWith(dateStr));
-                let attHtml = '';
-                if (att) {
-                    attHtml = `
-                    <div class="text-[10px] text-primary font-semibold mb-1 flex justify-between bg-primary-container/10 px-1 py-0.5 rounded">
-                        <span>In: ${att.clock_in_time || '--'}</span>
-                        <span>Out: ${att.clock_out_time || '--'}</span>
-                    </div>`;
-                }
-
-                // Find logs for this date
-                const dayLogs = allLogs.filter(l => l.date.startsWith(dateStr));
-                let logsHtml = '';
-                dayLogs.forEach(l => {
-                    const safeLog = encodeURIComponent(JSON.stringify(l));
-                    logsHtml += `
-                    <div class="log-item bg-surface-container text-[10px] text-on-surface-variant p-1 rounded mb-1 border border-outline-variant/30 hover:border-primary transition-colors" onclick="openLogModal('${safeLog}')">
-                        <span class="font-bold block">${l.task_category}</span>
-                        ${l.description}
-                    </div>`;
-                });
-
-                grid.innerHTML += `
-                <div class="calendar-cell relative">
-                    <span class="absolute top-1 right-2 text-xs font-bold text-outline-variant">${day}</span>
-                    <div class="mt-4 flex-1">
-                        ${attHtml}
-                        <div class="space-y-1 mt-1">${logsHtml}</div>
-                    </div>
-                </div>`;
-            }
-        };
-
-        window.openLogModal = (logStr) => {
-            try {
-                const log = JSON.parse(decodeURIComponent(logStr));
-                document.getElementById('modal-date').textContent = new Date(log.date).toLocaleDateString();
-                document.getElementById('modal-status').textContent = log.status;
-                document.getElementById('modal-category').textContent = log.task_category;
-                document.getElementById('modal-desc').textContent = log.description;
-                document.getElementById('modal-hours').textContent = log.hours_spent;
-                
-                const modal = document.getElementById('log-modal');
-                modal.classList.remove('hidden');
-                // slight delay to trigger opacity transition
-                setTimeout(() => {
-                    modal.children[0].classList.remove('scale-95');
-                    modal.children[0].classList.add('scale-100');
-                }, 10);
-            } catch(e) {}
-        };
-
-        document.getElementById('close-modal-btn')?.addEventListener('click', () => {
-            const modal = document.getElementById('log-modal');
-            modal.children[0].classList.remove('scale-100');
-            modal.children[0].classList.add('scale-95');
-            setTimeout(() => modal.classList.add('hidden'), 150);
-        });
-
-        document.getElementById('prev-month')?.addEventListener('click', () => {
-            currentDate.setMonth(currentDate.getMonth() - 1);
-            renderCalendar();
-        });
-
-        document.getElementById('next-month')?.addEventListener('click', () => {
-            currentDate.setMonth(currentDate.getMonth() + 1);
-            renderCalendar();
-        });
-
-        loadCalendarData();
     }
 });
