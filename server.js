@@ -165,6 +165,18 @@ app.get('/api/intern/dashboard', requireAuth, async (req, res) => {
   }
 });
 
+// Get Intern Calendar Data
+app.get('/api/intern/calendar', requireAuth, async (req, res) => {
+  const userId = req.session.user.id;
+  try {
+    const [attendance] = await db.execute('SELECT * FROM attendance WHERE user_id = ? ORDER BY date ASC', [userId]);
+    const [logs] = await db.execute('SELECT * FROM daily_logs WHERE user_id = ? ORDER BY date ASC', [userId]);
+    res.json({ attendance, logs });
+  } catch (error) {
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
 // Get Manager Dashboard Data
 app.get('/api/manager/dashboard', requireAdmin, async (req, res) => {
   try {
