@@ -106,9 +106,24 @@ document.addEventListener('DOMContentLoaded', async () => {
                 const data = await apiCall('/api/intern/dashboard');
                 
                 // Set progress
-                document.getElementById('progress-hours').textContent = data.totalHours;
-                const pct = Math.min((data.totalHours / 400) * 100, 100);
+                const totalHrs = parseFloat(data.totalHours || 0).toFixed(2);
+                document.getElementById('progress-hours').textContent = totalHrs;
+                const pct = Math.min((parseFloat(totalHrs) / 400) * 100, 100);
                 document.getElementById('progress-bar').style.width = `${pct}%`;
+                
+                const pctEl = document.getElementById('progress-pct');
+                if (pctEl) pctEl.textContent = `${pct.toFixed(2)}% complete`;
+
+                // Update Profile Card stats
+                if (document.getElementById('profile-hours')) {
+                    document.getElementById('profile-hours').textContent = totalHrs;
+                }
+                if (document.getElementById('profile-days')) {
+                    document.getElementById('profile-days').textContent = data.attendance.filter(a => a.clock_out_time).length; 
+                }
+                if (document.getElementById('profile-pct')) {
+                    document.getElementById('profile-pct').textContent = `${pct.toFixed(1)}%`;
+                }
 
                 // Set attendance
                 const today = new Date().toISOString().slice(0, 10);

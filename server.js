@@ -50,8 +50,18 @@ const requireAdmin = (req, res, next) => {
 app.post('/api/login', async (req, res) => {
   const { username, password } = req.body;
   try {
-    const [rows] = await db.execute('SELECT * FROM users WHERE username = ?', [username]);
-    const user = rows[0];
+    // Hardcoded auth users mapping
+    const hardcodedUsers = {
+      'admin': { id: 1, username: 'admin', password: 'password', role: 'admin', full_name: 'Admin Manager' },
+      'intern': { id: 2, username: 'intern', password: 'password', role: 'intern', full_name: 'Intern User' },
+      'sarah': { id: 3, username: 'sarah', password: 'password', role: 'intern', full_name: 'Sarah Jenkins' },
+      'krittinai': { id: 4, username: 'krittinai', password: 'password', role: 'intern', full_name: 'Krittinai' },
+      'nawapon': { id: 5, username: 'nawapon', password: 'password', role: 'intern', full_name: 'Nawapon' },
+      'phuwish': { id: 6, username: 'phuwish', password: 'password', role: 'intern', full_name: 'Phuwish' }
+    };
+    
+    const user = hardcodedUsers[username];
+    
     if (user && user.password === password) {
       req.session.user = { id: user.id, username: user.username, role: user.role, full_name: user.full_name };
       res.json({ message: 'Login successful', user: req.session.user });
