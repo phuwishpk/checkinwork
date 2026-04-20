@@ -1,0 +1,86 @@
+version: '3.8'
+
+services:
+  # ============================================
+  # MariaDB Database (Production)
+  # ============================================
+  mariadb:
+    image: mariadb:11
+    container_name: ${PROJECT_NAME}_mariadb
+    restart: always
+    environment:
+      MARIADB_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+      MARIADB_DATABASE: ${DB_NAME}
+      MARIADB_USER: ${DB_USER}
+      MARIADB_PASSWORD: ${DB_PASSWORD}
+    ports:
+      - "${DB_PORT}:3306"
+    volumes:
+      - mariadb_data:/var/lib/mysql
+      - ./sql/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    networks:
+      - checkinwork_network
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+        reservations:
+          memory: 256M
+
+  # ============================================
+  # Node.js Application (Production)
+  # ============================================
+  app:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+    container_name: ${PROJECT_NAME}_app
+    restart: always
+    environment:
+      NODE_ENV: production
+      PORT: ${APP_PORT}
+      DB_HOST: mariadb
+      DB_PORT: 3306
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_NAME: ${DB_NAME}
+      DB_CONNECTION_LIMIT: ${DB_CONNECTION_LIMIT}
+      SESSION_SECRET: ${SESSION_SECRET}
+      CORS_ORIGIN: ${CORS_ORIGIN}
+      SESSION_MAX_AGE: ${SESSION_MAX_AGE}
+    ports:
+      - "${APP_PORT}:3000"
+    depends_on:
+      mariadb:
+        condition: service_healthy
+    networks:
+      - checkinwork_network
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3000/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+        reservations:
+          memory: 128M
+
+# ============================================
+# Networks
+# ============================================
+networks:
+  checkinwork_network:
+    driver: bridge
+
+# ============================================
+# Volumes
+# ============================================
+volumes:
+  mariadb_data:
