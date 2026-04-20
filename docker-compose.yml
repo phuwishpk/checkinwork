@@ -1,0 +1,20 @@
+version: '3.8'
+
+services:
+  mariadb:
+    image: mariadb:latest
+    container_name: internship_mariadb
+    restart: always
+    environment:
+      MARIADB_ROOT_PASSWORD: your_database_password
+      MARIADB_DATABASE: internship_db
+    ports:
+      - "3306:3306"
+    volumes:
+      # Mount the initialization script so it runs automatically on the first startup
+      - ./init_db.sql:/docker-entrypoint-initdb.d/init_db.sql
+      # Persist data so it's not lost when the container stops
+      - mariadb_data:/var/lib/mysql
+
+volumes:
+  mariadb_data:
