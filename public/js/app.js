@@ -47,7 +47,7 @@ async function protectRoute() {
         const greetingEl = document.getElementById('greeting-name');
         if (nameEl) nameEl.textContent = user.full_name;
         if (roleEl) roleEl.textContent = user.role;
-        if (greetingEl) greetingEl.textContent = `Good morning, \${user.full_name.split(' ')[0]}`;
+        if (greetingEl) greetingEl.textContent = `Good morning, ${user.full_name.split(' ')[0]}`;
     }
     return user;
 }
@@ -97,7 +97,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 // Set progress
                 document.getElementById('progress-hours').textContent = data.totalHours;
                 const pct = Math.min((data.totalHours / 400) * 100, 100);
-                document.getElementById('progress-bar').style.width = `\${pct}%`;
+                document.getElementById('progress-bar').style.width = `${pct}%`;
 
                 // Set attendance
                 const today = new Date().toISOString().slice(0, 10);
@@ -108,7 +108,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                     const isToday = att.date.startsWith(today);
                     if (isToday && !att.clock_out_time) {
                         isClockedIn = true;
-                        clockInTime = new Date(`1970-01-01T\${att.clock_in_time}Z`);
+                        clockInTime = new Date(`1970-01-01T${att.clock_in_time}Z`);
                     }
 
                     const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
@@ -116,24 +116,24 @@ document.addEventListener('DOMContentLoaded', async () => {
                     const dayName = days[dateObj.getDay()];
                     
                     attList.innerHTML += `
-                    <div class="flex items-center justify-between p-4 \${isToday ? 'bg-primary-container/10' : 'bg-surface'} rounded-lg">
+                    <div class="flex items-center justify-between p-4 ${isToday ? 'bg-primary-container/10' : 'bg-surface'} rounded-lg">
                         <div class="flex items-center space-x-4 w-1/4">
-                            <div class="w-10 h-10 rounded-full \${isToday ? 'bg-primary text-on-primary' : 'bg-surface-container-high text-on-surface'} flex items-center justify-center font-bold text-sm">\${dayName}</div>
-                            <span class="font-medium text-sm \${isToday ? 'text-primary' : 'text-on-surface'}">\${isToday ? 'Today' : dateObj.toLocaleDateString()}</span>
+                            <div class="w-10 h-10 rounded-full ${isToday ? 'bg-primary text-on-primary' : 'bg-surface-container-high text-on-surface'} flex items-center justify-center font-bold text-sm">${dayName}</div>
+                            <span class="font-medium text-sm ${isToday ? 'text-primary' : 'text-on-surface'}">${isToday ? 'Today' : dateObj.toLocaleDateString()}</span>
                         </div>
                         <div class="flex-1 flex justify-center space-x-8 text-sm">
                             <div class="flex flex-col items-center">
                                 <span class="text-on-surface-variant text-xs mb-1">Arrival</span>
-                                <span class="font-medium">\${att.clock_in_time || '--'}</span>
+                                <span class="font-medium">${att.clock_in_time || '--'}</span>
                             </div>
                             <div class="flex flex-col items-center">
                                 <span class="text-on-surface-variant text-xs mb-1">Departure</span>
-                                <span class="font-medium \${!att.clock_out_time && isToday ? 'text-on-surface-variant italic' : ''}">\${att.clock_out_time || (isToday ? 'In Progress' : '--')}</span>
+                                <span class="font-medium ${!att.clock_out_time && isToday ? 'text-on-surface-variant italic' : ''}">${att.clock_out_time || (isToday ? 'In Progress' : '--')}</span>
                             </div>
                         </div>
                         <div class="w-1/4 flex justify-end items-center space-x-3">
-                            <span class="text-xs px-2 py-1 \${!att.clock_out_time && isToday ? 'bg-secondary-fixed text-on-secondary-fixed flex items-center space-x-1' : 'bg-tertiary-container text-on-tertiary-container'} rounded-full font-medium">
-                                \${!att.clock_out_time && isToday ? '<span class="w-1.5 h-1.5 rounded-full bg-primary inline-block"></span><span>Active</span>' : (att.total_hours + ' hrs')}
+                            <span class="text-xs px-2 py-1 ${!att.clock_out_time && isToday ? 'bg-secondary-fixed text-on-secondary-fixed flex items-center space-x-1' : 'bg-tertiary-container text-on-tertiary-container'} rounded-full font-medium">
+                                ${!att.clock_out_time && isToday ? '<span class="w-1.5 h-1.5 rounded-full bg-primary inline-block"></span><span>Active</span>' : (att.total_hours + ' hrs')}
                             </span>
                         </div>
                     </div>`;
@@ -146,13 +146,13 @@ document.addEventListener('DOMContentLoaded', async () => {
                     logList.innerHTML += `
                     <div class="p-4 bg-surface rounded-lg">
                         <div class="flex justify-between items-start mb-2">
-                            <h4 class="font-medium text-sm text-on-surface">\${log.task_category}</h4>
-                            <span class="text-xs text-on-surface-variant">\${new Date(log.date).toLocaleDateString()}</span>
+                            <h4 class="font-medium text-sm text-on-surface">${log.task_category}</h4>
+                            <span class="text-xs text-on-surface-variant">${new Date(log.date).toLocaleDateString()}</span>
                         </div>
-                        <p class="text-xs text-on-surface-variant leading-relaxed line-clamp-2">\${log.description}</p>
+                        <p class="text-xs text-on-surface-variant leading-relaxed line-clamp-2">${log.description}</p>
                         <div class="mt-3 flex gap-2">
-                            <span class="text-[10px] px-2 py-0.5 bg-surface-container-highest text-on-surface rounded-full">\${log.hours_spent} hrs</span>
-                            <span class="text-[10px] px-2 py-0.5 bg-surface-container-highest text-on-surface rounded-full capitalize">\${log.status}</span>
+                            <span class="text-[10px] px-2 py-0.5 bg-surface-container-highest text-on-surface rounded-full">${log.hours_spent} hrs</span>
+                            <span class="text-[10px] px-2 py-0.5 bg-surface-container-highest text-on-surface rounded-full capitalize">${log.status}</span>
                         </div>
                     </div>`;
                 });
@@ -181,7 +181,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 // Assuming clockInTime is GMT, just format logic for demo
                 const hrs = clockInTime.getUTCHours().toString().padStart(2, '0');
                 const mins = clockInTime.getUTCMinutes().toString().padStart(2, '0');
-                timeSpan.textContent = `Clocked in at \${hrs}:\${mins}`;
+                timeSpan.textContent = `Clocked in at ${hrs}:${mins}`;
 
                 // start timer
                 if (timerInterval) clearInterval(timerInterval);
@@ -193,7 +193,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                     const h = String(now.getHours()).padStart(2, '0');
                     const m = String(now.getMinutes()).padStart(2, '0');
                     const s = String(now.getSeconds()).padStart(2, '0');
-                    timer.textContent = `\${h}:\${m}:\${s}`;
+                    timer.textContent = `${h}:${m}:${s}`;
                 }, 1000);
             } else {
                 btn.className = "w-32 h-32 rounded-full bg-gradient-to-br from-primary to-primary-container text-on-primary flex flex-col items-center justify-center shadow-lg hover:opacity-90 transition-all transform hover:scale-105 active:scale-95";
@@ -277,14 +277,14 @@ document.addEventListener('DOMContentLoaded', async () => {
                         logList.innerHTML += `
                         <div class="bg-surface-container-lowest p-4 rounded-xl ambient-shadow">
                             <div class="flex justify-between items-start mb-2">
-                                <span class="text-sm font-label font-medium text-on-surface">\${new Date(log.date).toLocaleDateString()}</span>
-                                <span class="\${log.status === 'pending' ? 'bg-tertiary-container text-on-tertiary-container' : 'bg-surface-container text-on-surface-variant'} text-xs font-label px-2 py-1 rounded-full capitalize">\${log.status}</span>
+                                <span class="text-sm font-label font-medium text-on-surface">${new Date(log.date).toLocaleDateString()}</span>
+                                <span class="${log.status === 'pending' ? 'bg-tertiary-container text-on-tertiary-container' : 'bg-surface-container text-on-surface-variant'} text-xs font-label px-2 py-1 rounded-full capitalize">${log.status}</span>
                             </div>
-                            <h4 class="font-headline font-bold text-on-surface text-base mb-1">\${log.task_category}</h4>
-                            <p class="text-sm text-on-surface-variant font-body line-clamp-2 mb-3">\${log.description}</p>
+                            <h4 class="font-headline font-bold text-on-surface text-base mb-1">${log.task_category}</h4>
+                            <p class="text-sm text-on-surface-variant font-body line-clamp-2 mb-3">${log.description}</p>
                             <div class="flex items-center text-xs text-secondary font-label">
                                 <span class="material-symbols-outlined text-sm mr-1">schedule</span>
-                                <span>\${log.hours_spent} Hours</span>
+                                <span>${log.hours_spent} Hours</span>
                             </div>
                         </div>`;
                     });
@@ -310,13 +310,13 @@ document.addEventListener('DOMContentLoaded', async () => {
                     rosterList.innerHTML += `
                     <div class="flex items-center justify-between bg-surface-container-lowest p-3 rounded-xl ambient-shadow">
                         <div class="flex items-center space-x-3">
-                            <div class="w-10 h-10 rounded-full bg-primary text-on-primary flex items-center justify-center font-bold text-sm">\${initials}</div>
+                            <div class="w-10 h-10 rounded-full bg-primary text-on-primary flex items-center justify-center font-bold text-sm">${initials}</div>
                             <div>
-                                <p class="font-label text-sm font-semibold text-on-surface">\${r.full_name}</p>
+                                <p class="font-label text-sm font-semibold text-on-surface">${r.full_name}</p>
                                 <p class="font-label text-xs text-on-surface-variant capitalize">Intern</p>
                             </div>
                         </div>
-                        <span class="px-3 py-1 rounded-full text-xs font-label font-medium \${r.status === 'online' ? 'bg-tertiary-container text-on-tertiary-container' : 'bg-secondary-fixed text-on-secondary-container'} capitalize">\${r.status === 'online' ? 'Clocked In' : 'Offline'}</span>
+                        <span class="px-3 py-1 rounded-full text-xs font-label font-medium ${r.status === 'online' ? 'bg-tertiary-container text-on-tertiary-container' : 'bg-secondary-fixed text-on-secondary-container'} capitalize">${r.status === 'online' ? 'Clocked In' : 'Offline'}</span>
                     </div>`;
                 });
 
@@ -328,12 +328,12 @@ document.addEventListener('DOMContentLoaded', async () => {
                     overviewBody.innerHTML += `
                     <tr class="hover:bg-surface-bright transition-colors group">
                         <td class="py-5 px-8 font-medium flex items-center space-x-3">
-                            <div class="w-8 h-8 rounded-full bg-secondary-container text-on-secondary-container flex items-center justify-center text-xs font-bold">\${initials}</div>
-                            <span>\${o.full_name}</span>
+                            <div class="w-8 h-8 rounded-full bg-secondary-container text-on-secondary-container flex items-center justify-center text-xs font-bold">${initials}</div>
+                            <span>${o.full_name}</span>
                         </td>
-                        <td class="py-5 px-8 text-on-surface-variant capitalize">\${o.role}</td>
-                        <td class="py-5 px-8 font-semibold">\${o.total_hours}</td>
-                        <td class="py-5 px-8">\${o.days_present} days</td>
+                        <td class="py-5 px-8 text-on-surface-variant capitalize">${o.role}</td>
+                        <td class="py-5 px-8 font-semibold">${o.total_hours}</td>
+                        <td class="py-5 px-8">${o.days_present} days</td>
                         <td class="py-5 px-8"><span class="px-3 py-1 rounded-full text-xs font-medium bg-secondary-fixed text-on-secondary-container">Active</span></td>
                     </tr>`;
                 });
@@ -347,15 +347,15 @@ document.addEventListener('DOMContentLoaded', async () => {
                         <div class="flex justify-between items-start mb-4">
                             <div class="flex items-center space-x-2">
                                 <span class="material-symbols-outlined text-outline-variant text-sm">calendar_today</span>
-                                <span class="text-xs font-label text-on-surface-variant">\${new Date(log.date).toLocaleDateString()}</span>
+                                <span class="text-xs font-label text-on-surface-variant">${new Date(log.date).toLocaleDateString()}</span>
                             </div>
-                            <span class="px-2 py-1 rounded-full text-[10px] font-label font-bold uppercase tracking-wide bg-tertiary-container text-on-tertiary-container capitalize">\${log.status}</span>
+                            <span class="px-2 py-1 rounded-full text-[10px] font-label font-bold uppercase tracking-wide bg-tertiary-container text-on-tertiary-container capitalize">${log.status}</span>
                         </div>
-                        <h4 class="font-headline font-semibold text-on-surface mb-2">\${log.task_category}</h4>
-                        <p class="text-sm font-label text-on-surface-variant line-clamp-2 mb-4">\${log.description}</p>
+                        <h4 class="font-headline font-semibold text-on-surface mb-2">${log.task_category}</h4>
+                        <p class="text-sm font-label text-on-surface-variant line-clamp-2 mb-4">${log.description}</p>
                         <div class="flex items-center justify-between pt-4 border-t border-outline/15">
-                            <span class="text-sm font-label font-medium text-on-surface">\${log.full_name}</span>
-                            <span class="text-sm font-label font-bold text-primary">\${log.hours_spent} hrs</span>
+                            <span class="text-sm font-label font-medium text-on-surface">${log.full_name}</span>
+                            <span class="text-sm font-label font-bold text-primary">${log.hours_spent} hrs</span>
                         </div>
                     </div>`;
                 });
