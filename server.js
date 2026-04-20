@@ -115,8 +115,8 @@ app.post('/api/clock-out', requireAuth, async (req, res) => {
 
     // Calculate hours (simplified)
     const clockIn = existing[0].clock_in_time;
-    const timeIn = new Date(`1970-01-01T\${clockIn}Z`);
-    const timeOut = new Date(`1970-01-01T\${nowTime}Z`);
+    const timeIn = new Date(`1970-01-01T${clockIn}Z`);
+    const timeOut = new Date(`1970-01-01T${nowTime}Z`);
     let diff = (timeOut - timeIn) / (1000 * 60 * 60);
     if (diff < 0) diff = 0;
 
@@ -213,5 +213,5 @@ app.get('/api/manager/dashboard', requireAdmin, async (req, res) => {
 
 // Start the server
 app.listen(PORT, () => {
-  console.log(`Server is running on port \${PORT}`);
+  console.log(`Server is running on port ${PORT}`);
 });
