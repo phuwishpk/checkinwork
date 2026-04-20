@@ -92,71 +92,80 @@
 </style>
 </head>
 <body class="bg-background text-on-surface antialiased min-h-screen flex flex-col md:flex-row relative">
+
 <!-- SideNavBar -->
-<nav class="hidden md:flex bg-slate-50 dark:bg-slate-950 text-blue-600 dark:text-blue-400 font-headline docked left-0 h-screen w-64 bg-surface-container-low tonal-contrast flat no-shadows fixed left-0 top-0 flex flex-col h-full p-6 space-y-8 overflow-y-auto z-50">
-<div class="flex items-center space-x-3 mb-8">
-<div class="w-10 h-10 rounded-full bg-primary flex items-center justify-center text-on-primary font-bold text-lg">
-<span class="material-symbols-outlined">domain</span>
-</div>
-<div>
-<h1 class="text-lg font-bold text-slate-900 dark:text-white leading-tight">Internship System</h1>
-<p class="text-xs text-on-surface-variant font-body">Portal</p>
-</div>
-</div>
-<a href="/daily-log.html" class="w-full bg-gradient-to-br from-primary to-primary-container text-on-primary py-3 rounded-md font-medium text-sm shadow-[0_8px_32px_rgba(44,52,55,0.06)] hover:opacity-90 transition-opacity flex items-center justify-center space-x-2">
-<span class="material-symbols-outlined text-lg">add</span>
-<span>New Log Entry</span>
-</a>
-<div class="flex-1 mt-6">
-<ul class="space-y-2">
-<li>
-<a class="flex items-center space-x-3 px-4 py-3 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/50 hover:translate-x-1 transition-all duration-300" href="/intern-dashboard.html">
-<span class="material-symbols-outlined">grid_view</span>
-<span class="font-body text-sm">Dashboard</span>
-</a>
-</li>
-<li>
-<a class="flex items-center space-x-3 px-4 py-3 rounded-lg text-blue-700 dark:text-blue-300 font-semibold bg-blue-50 dark:bg-blue-900/20 active:scale-95 transition-all duration-300" href="/attendance.html">
-<span class="material-symbols-outlined">event_available</span>
-<span class="font-body text-sm">Attendance</span>
-</a>
-</li>
-<li>
-<a class="flex items-center space-x-3 px-4 py-3 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/50 hover:translate-x-1 transition-all duration-300" href="/daily-log.html">
-<span class="material-symbols-outlined">history_edu</span>
-<span class="font-body text-sm">Logs</span>
-</a>
-</li>
-</ul>
-</div>
-<div class="mt-auto">
-<ul class="space-y-2">
-<li>
-<button id="logout-btn" class="w-full flex items-center space-x-3 px-4 py-2 rounded-lg text-red-600 hover:bg-red-50 transition-colors">
-<span class="material-symbols-outlined text-sm">logout</span>
-<span class="font-body text-xs">Logout</span>
-</button>
-</li>
-</ul>
-</div>
+<nav class="hidden md:flex flex-col fixed left-0 top-0 h-full w-64 bg-white border-r border-outline-variant/30 shadow-sm p-5 z-50 space-y-6">
+  <!-- Brand -->
+  <div class="flex items-center space-x-3 pb-4 border-b border-outline-variant/20">
+    <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-primary to-primary-container flex items-center justify-center shadow-md">
+      <span class="material-symbols-outlined text-white text-lg">domain</span>
+    </div>
+    <div>
+      <h1 class="text-sm font-bold text-on-surface font-headline leading-tight">Internship Portal</h1>
+      <p class="text-[11px] text-on-surface-variant">Intern Workspace</p>
+    </div>
+  </div>
+
+  <!-- New Log CTA -->
+  <a href="/daily-log.html" class="flex items-center justify-center space-x-2 py-2.5 px-4 bg-gradient-to-r from-primary to-primary-fixed-dim text-white text-sm font-semibold rounded-xl shadow-md hover:shadow-lg hover:opacity-95 transition-all">
+    <span class="material-symbols-outlined text-base">add_circle</span>
+    <span>New Log Entry</span>
+  </a>
+
+  <!-- Nav Links -->
+  <div class="flex-1">
+    <p class="text-[10px] font-semibold text-on-surface-variant uppercase tracking-widest mb-3 px-3">Menu</p>
+    <ul class="space-y-1">
+      <li>
+        <a class="flex items-center space-x-3 px-3 py-2.5 rounded-xl text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-all" href="/intern-dashboard.html">
+          <span class="material-symbols-outlined text-[20px]">grid_view</span>
+          <span class="text-sm">Dashboard</span>
+        </a>
+      </li>
+      <li>
+        <a class="flex items-center space-x-3 px-3 py-2.5 rounded-xl text-primary bg-primary/8 font-semibold" href="/attendance.html">
+          <span class="material-symbols-outlined fill text-primary text-[20px]" style="font-variation-settings:'FILL' 1">event_available</span>
+          <span class="text-sm">Attendance</span>
+        </a>
+      </li>
+      <li>
+        <a class="flex items-center space-x-3 px-3 py-2.5 rounded-xl text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-all" href="/daily-log.html">
+          <span class="material-symbols-outlined text-[20px]">history_edu</span>
+          <span class="text-sm">Daily Logs</span>
+        </a>
+      </li>
+    </ul>
+  </div>
+
+  <!-- Logout -->
+  <div class="border-t border-outline-variant/20 pt-4">
+    <button id="logout-btn" class="flex items-center space-x-3 px-3 py-2.5 rounded-xl text-red-500 hover:bg-red-50 w-full transition-colors">
+      <span class="material-symbols-outlined text-[20px]">logout</span>
+      <span class="text-sm font-medium">Sign Out</span>
+    </button>
+  </div>
 </nav>
 
 <!-- Main Content Area -->
-<main class="flex-1 md:ml-64 flex flex-col min-h-screen relative z-10">
-<header class="bg-white/80 dark:bg-slate-900/80 backdrop-blur-md text-blue-600 dark:text-blue-400 docked full-width top-0 sticky z-40 no-border tonal-shift-bg shadow-[0_8px_32px_rgba(44,52,55,0.06)] flex justify-between items-center w-full px-8 py-3 mx-auto">
-<div class="flex items-center space-x-4">
-<span class="text-xl font-extrabold tracking-tight text-slate-900 dark:text-white font-headline">Attendance Calendar</span>
-</div>
-<div class="flex items-center space-x-4">
-<div class="text-right hidden sm:block">
-    <div id="user-name" class="text-sm font-bold text-slate-900 dark:text-white">Loading...</div>
-    <div id="user-role" class="text-xs text-slate-500 capitalize">Role</div>
-</div>
-<div class="w-8 h-8 rounded-full bg-primary text-on-primary flex items-center justify-center font-bold">
-    <span class="material-symbols-outlined text-sm">person</span>
-</div>
-</div>
-</header>
+<main class="flex-1 md:ml-64 flex flex-col min-h-screen relative z-10 bg-background">
+  <!-- Top Header -->
+  <header class="sticky top-0 z-40 bg-white/80 backdrop-blur-md border-b border-outline-variant/20 shadow-sm flex items-center justify-between px-8 py-3.5">
+    <div class="flex items-center space-x-3">
+      <button class="md:hidden p-2 rounded-lg hover:bg-surface-container">
+        <span class="material-symbols-outlined text-on-surface-variant">menu</span>
+      </button>
+      <span class="text-base font-bold text-on-surface font-headline hidden md:block">Attendance Calendar</span>
+    </div>
+    <div class="flex items-center space-x-3">
+      <div class="text-right">
+        <div id="user-name" class="text-sm font-bold text-on-surface">Loading...</div>
+        <div id="user-role" class="text-xs text-on-surface-variant capitalize">Intern</div>
+      </div>
+      <div class="w-9 h-9 rounded-full bg-gradient-to-br from-primary to-primary-container flex items-center justify-center shadow">
+        <span class="material-symbols-outlined text-white text-sm">person</span>
+      </div>
+    </div>
+  </header>
 
 <div class="p-8 max-w-7xl mx-auto w-full flex-1">
 <div class="flex justify-between items-center mb-6">
