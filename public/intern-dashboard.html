@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Intern Dashboard - Architect Portal</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+    tailwind.config = {
+    darkMode: "class",
+    theme: {
+        extend: {
+        "colors": {
+                "on-error-container": "#6e0a12",
+                "surface-container-highest": "#dce4e8",
+                "surface-container-high": "#e3e9ed",
+                "error-dim": "#67040d",
+                "on-error": "#fff7f6",
+                "tertiary-container": "#e6cafa",
+                "surface-container-lowest": "#ffffff",
+                "secondary-container": "#d3e4fe",
+                "tertiary-fixed": "#e6cafa",
+                "primary-container": "#3e76fe",
+                "surface-tint": "#0053dc",
+                "surface": "#f7f9fb",
+                "on-tertiary-fixed": "#422d53",
+                "error": "#a83836",
+                "outline": "#747c80",
+                "surface-bright": "#f7f9fb",
+                "primary-fixed": "#3e76fe",
+                "on-secondary-fixed": "#314055",
+                "on-secondary": "#f7f9ff",
+                "on-primary-fixed-variant": "#f9f7ff",
+                "error-container": "#fa746f",
+                "secondary-fixed-dim": "#c5d6f0",
+                "background": "#f7f9fb",
+                "surface-variant": "#dce4e8",
+                "secondary-fixed": "#d3e4fe",
+                "primary-dim": "#0049c2",
+                "on-background": "#2c3437",
+                "inverse-surface": "#0b0f10",
+                "inverse-primary": "#618bff",
+                "secondary": "#506076",
+                "secondary-dim": "#44546a",
+                "on-tertiary-fixed-variant": "#604a71",
+                "tertiary-fixed-dim": "#d8bceb",
+                "on-surface": "#2c3437",
+                "outline-variant": "#acb3b7",
+                "inverse-on-surface": "#9a9d9f",
+                "on-primary-container": "#000000",
+                "surface-container": "#eaeff2",
+                "on-secondary-container": "#435368",
+                "surface-container-low": "#f0f4f7",
+                "primary-fixed-dim": "#2d68f0",
+                "on-secondary-fixed-variant": "#4d5d73",
+                "tertiary-dim": "#604a72",
+                "on-primary": "#faf8ff",
+                "on-tertiary-container": "#564067",
+                "on-primary-fixed": "#ffffff",
+                "primary": "#0053dc",
+                "tertiary": "#6d567f",
+                "on-surface-variant": "#596064",
+                "surface-dim": "#d4dbdf",
+                "on-tertiary": "#fff6fe"
+        },
+        "borderRadius": {
+                "DEFAULT": "0.125rem",
+                "lg": "0.25rem",
+                "xl": "0.5rem",
+                "full": "0.75rem"
+        },
+        "fontFamily": {
+                "headline": ["Manrope"],
+                "body": ["Inter"],
+                "label": ["Inter"]
+        }
+    },
+    },
+    }
+</script>
+<style>
+    body { font-family: 'Inter', sans-serif; }
+    h1, h2, h3, h4, h5, h6, .font-headline { font-family: 'Manrope', sans-serif; letter-spacing: -0.02em; }
+    .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+    .material-symbols-outlined.fill { font-variation-settings: 'FILL' 1; }
+</style>
+</head>
+<body class="bg-background text-on-surface antialiased min-h-screen flex flex-col md:flex-row">
+<!-- SideNavBar -->
+<nav class="hidden md:flex bg-slate-50 dark:bg-slate-950 text-blue-600 dark:text-blue-400 font-headline docked left-0 h-screen w-64 bg-surface-container-low tonal-contrast flat no-shadows fixed left-0 top-0 flex flex-col h-full p-6 space-y-8 overflow-y-auto z-50">
+<div class="flex items-center space-x-3 mb-8">
+<div class="w-10 h-10 rounded-full bg-primary flex items-center justify-center text-on-primary font-bold text-lg">
+<span class="material-symbols-outlined">domain</span>
+</div>
+<div>
+<h1 class="text-lg font-bold text-slate-900 dark:text-white leading-tight">Internship System</h1>
+<p class="text-xs text-on-surface-variant font-body">Portal</p>
+</div>
+</div>
+<a href="/daily-log.html" class="w-full bg-gradient-to-br from-primary to-primary-container text-on-primary py-3 rounded-md font-medium text-sm shadow-[0_8px_32px_rgba(44,52,55,0.06)] hover:opacity-90 transition-opacity flex items-center justify-center space-x-2">
+<span class="material-symbols-outlined text-lg">add</span>
+<span>New Log Entry</span>
+</a>
+<div class="flex-1 mt-6">
+<ul class="space-y-2">
+<li>
+<a class="flex items-center space-x-3 px-4 py-3 rounded-lg text-blue-700 dark:text-blue-300 font-semibold bg-blue-50 dark:bg-blue-900/20 active:scale-95 transition-all duration-300" href="/intern-dashboard.html">
+<span class="material-symbols-outlined">grid_view</span>
+<span class="font-body text-sm">Dashboard</span>
+</a>
+</li>
+<li>
+<a class="flex items-center space-x-3 px-4 py-3 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/50 hover:translate-x-1 transition-all duration-300" href="#">
+<span class="material-symbols-outlined">event_available</span>
+<span class="font-body text-sm">Attendance</span>
+</a>
+</li>
+<li>
+<a class="flex items-center space-x-3 px-4 py-3 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/50 hover:translate-x-1 transition-all duration-300" href="/daily-log.html">
+<span class="material-symbols-outlined">history_edu</span>
+<span class="font-body text-sm">Logs</span>
+</a>
+</li>
+</ul>
+</div>
+<div class="mt-auto">
+<ul class="space-y-2">
+<li>
+<button id="logout-btn" class="w-full flex items-center space-x-3 px-4 py-2 rounded-lg text-red-600 hover:bg-red-50 transition-colors">
+<span class="material-symbols-outlined text-sm">logout</span>
+<span class="font-body text-xs">Logout</span>
+</button>
+</li>
+</ul>
+</div>
+</nav>
+<!-- Main Content Area -->
+<main class="flex-1 md:ml-64 flex flex-col min-h-screen">
+<header class="bg-white/80 dark:bg-slate-900/80 backdrop-blur-md text-blue-600 dark:text-blue-400 docked full-width top-0 sticky z-40 no-border tonal-shift-bg shadow-[0_8px_32px_rgba(44,52,55,0.06)] flex justify-between items-center w-full px-8 py-3 mx-auto">
+<div class="flex items-center space-x-4">
+<span class="text-xl font-extrabold tracking-tight text-slate-900 dark:text-white font-headline">Intern Portal</span>
+</div>
+<div class="flex items-center space-x-4">
+<div class="text-right hidden sm:block">
+    <div id="user-name" class="text-sm font-bold text-slate-900 dark:text-white">Loading...</div>
+    <div id="user-role" class="text-xs text-slate-500 capitalize">Role</div>
+</div>
+<div class="w-8 h-8 rounded-full bg-primary text-on-primary flex items-center justify-center font-bold">
+    <span class="material-symbols-outlined text-sm">person</span>
+</div>
+</div>
+</header>
+<!-- Dashboard Canvas -->
+<div class="p-8 max-w-7xl mx-auto w-full flex-1">
+<div class="mb-10 flex flex-col md:flex-row justify-between items-start md:items-end">
+<div>
+<h2 class="text-4xl font-extrabold text-on-surface font-headline mb-2" id="greeting-name">Good morning, Intern</h2>
+<p class="text-on-surface-variant font-body text-sm">Here is your internship overview for today.</p>
+</div>
+</div>
+<!-- Bento Grid Layout -->
+<div class="grid grid-cols-1 md:grid-cols-12 gap-6">
+<!-- Left Column: Primary Actions & Stats (8 cols) -->
+<div class="md:col-span-8 flex flex-col gap-6">
+<!-- Clock In Card -->
+<div class="bg-surface-container-lowest rounded-xl p-8 relative overflow-hidden group">
+<div class="absolute top-0 left-0 w-1.5 h-full bg-gradient-to-b from-primary to-primary-container"></div>
+<div class="flex flex-col md:flex-row justify-between items-center gap-6">
+<div>
+<h3 class="text-sm font-semibold text-on-surface-variant uppercase tracking-wider mb-1 font-body">Current Session</h3>
+<div id="session-timer" class="text-5xl font-extrabold text-on-surface font-headline mb-2 tracking-tight">00:00:00</div>
+<p class="text-sm text-on-surface-variant flex items-center space-x-1 hidden" id="clock-in-info">
+<span class="w-2 h-2 rounded-full bg-green-500 inline-block animate-pulse"></span>
+<span id="clock-in-time">Clocked in at --:--</span>
+</p>
+</div>
+<div class="flex space-x-4">
+<button id="clock-btn" class="w-32 h-32 rounded-full bg-gradient-to-br from-primary to-primary-container text-on-primary flex flex-col items-center justify-center shadow-lg hover:opacity-90 transition-all transform hover:scale-105 active:scale-95">
+<span id="clock-icon" class="material-symbols-outlined text-3xl mb-1">play_circle</span>
+<span id="clock-text" class="font-bold font-headline tracking-wide">Clock In</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Weekly Attendance Summary -->
+<div class="bg-surface-container-lowest rounded-xl p-8">
+<div class="flex justify-between items-center mb-6">
+<h3 class="text-xl font-bold font-headline text-on-surface">Recent Attendance</h3>
+</div>
+<div class="space-y-4" id="weekly-attendance-list">
+    <!-- Dynamic Content -->
+    <div class="text-sm text-on-surface-variant">Loading attendance data...</div>
+</div>
+</div>
+</div>
+<!-- Right Column: Logs & Context (4 cols) -->
+<div class="md:col-span-4 flex flex-col gap-6">
+<!-- Progress Card -->
+<div class="bg-surface-container-lowest rounded-xl p-8 relative">
+<div class="absolute top-0 left-0 w-1.5 h-full bg-gradient-to-b from-secondary-container to-secondary"></div>
+<h3 class="text-sm font-semibold text-on-surface-variant uppercase tracking-wider mb-4 font-body">Program Progress</h3>
+<div class="flex items-end space-x-2 mb-2">
+<span id="progress-hours" class="text-4xl font-bold font-headline text-on-surface tracking-tight">0</span>
+<span class="text-on-surface-variant mb-1">/ 400 hrs</span>
+</div>
+<div class="w-full bg-surface-container-high h-2 rounded-full overflow-hidden">
+<div id="progress-bar" class="bg-primary h-full rounded-full transition-all duration-1000" style="width: 0%"></div>
+</div>
+</div>
+<!-- Recent Logs -->
+<div class="bg-surface-container-lowest rounded-xl p-6 flex-1 flex flex-col">
+<div class="flex justify-between items-center mb-6">
+<h3 class="text-lg font-bold font-headline text-on-surface">Recent Logs</h3>
+<a href="/daily-log.html" class="bg-surface text-primary p-2 rounded-full hover:bg-surface-container transition-colors shadow-[0_4px_12px_rgba(44,52,55,0.04)]">
+<span class="material-symbols-outlined text-sm">edit_document</span>
+</a>
+</div>
+<div class="space-y-4 flex-1" id="recent-logs-list">
+    <!-- Dynamic Content -->
+    <div class="text-sm text-on-surface-variant">Loading recent logs...</div>
+</div>
+<a href="/daily-log.html" class="w-full mt-4 py-2 text-sm text-primary font-medium hover:bg-surface-container-low rounded-md transition-colors text-center block">
+    View All Logs
+</a>
+</div>
+</div>
+</div>
+</div>
+</main>
+<script src="/js/app.js"></script>
+</body>
+</html>
