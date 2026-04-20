@@ -1,149 +1,264 @@
-<!DOCTYPE html>
-<html class="light" lang="en"><head>
-<meta charset="utf-8"/>
-<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>Manager Dashboard - Internship System</title>
-<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet"/>
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
-<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-<script id="tailwind-config">
-    tailwind.config = {
+<!doctype html>
+<html class="light" lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Manager Dashboard - Internship System</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Inter:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+      rel="stylesheet"
+    />
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script id="tailwind-config">
+      tailwind.config = {
         darkMode: "class",
         theme: {
-            extend: {
-                colors: {
-                    "primary": "#0053dc",
-                    "primary-container": "#3e76fe",
-                    "on-primary": "#faf8ff",
-                    "background": "#f7f9fb",
-                    "surface": "#f7f9fb",
-                    "surface-container-lowest": "#ffffff",
-                    "surface-container-low": "#f0f4f7",
-                    "surface-container-high": "#e3e9ed",
-                    "on-surface": "#2c3437",
-                    "on-surface-variant": "#596064",
-                    "outline": "#747c80",
-                    "secondary": "#506076",
-                    "secondary-fixed": "#d3e4fe",
-                    "on-secondary-fixed": "#314055",
-                    "tertiary-container": "#e6cafa",
-                    "on-tertiary-container": "#564067",
-                },
-                fontFamily: {
-                    "headline": ["Manrope", "sans-serif"],
-                    "body": ["Inter", "sans-serif"],
-                    "label": ["Inter", "sans-serif"]
-                }
-            }
-        }
-    }
-</script>
-<style>
-    body { font-family: 'Inter', sans-serif; background-color: #f7f9fb; color: #2c3437; }
-    h1, h2, h3, h4, h5, h6, .font-headline { font-family: 'Manrope', sans-serif; letter-spacing: -0.02em; }
-    .ambient-shadow { box-shadow: 0 8px 32px rgba(44, 52, 55, 0.06); }
-    .gradient-text { background: linear-gradient(135deg, #0053dc, #3e76fe); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-    .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
-</style>
-</head>
-<body class="bg-background text-on-surface min-h-screen flex flex-col md:flex-row">
-<!-- SideNavBar (Web) -->
-<aside class="hidden md:flex bg-slate-50 dark:bg-slate-950 docked left-0 h-screen w-64 bg-surface-container-low tonal-contrast flat no-shadows fixed left-0 top-0 flex flex-col h-full p-6 space-y-8 overflow-y-auto z-50">
-<div class="flex items-center space-x-3">
-<div class="w-10 h-10 rounded-lg bg-primary flex items-center justify-center text-on-primary font-headline font-bold">IM</div>
-<div>
-<h1 class="text-lg font-bold text-slate-900 dark:text-white font-headline leading-tight">Internship Manager</h1>
-<p class="text-xs text-on-surface-variant font-label">Institutional Authority</p>
-</div>
-</div>
-<nav class="flex-1 space-y-2 mt-8">
-<a class="flex items-center space-x-3 px-4 py-3 text-blue-700 dark:text-blue-300 font-semibold bg-blue-50 dark:bg-blue-900/20 rounded-lg font-label text-sm hover:translate-x-1 transition-all duration-300" href="/manager-dashboard.html">
-<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">grid_view</span>
-<span>Dashboard</span>
-</a>
-</nav>
-<div class="mt-auto space-y-2 border-t border-outline/15 pt-4">
-<button id="logout-btn" class="w-full flex items-center space-x-3 px-4 py-2 text-red-600 hover:bg-red-50 rounded-lg font-label text-sm transition-all duration-300">
-<span class="material-symbols-outlined">logout</span>
-<span>Logout</span>
-</button>
-</div>
-</aside>
-<!-- Main Content Area -->
-<main class="flex-1 md:ml-64 p-6 md:p-12 max-w-7xl mx-auto w-full flex flex-col min-h-screen">
-<!-- Header Section -->
-<header class="mb-12 flex flex-col md:flex-row md:items-end justify-between gap-4">
-<div>
-<p class="text-on-surface-variant font-label text-sm mb-1 uppercase tracking-wider">Overview</p>
-<h2 class="text-4xl font-headline font-extrabold text-on-surface" id="greeting-name">Good morning, Admin</h2>
-</div>
-</header>
-<!-- Bento Grid Layout -->
-<div class="grid grid-cols-1 md:grid-cols-12 gap-8">
-<!-- Hero Metric: Progress Glass (Col Span 8) -->
-<div class="md:col-span-8 bg-surface-container-lowest rounded-xl p-8 ambient-shadow relative overflow-hidden flex flex-col justify-between">
-<div class="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-primary to-primary-container"></div>
-<div class="flex justify-between items-start mb-8">
-<div>
-<h3 class="font-headline text-xl font-bold text-on-surface mb-1">Total Program Hours</h3>
-<p class="text-sm text-on-surface-variant font-label">Across 3 active interns</p>
-</div>
-<span class="material-symbols-outlined text-primary bg-primary-container/10 p-2 rounded-full">schedule</span>
-</div>
-<div class="flex items-end space-x-4">
-<span id="total-program-hours" class="font-headline text-6xl font-extrabold gradient-text tracking-tighter">0</span>
-<span class="text-on-surface-variant font-label text-lg mb-2">hrs logged</span>
-</div>
-</div>
-<!-- Real-time Status (Col Span 4) -->
-<div class="md:col-span-4 bg-surface-container-low rounded-xl p-6 flex flex-col">
-<h3 class="font-headline text-lg font-bold text-on-surface mb-6 flex items-center justify-between">
-<span>Live Roster</span>
-<span class="flex h-3 w-3 relative">
-<span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
-<span class="relative inline-flex rounded-full h-3 w-3 bg-primary"></span>
-</span>
-</h3>
-<div class="space-y-4 flex-1" id="live-roster">
-<!-- Dynamic Roster -->
-<div class="text-sm text-on-surface-variant">Loading roster...</div>
-</div>
-</div>
-<!-- Attendance Summary Table (Col Span 12) -->
-<div class="md:col-span-12 bg-surface-container-lowest rounded-xl pt-8 pb-4 ambient-shadow overflow-hidden">
-<div class="px-8 mb-6 flex justify-between items-end">
-<h3 class="font-headline text-xl font-bold text-on-surface">Monthly Overview</h3>
-</div>
-<div class="overflow-x-auto">
-<table class="w-full text-left border-collapse">
-<thead>
-<tr class="bg-surface text-on-surface-variant font-label text-xs uppercase tracking-wider">
-<th class="py-4 px-8 font-medium">Intern</th>
-<th class="py-4 px-8 font-medium">Role</th>
-<th class="py-4 px-8 font-medium">Total Hours</th>
-<th class="py-4 px-8 font-medium">Days Present</th>
-<th class="py-4 px-8 font-medium">Status</th>
-</tr>
-</thead>
-<tbody id="overview-table-body" class="text-sm font-label text-on-surface divide-y divide-surface-container-low">
-<!-- Dynamic Overview -->
-<tr>
-    <td colspan="5" class="py-5 px-8 text-center text-on-surface-variant">Loading overview...</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<!-- Recent Logs List (Col Span 12) -->
-<div class="md:col-span-12 mt-4">
-<h3 class="font-headline text-xl font-bold text-on-surface mb-6 px-2">Recent Daily Logs</h3>
-<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="recent-logs-list">
-<!-- Dynamic Logs -->
-<div class="col-span-full text-sm text-on-surface-variant px-2">Loading recent logs...</div>
-</div>
-</div>
-</div>
-</main>
-<script src="/js/app.js"></script>
-</body>
+          extend: {
+            colors: {
+              primary: "#0053dc",
+              "primary-container": "#3e76fe",
+              "on-primary": "#faf8ff",
+              background: "#f7f9fb",
+              surface: "#f7f9fb",
+              "surface-container-lowest": "#ffffff",
+              "surface-container-low": "#f0f4f7",
+              "surface-container-high": "#e3e9ed",
+              "on-surface": "#2c3437",
+              "on-surface-variant": "#596064",
+              outline: "#747c80",
+              secondary: "#506076",
+              "secondary-fixed": "#d3e4fe",
+              "on-secondary-fixed": "#314055",
+              "tertiary-container": "#e6cafa",
+              "on-tertiary-container": "#564067",
+            },
+            fontFamily: {
+              headline: ["Manrope", "sans-serif"],
+              body: ["Inter", "sans-serif"],
+              label: ["Inter", "sans-serif"],
+            },
+          },
+        },
+      };
+    </script>
+    <style>
+      body {
+        font-family: "Inter", sans-serif;
+        background-color: #f7f9fb;
+        color: #2c3437;
+      }
+      h1,
+      h2,
+      h3,
+      h4,
+      h5,
+      h6,
+      .font-headline {
+        font-family: "Manrope", sans-serif;
+        letter-spacing: -0.02em;
+      }
+      .ambient-shadow {
+        box-shadow: 0 8px 32px rgba(44, 52, 55, 0.06);
+      }
+      .gradient-text {
+        background: linear-gradient(135deg, #0053dc, #3e76fe);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+      }
+      .material-symbols-outlined {
+        font-variation-settings:
+          "FILL" 0,
+          "wght" 400,
+          "GRAD" 0,
+          "opsz" 24;
+      }
+    </style>
+  </head>
+  <body
+    class="bg-background text-on-surface min-h-screen flex flex-col md:flex-row"
+  >
+    <!-- SideNavBar (Web) -->
+    <aside
+      class="hidden md:flex bg-slate-50 dark:bg-slate-950 docked left-0 h-screen w-64 bg-surface-container-low tonal-contrast flat no-shadows fixed left-0 top-0 flex flex-col h-full p-6 space-y-8 overflow-y-auto z-50"
+    >
+      <div class="flex items-center space-x-3">
+        <div
+          class="w-10 h-10 rounded-lg bg-primary flex items-center justify-center text-on-primary font-headline font-bold"
+        >
+          IM
+        </div>
+        <div>
+          <h1
+            class="text-lg font-bold text-slate-900 dark:text-white font-headline leading-tight"
+          >
+            Internship Manager
+          </h1>
+          <p class="text-xs text-on-surface-variant font-label">
+            Institutional Authority
+          </p>
+        </div>
+      </div>
+      <nav class="flex-1 space-y-2 mt-8">
+        <a
+          class="flex items-center space-x-3 px-4 py-3 text-blue-700 dark:text-blue-300 font-semibold bg-blue-50 dark:bg-blue-900/20 rounded-lg font-label text-sm hover:translate-x-1 transition-all duration-300"
+          href="/manager-dashboard.html"
+        >
+          <span
+            class="material-symbols-outlined"
+            style="font-variation-settings: &quot;FILL&quot; 1"
+            >grid_view</span
+          >
+          <span>Dashboard</span>
+        </a>
+      </nav>
+      <div class="mt-auto space-y-2 border-t border-outline/15 pt-4">
+        <button
+          id="logout-btn"
+          class="w-full flex items-center space-x-3 px-4 py-2 text-red-600 hover:bg-red-50 rounded-lg font-label text-sm transition-all duration-300"
+        >
+          <span class="material-symbols-outlined">logout</span>
+          <span>Logout</span>
+        </button>
+      </div>
+    </aside>
+    <!-- Main Content Area -->
+    <main
+      class="flex-1 md:ml-64 p-6 md:p-12 max-w-7xl mx-auto w-full flex flex-col min-h-screen"
+    >
+      <!-- Header Section -->
+      <header
+        class="mb-12 flex flex-col md:flex-row md:items-end justify-between gap-4"
+      >
+        <div>
+          <p
+            class="text-on-surface-variant font-label text-sm mb-1 uppercase tracking-wider"
+          >
+            Overview
+          </p>
+          <h2
+            class="text-4xl font-headline font-extrabold text-on-surface"
+            id="greeting-name"
+          >
+            Good morning, Admin
+          </h2>
+        </div>
+      </header>
+      <!-- Bento Grid Layout -->
+      <div class="grid grid-cols-1 md:grid-cols-12 gap-8">
+        <!-- Hero Metric: Progress Glass (Col Span 8) -->
+        <div
+          class="md:col-span-8 bg-surface-container-lowest rounded-xl p-8 ambient-shadow relative overflow-hidden flex flex-col justify-between"
+        >
+          <div
+            class="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-primary to-primary-container"
+          ></div>
+          <div class="flex justify-between items-start mb-8">
+            <div>
+              <h3 class="font-headline text-xl font-bold text-on-surface mb-1">
+                Total Program Hours
+              </h3>
+              <p class="text-sm text-on-surface-variant font-label">
+                Across 3 active interns
+              </p>
+            </div>
+            <span
+              class="material-symbols-outlined text-primary bg-primary-container/10 p-2 rounded-full"
+              >schedule</span
+            >
+          </div>
+          <div class="flex items-end space-x-4">
+            <span
+              id="total-program-hours"
+              class="font-headline text-6xl font-extrabold gradient-text tracking-tighter"
+              >0</span
+            >
+            <span class="text-on-surface-variant font-label text-lg mb-2"
+              >hrs logged</span
+            >
+          </div>
+        </div>
+        <!-- Real-time Status (Col Span 4) -->
+        <div
+          class="md:col-span-4 bg-surface-container-low rounded-xl p-6 flex flex-col"
+        >
+          <h3
+            class="font-headline text-lg font-bold text-on-surface mb-6 flex items-center justify-between"
+          >
+            <span>Live Roster</span>
+            <span class="flex h-3 w-3 relative">
+              <span
+                class="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"
+              ></span>
+              <span
+                class="relative inline-flex rounded-full h-3 w-3 bg-primary"
+              ></span>
+            </span>
+          </h3>
+          <div class="space-y-4 flex-1" id="live-roster">
+            <!-- Dynamic Roster -->
+            <div class="text-sm text-on-surface-variant">Loading roster...</div>
+          </div>
+        </div>
+        <!-- Attendance Summary Table (Col Span 12) -->
+        <div
+          class="md:col-span-12 bg-surface-container-lowest rounded-xl pt-8 pb-4 ambient-shadow overflow-hidden"
+        >
+          <div class="px-8 mb-6 flex justify-between items-end">
+            <h3 class="font-headline text-xl font-bold text-on-surface">
+              Monthly Overview
+            </h3>
+          </div>
+          <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse">
+              <thead>
+                <tr
+                  class="bg-surface text-on-surface-variant font-label text-xs uppercase tracking-wider"
+                >
+                  <th class="py-4 px-8 font-medium">Intern</th>
+                  <th class="py-4 px-8 font-medium">Role</th>
+                  <th class="py-4 px-8 font-medium">Total Hours</th>
+                  <th class="py-4 px-8 font-medium">Days Present</th>
+                  <th class="py-4 px-8 font-medium">Status</th>
+                </tr>
+              </thead>
+              <tbody
+                id="overview-table-body"
+                class="text-sm font-label text-on-surface divide-y divide-surface-container-low"
+              >
+                <!-- Dynamic Overview -->
+                <tr>
+                  <td
+                    colspan="5"
+                    class="py-5 px-8 text-center text-on-surface-variant"
+                  >
+                    Loading overview...
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <!-- Recent Logs List (Col Span 12) -->
+        <div class="md:col-span-12 mt-4">
+          <h3 class="font-headline text-xl font-bold text-on-surface mb-6 px-2">
+            Recent Daily Logs
+          </h3>
+          <div
+            class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+            id="recent-logs-list"
+          >
+            <!-- Dynamic Logs -->
+            <div class="col-span-full text-sm text-on-surface-variant px-2">
+              Loading recent logs...
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+    <script src="/js/app.js"></script>
+  </body>
 </html>
