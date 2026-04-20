@@ -1,20 +1,105 @@
 version: '3.8'
 
 services:
+  # ============================================
+  # MariaDB Database
+  # ============================================
   mariadb:
-    image: mariadb:latest
-    container_name: internship_mariadb
-    restart: always
+    image: mariadb:11
+    container_name: ${PROJECT_NAME:-checkinwork}_mariadb
+    restart: ${DOCKER_RESTART_POLICY:-unless-stopped}
     environment:
-      MARIADB_ROOT_PASSWORD: your_database_password
-      MARIADB_DATABASE: internship_db
+      MARIADB_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+      MARIADB_DATABASE: ${DB_NAME}
+      MARIADB_USER: ${DB_USER}
+      MARIADB_PASSWORD: ${DB_PASSWORD}
     ports:
-      - "3306:3306"
+      - "${DB_PORT:-3307}:3306"
     volumes:
-      # Mount the initialization script so it runs automatically on the first startup
-      - ./init_db.sql:/docker-entrypoint-initdb.d/init_db.sql
-      # Persist data so it's not lost when the container stops
       - mariadb_data:/var/lib/mysql
+      - ./sql/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+      - ./sql/backups:/backups:ro
+    networks:
+      - checkinwork_network
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      start_period: 30s
+      timeout: 10s
+      retries: 5
+    labels:
+      - "com.checkinwork.service=database"
+      - "com.checkinwork.role=primary"
 
+  # ============================================
+  # Node.js Application
+  # ============================================
+  app:
+    build:
+      context: .
+      dockerfile: ${DOCKERFILE:-docker/Dockerfile}
+    container_name: ${PROJECT_NAME:-checkinwork}_app
+    restart: ${DOCKER_RESTART_POLICY:-unless-stopped}
+    environment:
+      NODE_ENV: ${NODE_ENV:-production}
+      PORT: ${APP_PORT:-3000}
+      DB_HOST: mariadb
+      DB_PORT: 3306
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_NAME: ${DB_NAME}
+      DB_CONNECTION_LIMIT: ${DB_CONNECTION_LIMIT:-10}
+      SESSION_SECRET: ${SESSION_SECRET}
+      CORS_ORIGIN: ${CORS_ORIGIN:-*}
+      SESSION_MAX_AGE: ${SESSION_MAX_AGE:-86400000}
+    ports:
+      - "${APP_PORT:-3000}:3000"
+    volumes:
+      - ./public:/app/public:ro
+    depends_on:
+      mariadb:
+        condition: service_healthy
+    networks:
+      - checkinwork_network
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    labels:
+      - "com.checkinwork.service=app"
+      - "com.checkinwork.role=frontend"
+
+  # ============================================
+  # Adminer (Database Management UI)
+  # ============================================
+  adminer:
+    image: adminer:latest
+    container_name: ${PROJECT_NAME:-checkinwork}_adminer
+    restart: ${DOCKER_RESTART_POLICY:-unless-stopped}
+    ports:
+      - "${ADMINER_PORT:-8080}:8080"
+    depends_on:
+      - mariadb
+    networks:
+      - checkinwork_network
+    labels:
+      - "com.checkinwork.service=adminer"
+      - "com.checkinwork.role=tools"
+    profiles:
+      - tools
+
+# ============================================
+# Networks
+# ============================================
+networks:
+  checkinwork_network:
+    driver: bridge
+    name: ${PROJECT_NAME:-checkinwork}_network
+
+# ============================================
+# Volumes
+# ============================================
 volumes:
   mariadb_data:
+    name: ${PROJECT_NAME:-checkinwork}_mariadb_data
