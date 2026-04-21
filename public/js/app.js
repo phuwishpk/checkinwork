@@ -49,7 +49,9 @@ async function protectRoute() {
                 document.getElementById('user-role').textContent = user.role;
             }
             if (document.getElementById('greeting-name')) {
-                document.getElementById('greeting-name').textContent = `Good morning, ${user.full_name || user.username} 👋`;
+                const hour = new Date().getHours();
+                const greeting = (hour >= 5 && hour < 12) ? 'Good morning' : 'Good evening';
+                document.getElementById('greeting-name').textContent = `${greeting}, ${user.full_name || user.username} 👋`;
             }
             if (document.getElementById('profile-card-name')) {
                 document.getElementById('profile-card-name').textContent = user.full_name || user.username;
