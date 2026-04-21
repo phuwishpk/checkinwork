@@ -89,98 +89,80 @@
         h1, h2, h3 { font-family: 'Manrope', sans-serif; }
     </style>
 </head>
-<body class="bg-background text-on-surface">
-<!-- TopAppBar -->
-<header class="fixed top-0 left-0 right-0 z-50 flex justify-between items-center px-8 h-16 bg-[#f7f9fb]/80 dark:bg-slate-950/80 backdrop-blur-md shadow-sm">
-<div class="flex items-center gap-4">
-<span class="text-xl font-black tracking-tighter text-blue-700 dark:text-blue-500">The Architect</span>
-</div>
-<div class="flex items-center gap-6">
-<div class="flex items-center gap-4 text-slate-500 dark:text-slate-400">
-<span class="material-symbols-outlined cursor-pointer hover:text-blue-600 transition-colors" data-icon="notifications">notifications</span>
-<span class="material-symbols-outlined cursor-pointer hover:text-blue-600 transition-colors" data-icon="help_outline">help_outline</span>
-</div>
-<button class="bg-primary hover:bg-primary-dim text-white px-5 py-2 rounded-lg text-sm font-bold transition-all active:scale-95 duration-200 ease-in-out">
-                Clock Out
-            </button>
-<img alt="User profile avatar" class="w-8 h-8 rounded-full border border-outline-variant/20" data-alt="close-up portrait of a professional man with a friendly expression in a bright modern office setting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCnyjjG72YpjYwjPpF0SGN6SyQDnv0IWFr6vFiGWrFSAFVdr6GS-Yns3vGwMaCBq_5ypEuYR8ra9k7-7taQ8kzDrWm5NKNh26vP3-8nmcNLQx3SiJbr-1T3EJm0LBmOZCAhZ0LfjidopuTt0ItpUnXYVylq3Q448FIixehgdQs4CVlJq8ACH1oqbylRN7lQmo_xJ2tDvvRRj1v94Ybj8xlUKEZZxny393_kUL8BTScqFRteGOK2TrKnDuvSroWZxkwRfAjdM_4Rbjig"/>
-</div>
-</header>
+<body class="bg-background text-on-surface antialiased min-h-screen flex flex-col md:flex-row relative">
 <!-- SideNavBar -->
-<aside class="h-screen w-64 fixed left-0 top-0 bg-[#f0f4f7] dark:bg-slate-900 flex flex-col py-6 gap-y-2 h-full border-r-0 z-40">
-<div class="px-6 mb-10 mt-16">
-<h2 class="font-['Manrope'] font-extrabold text-slate-900 dark:text-white text-xl tracking-tight">Management</h2>
-<p class="text-xs text-on-surface-variant font-medium">Internship Portal</p>
+<nav class="hidden md:flex bg-slate-50 dark:bg-slate-950 text-blue-600 dark:text-blue-400 font-headline docked left-0 h-screen w-64 bg-surface-container-low tonal-contrast flat no-shadows fixed left-0 top-0 flex flex-col h-full p-6 space-y-8 overflow-y-auto z-50">
+<div class="flex items-center space-x-3 mb-8">
+<div class="w-10 h-10 rounded-full bg-primary flex items-center justify-center text-on-primary font-bold text-lg">
+<span class="material-symbols-outlined">domain</span>
 </div>
-<nav class="flex-1 space-y-1">
-<a class="flex items-center gap-3 py-3 px-4 mx-2 text-slate-600 dark:text-slate-400 hover:bg-slate-200/50 dark:hover:bg-slate-800/50 rounded-lg transition-all font-['Inter'] font-medium text-sm" href="#">
-<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
-<span>Dashboard</span>
-</a>
-<a class="flex items-center gap-3 py-3 px-4 mx-2 text-slate-600 dark:text-slate-400 hover:bg-slate-200/50 dark:hover:bg-slate-800/50 rounded-lg transition-all font-['Inter'] font-medium text-sm" href="#">
-<span class="material-symbols-outlined" data-icon="group">group</span>
-<span>Interns</span>
-</a>
-<a class="flex items-center gap-3 py-3 px-4 bg-white dark:bg-slate-800 text-blue-600 dark:text-blue-400 shadow-sm rounded-lg mx-2 transition-all font-['Inter'] font-medium text-sm translate-x-1 duration-150" href="#">
-<span class="material-symbols-outlined" data-icon="schedule">schedule</span>
-<span>Attendance</span>
-</a>
-<a class="flex items-center gap-3 py-3 px-4 mx-2 text-slate-600 dark:text-slate-400 hover:bg-slate-200/50 dark:hover:bg-slate-800/50 rounded-lg transition-all font-['Inter'] font-medium text-sm" href="#">
-<span class="material-symbols-outlined" data-icon="history_edu">history_edu</span>
-<span>Timesheets</span>
-</a>
-<a class="flex items-center gap-3 py-3 px-4 mx-2 text-slate-600 dark:text-slate-400 hover:bg-slate-200/50 dark:hover:bg-slate-800/50 rounded-lg transition-all font-['Inter'] font-medium text-sm" href="#">
-<span class="material-symbols-outlined" data-icon="supervised_user_circle">supervised_user_circle</span>
-<span>Mentors</span>
-</a>
-<a class="flex items-center gap-3 py-3 px-4 mx-2 text-slate-600 dark:text-slate-400 hover:bg-slate-200/50 dark:hover:bg-slate-800/50 rounded-lg transition-all font-['Inter'] font-medium text-sm" href="#">
-<span class="material-symbols-outlined" data-icon="settings">settings</span>
-<span>Settings</span>
-</a>
-</nav>
-<div class="px-4 mt-auto">
-<button class="w-full flex items-center justify-center gap-2 bg-gradient-to-br from-primary to-primary-container text-white py-3 rounded-xl font-bold shadow-md hover:shadow-lg transition-all active:scale-95">
-<span class="material-symbols-outlined text-lg" data-icon="add">add</span>
-<span>New Entry</span>
-</button>
-</div>
-</aside>
-<!-- Main Content Canvas -->
-<main class="ml-64 pt-24 px-10 pb-12 min-h-screen">
-<!-- Header Section -->
-<header class="flex justify-between items-end mb-10">
 <div>
-<h1 class="text-4xl font-extrabold tracking-tight text-on-surface mb-2">Attendance History</h1>
-<p class="text-on-surface-variant font-medium">Review and export your professional journey for the month.</p>
+<h1 class="text-lg font-bold text-slate-900 dark:text-white leading-tight">Internship System</h1>
+<p class="text-xs text-on-surface-variant font-body">Portal</p>
 </div>
-<div class="flex gap-4">
-<div class="flex items-center bg-surface-container rounded-xl px-4 py-2 border-0">
-<span class="material-symbols-outlined text-on-surface-variant mr-2" data-icon="calendar_month">calendar_month</span>
-<select class="bg-transparent border-none focus:ring-0 text-sm font-semibold text-on-surface p-0 cursor-pointer">
-<option>October 2023</option>
-<option selected="">November 2023</option>
-<option>December 2023</option>
-</select>
 </div>
-<button class="flex items-center gap-2 bg-secondary-container text-on-secondary-container px-6 py-2 rounded-xl font-bold hover:bg-surface-container-high transition-all">
-<span class="material-symbols-outlined text-lg" data-icon="ios_share">ios_share</span>
-                    Export Report
-                </button>
+<a href="/daily-log.html" class="w-full bg-gradient-to-br from-primary to-primary-container text-on-primary py-3 rounded-md font-medium text-sm shadow-[0_8px_32px_rgba(44,52,55,0.06)] hover:opacity-90 transition-opacity flex items-center justify-center space-x-2">
+<span class="material-symbols-outlined text-lg">add</span>
+<span>New Log Entry</span>
+</a>
+<div class="flex-1 mt-6">
+<ul class="space-y-2">
+<li>
+<a class="flex items-center space-x-3 px-4 py-3 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/50 hover:translate-x-1 transition-all duration-300" href="/intern-dashboard.html">
+<span class="material-symbols-outlined">grid_view</span>
+<span class="font-body text-sm">Dashboard</span>
+</a>
+</li>
+<li>
+<a class="flex items-center space-x-3 px-4 py-3 rounded-lg text-blue-700 dark:text-blue-300 font-semibold bg-blue-50 dark:bg-blue-900/20 active:scale-95 transition-all duration-300" href="/attendance.html">
+<span class="material-symbols-outlined">event_available</span>
+<span class="font-body text-sm">Attendance</span>
+</a>
+</li>
+<li>
+<a class="flex items-center space-x-3 px-4 py-3 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/50 hover:translate-x-1 transition-all duration-300" href="/daily-log.html">
+<span class="material-symbols-outlined">history_edu</span>
+<span class="font-body text-sm">Logs</span>
+</a>
+</li>
+</ul>
+</div>
+<div class="mt-auto">
+<ul class="space-y-2">
+<li>
+<button id="logout-btn" class="w-full flex items-center space-x-3 px-4 py-2 rounded-lg text-red-600 hover:bg-red-50 transition-colors">
+<span class="material-symbols-outlined text-sm">logout</span>
+<span class="font-body text-xs">Logout</span>
+</button>
+</li>
+</ul>
+</div>
+</nav>
+
+<!-- Main Content Area -->
+<main class="flex-1 md:ml-64 flex flex-col min-h-screen relative z-10">
+<header class="bg-white/80 dark:bg-slate-900/80 backdrop-blur-md text-blue-600 dark:text-blue-400 docked full-width top-0 sticky z-40 no-border tonal-shift-bg shadow-[0_8px_32px_rgba(44,52,55,0.06)] flex justify-between items-center w-full px-8 py-3 mx-auto">
+<div class="flex items-center space-x-4">
+<span class="text-xl font-extrabold tracking-tight text-slate-900 dark:text-white font-headline">Attendance Calendar</span>
+</div>
+<div class="flex items-center space-x-4">
+<div class="text-right hidden sm:block">
+    <div id="user-name" class="text-sm font-bold text-slate-900 dark:text-white">Loading...</div>
+    <div id="user-role" class="text-xs text-slate-500 capitalize">Role</div>
+</div>
+<div class="w-8 h-8 rounded-full bg-primary text-on-primary flex items-center justify-center font-bold">
+    <span class="material-symbols-outlined text-sm">person</span>
+</div>
 </div>
 </header>
-<!-- Summary Metrics (Bento Grid Style) -->
-<section class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
-<div class="bg-surface-container-lowest p-8 rounded-xl relative overflow-hidden group border-0">
-<div class="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-primary to-primary-container"></div>
-<p class="text-on-surface-variant text-sm font-semibold mb-4 uppercase tracking-wider">Total Hours This Month</p>
-<div class="flex items-baseline gap-2">
-<span class="text-5xl font-black text-on-surface font-headline">164.5</span>
-<span class="text-on-surface-variant font-medium">hrs</span>
-</div>
-<div class="mt-4 flex items-center text-xs font-bold text-primary">
-<span class="material-symbols-outlined text-sm mr-1" data-icon="trending_up">trending_up</span>
-                    12% increase from Oct
-                </div>
+
+<div class="p-8 max-w-7xl mx-auto w-full flex-1">
+<div class="flex justify-between items-center mb-6">
+    <h2 class="text-2xl font-bold font-headline text-on-surface" id="calendar-month-year">Loading...</h2>
+    <div class="flex space-x-2">
+        <button id="prev-month" class="p-2 rounded hover:bg-surface-container"><span class="material-symbols-outlined">chevron_left</span></button>
+        <button id="next-month" class="p-2 rounded hover:bg-surface-container"><span class="material-symbols-outlined">chevron_right</span></button>
+    </div>
 </div>
 <div class="bg-surface-container-lowest p-8 rounded-xl relative overflow-hidden group border-0">
 <div class="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-tertiary to-tertiary-container"></div>

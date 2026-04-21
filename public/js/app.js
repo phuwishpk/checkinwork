@@ -35,19 +35,30 @@ async function protectRoute() {
     } else {
         if (path === '/' || path === '/index.html' || path === '') {
             window.location.href = user.role === 'admin' ? '/manager-dashboard.html' : '/intern-dashboard.html';
-        } else if (user.role === 'admin' && (path.includes('intern-dashboard') || path.includes('daily-log') || path.includes('attendance'))) {
+        } else if (user.role === 'admin' && (path.includes('intern-dashboard') || path.includes('daily-log'))) {
             window.location.href = '/manager-dashboard.html';
         } else if (user.role === 'intern' && path.includes('manager-dashboard')) {
             window.location.href = '/intern-dashboard.html';
         }
 
         // Update UI user info
-        const nameEl = document.getElementById('user-name');
-        const roleEl = document.getElementById('user-role');
-        const greetingEl = document.getElementById('greeting-name');
-        if (nameEl) nameEl.textContent = user.full_name;
-        if (roleEl) roleEl.textContent = user.role;
-        if (greetingEl) greetingEl.textContent = `Good morning, ${user.full_name.split(' ')[0]}`;
+            if (document.getElementById('user-name')) {
+                document.getElementById('user-name').textContent = user.full_name || user.username;
+            }
+            if (document.getElementById('user-role')) {
+                document.getElementById('user-role').textContent = user.role;
+            }
+            if (document.getElementById('greeting-name')) {
+                document.getElementById('greeting-name').textContent = `Good morning, ${user.full_name || user.username} 👋`;
+            }
+            if (document.getElementById('profile-card-name')) {
+                document.getElementById('profile-card-name').textContent = user.full_name || user.username;
+            }
+            if (document.getElementById('profile-card-role')) {
+                document.getElementById('profile-card-role').textContent = user.role === 'admin' ? 'Manager' : 'Intern';
+            }
+            
+            // Render auth buttons
     }
     return user;
 }
@@ -95,9 +106,24 @@ document.addEventListener('DOMContentLoaded', async () => {
                 const data = await apiCall('/api/intern/dashboard');
                 
                 // Set progress
-                document.getElementById('progress-hours').textContent = data.totalHours;
-                const pct = Math.min((data.totalHours / 400) * 100, 100);
+                const totalHrs = parseFloat(data.totalHours || 0).toFixed(2);
+                document.getElementById('progress-hours').textContent = totalHrs;
+                const pct = Math.min((parseFloat(totalHrs) / 400) * 100, 100);
                 document.getElementById('progress-bar').style.width = `${pct}%`;
+                
+                const pctEl = document.getElementById('progress-pct');
+                if (pctEl) pctEl.textContent = `${pct.toFixed(2)}% complete`;
+
+                // Update Profile Card stats
+                if (document.getElementById('profile-hours')) {
+                    document.getElementById('profile-hours').textContent = totalHrs;
+                }
+                if (document.getElementById('profile-days')) {
+                    document.getElementById('profile-days').textContent = data.attendance.filter(a => a.clock_out_time).length; 
+                }
+                if (document.getElementById('profile-pct')) {
+                    document.getElementById('profile-pct').textContent = `${pct.toFixed(1)}%`;
+                }
 
                 // Set attendance
                 const today = new Date().toISOString().slice(0, 10);
@@ -387,9 +413,11 @@ document.addEventListener('DOMContentLoaded', async () => {
         const renderCalendar = () => {
             const year = currentDate.getFullYear();
             const month = currentDate.getMonth();
-            document.getElementById('calendar-month-year').textContent = new Intl.DateTimeFormat('en-US', { month: 'long', year: 'numeric' }).format(currentDate);
+            const headerEl = document.getElementById('calendar-month-year');
+            if(headerEl) headerEl.textContent = new Intl.DateTimeFormat('en-US', { month: 'long', year: 'numeric' }).format(currentDate);
 
             const grid = document.getElementById('calendar-grid');
+            if(!grid) return;
             grid.innerHTML = '';
 
             const firstDay = new Date(year, month, 1).getDay();
@@ -422,7 +450,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                     const safeLog = encodeURIComponent(JSON.stringify(l));
                     logsHtml += `
                     <div class="log-item bg-surface-container text-[10px] text-on-surface-variant p-1 rounded mb-1 border border-outline-variant/30 hover:border-primary transition-colors" onclick="openLogModal('${safeLog}')">
-                        <span class="font-bold block">${l.task_category}</span>
+                        <span class="font-bold block text-on-surface">${l.task_category}</span>
                         ${l.description}
                     </div>`;
                 });
@@ -449,7 +477,6 @@ document.addEventListener('DOMContentLoaded', async () => {
                 
                 const modal = document.getElementById('log-modal');
                 modal.classList.remove('hidden');
-                // slight delay to trigger opacity transition
                 setTimeout(() => {
                     modal.children[0].classList.remove('scale-95');
                     modal.children[0].classList.add('scale-100');
@@ -457,22 +484,31 @@ document.addEventListener('DOMContentLoaded', async () => {
             } catch(e) {}
         };
 
-        document.getElementById('close-modal-btn')?.addEventListener('click', () => {
-            const modal = document.getElementById('log-modal');
-            modal.children[0].classList.remove('scale-100');
-            modal.children[0].classList.add('scale-95');
-            setTimeout(() => modal.classList.add('hidden'), 150);
-        });
+        const closeBtn = document.getElementById('close-modal-btn');
+        if (closeBtn) {
+            closeBtn.addEventListener('click', () => {
+                const modal = document.getElementById('log-modal');
+                modal.children[0].classList.remove('scale-100');
+                modal.children[0].classList.add('scale-95');
+                setTimeout(() => modal.classList.add('hidden'), 150);
+            });
+        }
 
-        document.getElementById('prev-month')?.addEventListener('click', () => {
-            currentDate.setMonth(currentDate.getMonth() - 1);
-            renderCalendar();
-        });
+        const prevBtn = document.getElementById('prev-month');
+        if (prevBtn) {
+            prevBtn.addEventListener('click', () => {
+                currentDate.setMonth(currentDate.getMonth() - 1);
+                renderCalendar();
+            });
+        }
 
-        document.getElementById('next-month')?.addEventListener('click', () => {
-            currentDate.setMonth(currentDate.getMonth() + 1);
-            renderCalendar();
-        });
+        const nextBtn = document.getElementById('next-month');
+        if (nextBtn) {
+            nextBtn.addEventListener('click', () => {
+                currentDate.setMonth(currentDate.getMonth() + 1);
+                renderCalendar();
+            });
+        }
 
         loadCalendarData();
     }
