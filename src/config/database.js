@@ -43,7 +43,8 @@ async function initDb() {
         date_finish TEXT,
         task_category TEXT,
         description TEXT,
-        status TEXT DEFAULT 'Plan'
+        status TEXT DEFAULT 'Plan',
+        color TEXT DEFAULT '#3e76fe'
       );
     `);
 
@@ -70,6 +71,7 @@ async function initDb() {
     // Migration: add new daily_logs columns
     try { await dbInstance.run('ALTER TABLE daily_logs ADD COLUMN date_start TEXT'); } catch(e) {}
     try { await dbInstance.run('ALTER TABLE daily_logs ADD COLUMN date_finish TEXT'); } catch(e) {}
+    try { await dbInstance.run('ALTER TABLE daily_logs ADD COLUMN color TEXT DEFAULT "#3e76fe"'); } catch(e) {}
     // Remove hours_spent dependency — keep column but don't require it
 
   } catch (err) {

@@ -2,100 +2,77 @@
 <html class="light" lang="en"><head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>Attendance Calendar - Architect Portal</title>
+<title>Attendance Calendar - Internship Portal</title>
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
 <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
 <script id="tailwind-config">
     tailwind.config = {
-    darkMode: "class",
-    theme: {
-        extend: {
-        "colors": {
-                "on-error-container": "#6e0a12",
-                "surface-container-highest": "#dce4e8",
-                "surface-container-high": "#e3e9ed",
-                "error-dim": "#67040d",
-                "on-error": "#fff7f6",
-                "tertiary-container": "#e6cafa",
-                "surface-container-lowest": "#ffffff",
-                "secondary-container": "#d3e4fe",
-                "tertiary-fixed": "#e6cafa",
-                "primary-container": "#3e76fe",
-                "surface-tint": "#0053dc",
-                "surface": "#f7f9fb",
-                "on-tertiary-fixed": "#422d53",
-                "error": "#a83836",
-                "outline": "#747c80",
-                "surface-bright": "#f7f9fb",
-                "primary-fixed": "#3e76fe",
-                "on-secondary-fixed": "#314055",
-                "on-secondary": "#f7f9ff",
-                "on-primary-fixed-variant": "#f9f7ff",
-                "error-container": "#fa746f",
-                "secondary-fixed-dim": "#c5d6f0",
-                "background": "#f7f9fb",
-                "surface-variant": "#dce4e8",
-                "secondary-fixed": "#d3e4fe",
-                "primary-dim": "#0049c2",
-                "on-background": "#2c3437",
-                "inverse-surface": "#0b0f10",
-                "inverse-primary": "#618bff",
-                "secondary": "#506076",
-                "secondary-dim": "#44546a",
-                "on-tertiary-fixed-variant": "#604a71",
-                "tertiary-fixed-dim": "#d8bceb",
-                "on-surface": "#2c3437",
-                "outline-variant": "#acb3b7",
-                "inverse-on-surface": "#9a9d9f",
-                "on-primary-container": "#000000",
-                "surface-container": "#eaeff2",
-                "on-secondary-container": "#435368",
-                "surface-container-low": "#f0f4f7",
-                "primary-fixed-dim": "#2d68f0",
-                "on-secondary-fixed-variant": "#4d5d73",
-                "tertiary-dim": "#604a72",
-                "on-primary": "#faf8ff",
-                "on-tertiary-container": "#564067",
-                "on-primary-fixed": "#ffffff",
-                "primary": "#0053dc",
-                "tertiary": "#6d567f",
-                "on-surface-variant": "#596064",
-                "surface-dim": "#d4dbdf",
-                "on-tertiary": "#fff6fe"
+        darkMode: "class",
+        theme: {
+            extend: {
+                colors: {
+                    "primary": "#0053dc",
+                    "background": "#f7f9fb",
+                    "surface": "#ffffff",
+                    "surface-container": "#eaeff2",
+                    "surface-container-low": "#f0f4f7",
+                    "on-surface": "#2c3437",
+                    "on-surface-variant": "#596064",
+                    "outline-variant": "#acb3b7",
+                },
+                fontFamily: {
+                    headline: ["Manrope"],
+                    body: ["Inter"]
+                }
+            },
         },
-        "borderRadius": {
-                "DEFAULT": "0.125rem",
-                "lg": "0.25rem",
-                "xl": "0.5rem",
-                "full": "0.75rem"
-        },
-        "fontFamily": {
-                "headline": ["Manrope"],
-                "body": ["Inter"],
-                "label": ["Inter"]
-        }
-    },
-    },
     }
 </script>
 <style>
     body { font-family: 'Inter', sans-serif; }
     h1, h2, h3, h4, h5, h6, .font-headline { font-family: 'Manrope', sans-serif; letter-spacing: -0.02em; }
-    .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
-    .material-symbols-outlined.fill { font-variation-settings: 'FILL' 1; }
-    .calendar-grid { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 1px; background-color: #e3e9ed; }
-    .calendar-cell { background-color: white; min-height: 120px; padding: 0.5rem; display: flex; flex-direction: column; }
-    .calendar-cell:hover { background-color: #f7f9fb; }
-    .log-item { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; text-overflow: ellipsis; cursor: pointer; }
-    .log-item:hover { background-color: #f0f4f7; }
+    .calendar-grid { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); background-color: #e3e9ed; border-left: 1px solid #e3e9ed; border-top: 1px solid #e3e9ed; }
+    .calendar-cell { background-color: white; min-height: 140px; padding: 0.5rem; display: flex; flex-direction: column; position: relative; border-right: 1px solid #e3e9ed; border-bottom: 1px solid #e3e9ed; }
+    .log-bar { 
+        height: 24px; 
+        margin-bottom: 3px; 
+        padding: 0 8px; 
+        font-size: 10px; 
+        font-weight: 700; 
+        display: flex; 
+        align-items: center; 
+        cursor: pointer;
+        white-space: nowrap;
+        overflow: visible;
+        transition: all 0.2s;
+        z-index: 10;
+        border-radius: 4px;
+        color: white;
+        position: relative;
+    }
+    .log-bar:hover { filter: brightness(1.1); z-index: 20; }
+    .log-bar.span-start { 
+        border-top-right-radius: 0; border-bottom-right-radius: 0; 
+        margin-right: -0.51rem; 
+        width: calc(100% + 0.51rem);
+    }
+    .log-bar.span-mid { 
+        border-radius: 0; 
+        margin-left: -0.51rem; margin-right: -0.51rem; 
+        width: calc(100% + 1.02rem);
+    }
+    .log-bar.span-end { 
+        border-top-left-radius: 0; border-bottom-left-radius: 0; 
+        margin-left: -0.51rem; 
+        width: calc(100% + 0.51rem);
+    }
 </style>
 </head>
-<body class="bg-background text-on-surface antialiased min-h-screen flex flex-col md:flex-row relative">
+<body class="bg-background text-on-surface antialiased min-h-screen flex flex-col md:flex-row">
 
 <!-- SideNavBar -->
 <nav class="hidden md:flex flex-col fixed left-0 top-0 h-full w-64 bg-[#f0f4f7] p-6 gap-y-8 z-50 pt-8">
-  <!-- Brand -->
   <div class="flex items-center gap-3">
     <div class="w-10 h-10 flex-shrink-0 bg-primary rounded-lg flex items-center justify-center shadow-md">
       <span class="material-symbols-outlined text-white text-lg">domain</span>
@@ -105,8 +82,6 @@
       <p class="text-[10px] text-on-surface-variant uppercase tracking-wider font-semibold">Intern Workspace</p>
     </div>
   </div>
-
-  <!-- Nav Links -->
   <div class="flex flex-col gap-2">
     <a class="text-slate-500 flex items-center gap-3 px-4 py-3 hover:translate-x-1 transition-transform" href="/intern-dashboard.html">
       <span class="material-symbols-outlined text-[20px]">grid_view</span>
@@ -121,15 +96,11 @@
       <span class="text-sm font-medium">Daily Logs</span>
     </a>
   </div>
-
   <div class="mt-auto space-y-4">
-    <!-- New Log CTA -->
-    <a href="/daily-log.html" class="w-full py-3 bg-gradient-to-br from-primary to-primary-container text-white rounded-xl font-semibold shadow-lg shadow-primary/20 flex items-center justify-center gap-2 hover:opacity-95 transition-all">
+    <button id="open-new-task-btn" class="w-full py-3 bg-gradient-to-br from-primary to-primary-container text-white rounded-xl font-semibold shadow-lg shadow-primary/20 flex items-center justify-center gap-2 hover:opacity-95 transition-all">
       <span class="material-symbols-outlined text-sm">add_circle</span>
-      New Log Entry
-    </a>
-
-    <!-- Logout -->
+      Add New Task
+    </button>
     <button id="logout-btn" class="flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-red-500 hover:bg-red-50 w-full transition-colors font-medium">
       <span class="material-symbols-outlined text-[20px]">logout</span>
       <span class="text-sm">Sign Out</span>
@@ -137,70 +108,90 @@
   </div>
 </nav>
 
-<!-- Main Content Area -->
-<main class="flex-1 md:ml-64 flex flex-col min-h-screen relative z-10 bg-background">
-  <!-- Top Header -->
+<main class="flex-1 md:ml-64 flex flex-col min-h-screen bg-background">
   <header class="sticky top-0 z-40 bg-white/80 backdrop-blur-md border-b border-outline-variant/20 shadow-sm flex items-center justify-between px-8 py-3.5">
+    <span class="text-base font-bold text-on-surface font-headline">Attendance Calendar</span>
     <div class="flex items-center space-x-3">
-      <button class="md:hidden p-2 rounded-lg hover:bg-surface-container">
-        <span class="material-symbols-outlined text-on-surface-variant">menu</span>
-      </button>
-      <span class="text-base font-bold text-on-surface font-headline hidden md:block">Attendance Calendar</span>
-    </div>
-    <div class="flex items-center space-x-3">
-      <div class="text-right">
-        <div id="user-name" class="text-sm font-bold text-on-surface">Loading...</div>
-        <div id="user-role" class="text-xs text-on-surface-variant capitalize">Intern</div>
-      </div>
-      <div class="w-9 h-9 rounded-full bg-gradient-to-br from-primary to-primary-container flex items-center justify-center shadow">
-        <span class="material-symbols-outlined text-white text-sm">person</span>
+      <div id="user-name" class="text-sm font-bold">Loading...</div>
+      <div class="w-9 h-9 rounded-full bg-primary flex items-center justify-center shadow text-white">
+        <span class="material-symbols-outlined text-sm">person</span>
       </div>
     </div>
   </header>
 
-<div class="p-8 max-w-7xl mx-auto w-full flex-1">
-<div class="flex justify-between items-center mb-6">
-    <h2 class="text-2xl font-bold font-headline text-on-surface" id="calendar-month-year">Loading...</h2>
-    <div class="flex space-x-2">
-        <button id="prev-month" class="p-2 rounded hover:bg-surface-container"><span class="material-symbols-outlined">chevron_left</span></button>
-        <button id="next-month" class="p-2 rounded hover:bg-surface-container"><span class="material-symbols-outlined">chevron_right</span></button>
+  <div class="p-8 max-w-7xl mx-auto w-full flex-1">
+    <div class="flex justify-between items-center mb-6">
+        <h2 class="text-2xl font-bold font-headline text-on-surface" id="calendar-month-year">Loading...</h2>
+        <div class="flex items-center gap-4">
+            <div class="flex bg-surface-container rounded-lg p-1">
+                <button id="prev-month" class="p-1.5 rounded-md hover:bg-white transition-colors"><span class="material-symbols-outlined">chevron_left</span></button>
+                <button id="next-month" class="p-1.5 rounded-md hover:bg-white transition-colors"><span class="material-symbols-outlined">chevron_right</span></button>
+            </div>
+            <button id="open-new-task-btn2" class="bg-primary text-white px-4 py-2 rounded-lg font-bold text-sm shadow-md hover:opacity-90">New Task</button>
+        </div>
     </div>
-</div>
 
-<div class="bg-surface-container-lowest rounded-xl shadow-sm border border-outline-variant overflow-hidden">
-    <!-- Days of week -->
-    <div class="grid grid-cols-7 bg-surface-container-low text-on-surface-variant font-semibold text-sm py-3 text-center border-b border-outline-variant">
-        <div>Sun</div><div>Mon</div><div>Tue</div><div>Wed</div><div>Thu</div><div>Fri</div><div>Sat</div>
+    <div class="bg-white rounded-2xl shadow-sm border border-outline-variant/20 overflow-hidden">
+        <div class="grid grid-cols-7 bg-surface-container-low text-on-surface-variant font-bold text-[10px] uppercase tracking-widest py-3 text-center border-b border-outline-variant/10">
+            <div>Sun</div><div>Mon</div><div>Tue</div><div>Wed</div><div>Thu</div><div>Fri</div><div>Sat</div>
+        </div>
+        <div id="calendar-grid" class="calendar-grid"></div>
     </div>
-    <!-- Calendar Grid -->
-    <div id="calendar-grid" class="calendar-grid">
-        <!-- Cells will be generated by JS -->
-    </div>
-</div>
-</div>
+  </div>
 </main>
 
-<!-- Popup Modal -->
-<div id="log-modal" class="fixed inset-0 bg-black/50 z-[100] hidden flex items-center justify-center backdrop-blur-sm transition-opacity">
-    <div class="bg-surface-container-lowest rounded-2xl w-11/12 max-w-lg shadow-2xl p-6 relative transform transition-transform scale-95">
-        <button id="close-modal-btn" class="absolute top-4 right-4 text-on-surface-variant hover:text-on-surface bg-surface-container p-2 rounded-full flex items-center justify-center">
-            <span class="material-symbols-outlined text-sm">close_fullscreen</span>
-        </button>
-        <div class="mb-4 pr-10">
-            <div class="flex items-center justify-between mb-1">
-                <span id="modal-date" class="text-xs font-semibold text-primary"></span>
-                <span id="modal-status" class="px-2 py-1 rounded-full text-[10px] font-bold uppercase tracking-wide bg-tertiary-container text-on-tertiary-container"></span>
-            </div>
-            <h3 id="modal-category" class="text-xl font-bold font-headline text-on-surface"></h3>
-        </div>
-        <div class="bg-surface-container-low p-4 rounded-lg mb-4 max-h-60 overflow-y-auto">
-            <p id="modal-desc" class="text-sm text-on-surface-variant leading-relaxed whitespace-pre-wrap"></p>
-        </div>
-        <div class="flex items-center text-sm font-semibold text-secondary">
-            <span class="material-symbols-outlined mr-2">schedule</span>
-            <span id="modal-hours"></span> Hours
-        </div>
+<!-- Unified Log Modal (Editable) -->
+<div id="log-modal" class="fixed inset-0 z-[100] flex items-center justify-center bg-black/40 opacity-0 pointer-events-none transition-opacity">
+  <div class="bg-white rounded-2xl shadow-2xl w-full max-w-lg mx-4 overflow-hidden">
+    <div class="flex items-center justify-between px-6 py-4 border-b border-outline-variant/10 bg-surface-container-low">
+      <h3 id="modal-title" class="text-lg font-bold font-headline text-on-surface">Task Details</h3>
+      <button id="close-modal-btn" class="p-2 rounded-lg hover:bg-surface-container">
+        <span class="material-symbols-outlined text-on-surface-variant">close</span>
+      </button>
     </div>
+    <form id="log-form" class="p-6 space-y-4">
+      <input type="hidden" id="editing-log-id" value=""/>
+      <div class="flex flex-col space-y-1">
+        <label class="text-[10px] font-bold text-on-surface-variant uppercase tracking-wider">Description</label>
+        <textarea id="log-description" name="description" rows="3" required class="bg-surface-container-low border-none rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-primary/40"></textarea>
+      </div>
+      <div class="grid grid-cols-2 gap-4">
+        <div class="flex flex-col space-y-1">
+          <label class="text-[10px] font-bold text-on-surface-variant uppercase tracking-wider">Category</label>
+          <select id="log-category" name="task_category" required class="bg-surface-container-low border-none rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-primary/40">
+            <option value="Plan">Plan</option><option value="To Do">To Do</option><option value="In Progress">In Progress</option><option value="Done">Done</option>
+          </select>
+        </div>
+        <div class="flex flex-col space-y-1">
+          <label class="text-[10px] font-bold text-on-surface-variant uppercase tracking-wider">Color</label>
+          <div class="flex items-center gap-2">
+            <input type="color" id="log-color" name="color" value="#3e76fe" class="w-10 h-10 border-none bg-transparent cursor-pointer p-0"/>
+            <span class="text-xs text-on-surface-variant">Pick a theme color</span>
+          </div>
+        </div>
+      </div>
+      <div class="grid grid-cols-2 gap-4">
+        <div class="flex flex-col space-y-1">
+          <label class="text-[10px] font-bold text-on-surface-variant uppercase tracking-wider">Date Start</label>
+          <input id="log-date-start" name="date_start" type="date" required class="bg-surface-container-low border-none rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-primary/40"/>
+        </div>
+        <div class="flex flex-col space-y-1">
+          <label class="text-[10px] font-bold text-on-surface-variant uppercase tracking-wider">Date Finish</label>
+          <input id="log-date-finish" name="date_finish" type="date" class="bg-surface-container-low border-none rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-primary/40"/>
+        </div>
+      </div>
+      <div id="log-message" class="text-xs font-bold hidden"></div>
+      <div class="flex justify-between items-center pt-4">
+        <button type="button" id="delete-log-btn" class="text-red-500 text-sm font-bold flex items-center gap-1 hover:underline opacity-0 pointer-events-none">
+          <span class="material-symbols-outlined text-base">delete</span> Delete
+        </button>
+        <div class="flex gap-3">
+          <button type="button" id="cancel-modal-btn" class="px-5 py-2 text-sm font-bold text-on-surface-variant">Cancel</button>
+          <button type="submit" class="bg-primary text-white px-6 py-2 rounded-xl font-bold text-sm shadow-md">Save Task</button>
+        </div>
+      </div>
+    </form>
+  </div>
 </div>
 
 <script src="/js/app.js"></script>

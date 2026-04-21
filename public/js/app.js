@@ -179,21 +179,32 @@ document.addEventListener('DOMContentLoaded', async () => {
 
                 // Set recent logs
                 const logList = document.getElementById('recent-logs-list');
-                logList.innerHTML = '';
-                data.logs.forEach(log => {
-                    logList.innerHTML += `
-                    <div class="p-4 bg-surface rounded-lg">
-                        <div class="flex justify-between items-start mb-2">
-                            <h4 class="font-medium text-sm text-on-surface">${log.task_category}</h4>
-                            <span class="text-xs text-on-surface-variant">${new Date(log.date).toLocaleDateString()}</span>
-                        </div>
-                        <p class="text-xs text-on-surface-variant leading-relaxed line-clamp-2">${log.description}</p>
-                        <div class="mt-3 flex gap-2">
-                            <span class="text-[10px] px-2 py-0.5 bg-surface-container-highest text-on-surface rounded-full">${log.hours_spent} hrs</span>
-                            <span class="text-[10px] px-2 py-0.5 bg-surface-container-highest text-on-surface rounded-full capitalize">${log.status}</span>
-                        </div>
-                    </div>`;
-                });
+                if (logList) {
+                    logList.innerHTML = '';
+                    const STATUS_STYLE = {
+                        'Plan':        'bg-blue-50 text-blue-700',
+                        'To Do':       'bg-yellow-50 text-yellow-700',
+                        'In Progress': 'bg-sky-50 text-sky-700',
+                        'Done':        'bg-green-50 text-green-700',
+                    };
+                    
+                    data.logs.forEach(log => {
+                        const statusCls = STATUS_STYLE[log.status] || 'bg-slate-50 text-slate-700';
+                        const catCls = STATUS_STYLE[log.task_category] || 'bg-slate-50 text-slate-700';
+                        logList.innerHTML += `
+                        <div class="p-4 bg-surface rounded-xl border border-outline-variant/10 hover:shadow-md transition-shadow">
+                            <div class="flex justify-between items-start mb-2">
+                                <span class="text-[10px] px-2 py-0.5 rounded-full font-bold uppercase tracking-wider ${catCls}">${log.task_category}</span>
+                                <span class="text-[10px] text-on-surface-variant font-medium">${new Date(log.date_start || log.date).toLocaleDateString()}</span>
+                            </div>
+                            <p class="text-xs text-on-surface font-semibold leading-tight line-clamp-2 mb-3">${log.description}</p>
+                            <div class="flex justify-between items-center">
+                                <span class="text-[10px] px-2 py-0.5 rounded-full font-bold ${statusCls}">${log.status}</span>
+                                <span class="text-[9px] text-on-surface-variant">${log.date_finish ? 'Ends: ' + new Date(log.date_finish).toLocaleDateString() : ''}</span>
+                            </div>
+                        </div>`;
+                    });
+                }
 
                 updateClockUI();
 
@@ -372,6 +383,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 task_category: document.getElementById('log-category').value,
                 description:   document.getElementById('log-description').value,
                 status:        document.getElementById('log-status').value,
+                color:         document.getElementById('log-color')?.value || '#3e76fe',
             };
             try {
                 if (editingId) {
@@ -598,116 +610,154 @@ document.addEventListener('DOMContentLoaded', async () => {
         let allAttendance = [];
         let allLogs = [];
 
+        // --- Modal helpers ---
+        const modal = document.getElementById('log-modal');
+        const openModal = (log = null) => {
+            const form = document.getElementById('log-form');
+            const msgEl = document.getElementById('log-message');
+            const editingId = document.getElementById('editing-log-id');
+            const title = document.getElementById('modal-title');
+            const deleteBtn = document.getElementById('delete-log-btn');
+            form.reset();
+            msgEl.classList.add('hidden');
+            if (log) {
+                title.textContent = 'Edit Task';
+                editingId.value = log.id;
+                document.getElementById('log-description').value = log.description || '';
+                document.getElementById('log-category').value = log.task_category || 'Plan';
+                document.getElementById('log-color').value = log.color || '#3e76fe';
+                document.getElementById('log-date-start').value = log.date_start || '';
+                document.getElementById('log-date-finish').value = log.date_finish || '';
+                deleteBtn.classList.remove('opacity-0', 'pointer-events-none');
+            } else {
+                title.textContent = 'New Task';
+                editingId.value = '';
+                document.getElementById('log-date-start').value = new Date().toISOString().slice(0, 10);
+                document.getElementById('log-color').value = '#3e76fe';
+                deleteBtn.classList.add('opacity-0', 'pointer-events-none');
+            }
+            modal.classList.remove('opacity-0', 'pointer-events-none');
+        };
+        const closeModal = () => modal.classList.add('opacity-0', 'pointer-events-none');
+
+        ['open-new-task-btn', 'open-new-task-btn2'].forEach(id => {
+            const el = document.getElementById(id);
+            if (el) el.addEventListener('click', () => openModal());
+        });
+        document.getElementById('close-modal-btn').addEventListener('click', closeModal);
+        document.getElementById('cancel-modal-btn').addEventListener('click', closeModal);
+        modal.addEventListener('click', (e) => { if (e.target === modal) closeModal(); });
+
+        document.getElementById('log-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const editingId = document.getElementById('editing-log-id').value;
+            const payload = {
+                date_start:    document.getElementById('log-date-start').value,
+                date_finish:   document.getElementById('log-date-finish').value,
+                task_category: document.getElementById('log-category').value,
+                description:   document.getElementById('log-description').value,
+                color:         document.getElementById('log-color').value,
+                status:        'Plan' // Default status
+            };
+            try {
+                if (editingId) await apiCall(`/api/intern/log/${editingId}`, 'PUT', payload);
+                else await apiCall('/api/intern/log', 'POST', payload);
+                closeModal();
+                loadCalendarData();
+            } catch (err) { alert(err.message); }
+        });
+
+        document.getElementById('delete-log-btn').addEventListener('click', async () => {
+            const id = document.getElementById('editing-log-id').value;
+            if (id && confirm('Delete this task?')) {
+                try {
+                    await apiCall(`/api/intern/log/${id}`, 'DELETE');
+                    closeModal();
+                    loadCalendarData();
+                } catch(e) { alert(e.message); }
+            }
+        });
+
         const loadCalendarData = async () => {
             try {
                 const data = await apiCall('/api/intern/calendar');
                 allAttendance = data.attendance;
                 allLogs = data.logs;
                 renderCalendar();
-            } catch (err) {
-                console.error('Error loading calendar data:', err);
-            }
+            } catch (err) { console.error(err); }
         };
 
         const renderCalendar = () => {
             const year = currentDate.getFullYear();
             const month = currentDate.getMonth();
-            const headerEl = document.getElementById('calendar-month-year');
-            if(headerEl) headerEl.textContent = new Intl.DateTimeFormat('en-US', { month: 'long', year: 'numeric' }).format(currentDate);
-
             const grid = document.getElementById('calendar-grid');
+            const header = document.getElementById('calendar-month-year');
             if(!grid) return;
+            header.textContent = new Intl.DateTimeFormat('en-US', { month: 'long', year: 'numeric' }).format(currentDate);
             grid.innerHTML = '';
 
             const firstDay = new Date(year, month, 1).getDay();
             const daysInMonth = new Date(year, month + 1, 0).getDate();
 
-            // Fill empty cells before start of month
-            for (let i = 0; i < firstDay; i++) {
-                grid.innerHTML += `<div class="calendar-cell bg-surface-container-low opacity-50"></div>`;
-            }
+            for (let i = 0; i < firstDay; i++) grid.innerHTML += `<div class="calendar-cell bg-surface-container-low opacity-50"></div>`;
 
-            // Fill days
+            // Sort logs to keep vertical positions consistent
+            const sortedLogs = [...allLogs].sort((a,b) => a.id - b.id);
+
             for (let day = 1; day <= daysInMonth; day++) {
                 const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
                 
-                // Find attendance for this date
+                // Attendance
                 const att = allAttendance.find(a => a.date.startsWith(dateStr));
                 let attHtml = '';
                 if (att) {
-                    attHtml = `
-                    <div class="text-[10px] text-primary font-semibold mb-1 flex justify-between bg-primary-container/10 px-1 py-0.5 rounded">
-                        <span>In: ${att.clock_in_time || '--'}</span>
-                        <span>Out: ${att.clock_out_time || '--'}</span>
+                    attHtml = `<div class="flex items-center gap-1 text-[9px] font-bold text-primary mb-1 opacity-70">
+                        <span class="material-symbols-outlined text-[10px]">login</span> ${att.clock_in_time?.slice(0,5)}
+                        ${att.clock_out_time ? `<span class="material-symbols-outlined text-[10px]">logout</span> ${att.clock_out_time.slice(0,5)}` : ''}
                     </div>`;
                 }
 
-                // Find logs for this date
-                const dayLogs = allLogs.filter(l => l.date.startsWith(dateStr));
+                // Logs with spanning logic
                 let logsHtml = '';
-                dayLogs.forEach(l => {
-                    const safeLog = encodeURIComponent(JSON.stringify(l));
-                    logsHtml += `
-                    <div class="log-item bg-surface-container text-[10px] text-on-surface-variant p-1 rounded mb-1 border border-outline-variant/30 hover:border-primary transition-colors" onclick="openLogModal('${safeLog}')">
-                        <span class="font-bold block text-on-surface">${l.task_category}</span>
-                        ${l.description}
-                    </div>`;
+                sortedLogs.forEach(l => {
+                    const start = l.date_start;
+                    const finish = l.date_finish || l.date_start;
+                    if (dateStr >= start && dateStr <= finish) {
+                        const isStart = dateStr === start;
+                        const isEnd = dateStr === finish;
+                        const safeLog = encodeURIComponent(JSON.stringify(l));
+                        
+                        let spanClass = '';
+                        if (isStart && !isEnd) spanClass = 'span-start';
+                        else if (!isStart && !isEnd) spanClass = 'span-mid';
+                        else if (!isStart && isEnd) spanClass = 'span-end';
+
+                        logsHtml += `
+                        <div class="log-bar ${spanClass}" style="background-color: ${l.color || '#3e76fe'}" onclick="editLog('${safeLog}')">
+                            ${isStart ? `<span class="truncate">${l.task_category}: ${l.description}</span>` : ''}
+                        </div>`;
+                    }
                 });
 
                 grid.innerHTML += `
-                <div class="calendar-cell relative">
-                    <span class="absolute top-1 right-2 text-xs font-bold text-outline-variant">${day}</span>
-                    <div class="mt-4 flex-1">
+                <div class="calendar-cell">
+                    <span class="text-[11px] font-bold text-on-surface-variant/40 mb-1">${day}</span>
+                    <div class="flex-1 overflow-hidden">
                         ${attHtml}
-                        <div class="space-y-1 mt-1">${logsHtml}</div>
+                        ${logsHtml}
                     </div>
                 </div>`;
             }
         };
 
-        window.openLogModal = (logStr) => {
-            try {
-                const log = JSON.parse(decodeURIComponent(logStr));
-                document.getElementById('modal-date').textContent = new Date(log.date).toLocaleDateString();
-                document.getElementById('modal-status').textContent = log.status;
-                document.getElementById('modal-category').textContent = log.task_category;
-                document.getElementById('modal-desc').textContent = log.description;
-                document.getElementById('modal-hours').textContent = log.hours_spent;
-                
-                const modal = document.getElementById('log-modal');
-                modal.classList.remove('hidden');
-                setTimeout(() => {
-                    modal.children[0].classList.remove('scale-95');
-                    modal.children[0].classList.add('scale-100');
-                }, 10);
-            } catch(e) {}
+        window.editLog = (logStr) => {
+            try { openModal(JSON.parse(decodeURIComponent(logStr))); } catch(e) {}
         };
 
-        const closeBtn = document.getElementById('close-modal-btn');
-        if (closeBtn) {
-            closeBtn.addEventListener('click', () => {
-                const modal = document.getElementById('log-modal');
-                modal.children[0].classList.remove('scale-100');
-                modal.children[0].classList.add('scale-95');
-                setTimeout(() => modal.classList.add('hidden'), 150);
-            });
-        }
-
         const prevBtn = document.getElementById('prev-month');
-        if (prevBtn) {
-            prevBtn.addEventListener('click', () => {
-                currentDate.setMonth(currentDate.getMonth() - 1);
-                renderCalendar();
-            });
-        }
-
         const nextBtn = document.getElementById('next-month');
-        if (nextBtn) {
-            nextBtn.addEventListener('click', () => {
-                currentDate.setMonth(currentDate.getMonth() + 1);
-                renderCalendar();
-            });
-        }
+        if (prevBtn) prevBtn.addEventListener('click', () => { currentDate.setMonth(currentDate.getMonth() - 1); renderCalendar(); });
+        if (nextBtn) nextBtn.addEventListener('click', () => { currentDate.setMonth(currentDate.getMonth() + 1); renderCalendar(); });
 
         loadCalendarData();
     }

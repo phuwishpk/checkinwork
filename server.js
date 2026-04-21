@@ -167,11 +167,11 @@ app.get('/api/intern/logs', requireAuth, async (req, res) => {
 // Create Daily Log
 app.post('/api/intern/log', requireAuth, async (req, res) => {
   const userId = req.session.user.id;
-  const { date_start, date_finish, task_category, description, status } = req.body;
+  const { date_start, date_finish, task_category, description, status, color } = req.body;
   try {
     await db.execute(
-      'INSERT INTO daily_logs (user_id, date, date_start, date_finish, task_category, description, status) VALUES (?, ?, ?, ?, ?, ?, ?)',
-      [userId, date_start || new Date().toISOString().slice(0,10), date_start, date_finish, task_category, description, status || 'Plan']
+      'INSERT INTO daily_logs (user_id, date, date_start, date_finish, task_category, description, status, color) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
+      [userId, date_start || new Date().toISOString().slice(0,10), date_start, date_finish, task_category, description, status || 'Plan', color || '#3e76fe']
     );
     res.json({ message: 'Log created successfully' });
   } catch (error) {
@@ -184,11 +184,11 @@ app.post('/api/intern/log', requireAuth, async (req, res) => {
 app.put('/api/intern/log/:id', requireAuth, async (req, res) => {
   const userId = req.session.user.id;
   const { id } = req.params;
-  const { date_start, date_finish, task_category, description, status } = req.body;
+  const { date_start, date_finish, task_category, description, status, color } = req.body;
   try {
     await db.execute(
-      'UPDATE daily_logs SET date=?, date_start=?, date_finish=?, task_category=?, description=?, status=? WHERE id=? AND user_id=?',
-      [date_start || new Date().toISOString().slice(0,10), date_start, date_finish, task_category, description, status, id, userId]
+      'UPDATE daily_logs SET date=?, date_start=?, date_finish=?, task_category=?, description=?, status=?, color=? WHERE id=? AND user_id=?',
+      [date_start || new Date().toISOString().slice(0,10), date_start, date_finish, task_category, description, status, color, id, userId]
     );
     res.json({ message: 'Log updated successfully' });
   } catch (error) {
@@ -213,8 +213,8 @@ app.delete('/api/intern/log/:id', requireAuth, async (req, res) => {
 app.get('/api/intern/dashboard', requireAuth, async (req, res) => {
   const userId = req.session.user.id;
   try {
-    const [attendance] = await db.execute('SELECT * FROM attendance WHERE user_id = ? ORDER BY date DESC, id DESC LIMIT 20', [userId]);
-    const [logs] = await db.execute('SELECT * FROM daily_logs WHERE user_id = ? ORDER BY date DESC LIMIT 5', [userId]);
+    const [attendance] = await db.execute('SELECT * FROM attendance WHERE user_id = ? ORDER BY date DESC, id DESC', [userId]);
+    const [logs] = await db.execute('SELECT * FROM daily_logs WHERE user_id = ? ORDER BY date DESC', [userId]);
     const [totalHoursRes] = await db.execute('SELECT SUM(total_hours) as total_hours, SUM(ot_hours) as total_ot_hours FROM attendance WHERE user_id = ?', [userId]);
     res.json({
       attendance,
@@ -264,7 +264,7 @@ app.get('/api/manager/dashboard', requireAdmin, async (req, res) => {
       SELECT l.*, u.full_name
       FROM daily_logs l
       JOIN users u ON l.user_id = u.id
-      ORDER BY l.date DESC LIMIT 10
+      ORDER BY l.date_start DESC, l.id DESC
     `);
     res.json({ totalProgramHours: totalHoursRes[0].total_program_hours || 0, roster, overview, recentLogs });
   } catch (error) {
