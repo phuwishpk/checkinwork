@@ -182,13 +182,10 @@
         <span class="material-symbols-outlined">contact_support</span>
         <span>Support</span>
       </a>
-<<<<<<< HEAD
-=======
       <button id="logout-btn" class="w-full flex items-center space-x-3 px-4 py-2 rounded-lg text-red-600 hover:bg-red-50 transition-colors font-medium">
         <span class="material-symbols-outlined">logout</span>
         <span>Sign Out</span>
       </button>
->>>>>>> 9eeee0fed4d960af1fbaa4fb65a7d4925c283e24
     </div>
   </aside>
   <!-- Main Content Area -->
@@ -203,13 +200,10 @@
           Review Daily Logs
         </h2>
       </div>
-<<<<<<< HEAD
       <div class="flex items-center space-x-4 bg-surface-container-lowest px-4 py-2 rounded-xl ambient-shadow">
         <span class="text-sm font-label text-on-surface-variant">Current Term:</span>
         <span class="text-sm font-label font-semibold text-primary">Fall 2024</span>
       </div>
-=======
->>>>>>> 9eeee0fed4d960af1fbaa4fb65a7d4925c283e24
     </header>
     <!-- Bento Grid Layout -->
     <div class="grid grid-cols-1 md:grid-cols-12 gap-8">
@@ -523,9 +517,6 @@
 
     // Load on page load
     checkSession();
-<<<<<<< HEAD
-=======
-
     document.getElementById('logout-btn').addEventListener('click', async () => {
       try {
         const response = await fetch('/api/logout', { method: 'POST' });
@@ -536,7 +527,6 @@
         console.error('Logout error:', error);
       }
     });
->>>>>>> 9eeee0fed4d960af1fbaa4fb65a7d4925c283e24
   </script>
 </body>
 

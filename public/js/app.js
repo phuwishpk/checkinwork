@@ -55,7 +55,14 @@ async function protectRoute() {
                 document.getElementById('profile-card-name').textContent = user.full_name || user.username;
             }
             if (document.getElementById('profile-card-role')) {
-                document.getElementById('profile-card-role').textContent = user.role === 'admin' ? 'Manager' : 'Intern';
+                document.getElementById('profile-card-role').textContent = user.role === 'admin' ? 'Management' : 'Intern Workspace';
+            }
+            if (document.getElementById('profile-card-image')) {
+                const name = user.full_name || user.username;
+                document.getElementById('profile-card-image').src = `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=0053dc&color=fff&size=128&bold=true`;
+            }
+            if (document.getElementById('profile-card-email')) {
+                document.getElementById('profile-card-email').textContent = `${user.username}@checkinwork.app`;
             }
             
             // Render auth buttons

@@ -335,20 +335,29 @@
                 <div class="w-8 h-8 rounded-full ${act.bgColor} ${act.color} flex items-center justify-center">
                   <span class="material-symbols-outlined text-sm font-bold">${act.icon}</span>
                 </div>
-                <span>${intern.full_name}</span>
-              </td>
-              <td class="py-5 px-8 text-on-surface-variant">${intern.role}</td>
-              <td class="py-5 px-8 font-semibold">${parseFloat(intern.total_hours).toFixed(1)}</td>
-              <td class="py-5 px-8">${intern.days_present} days</td>
-              <td class="py-5 px-8">
-                <span class="px-3 py-1 rounded-full text-xs font-medium ${parseFloat(intern.total_hours) > 100
-            ? 'bg-secondary-fixed text-on-secondary-container'
-            : 'bg-tertiary-container text-on-tertiary-container'
-          }">
-                  ${parseFloat(intern.total_hours) > 100 ? 'On Track' : 'Needs Review'}
+                <div>
+                  <p class="font-headline font-bold text-sm text-on-surface">${act.full_name}</p>
+                  <p class="text-[10px] font-bold text-on-surface-variant uppercase tracking-widest">${act.displayType} • ${act.title}</p>
+                </div>
+                <span class="ml-auto text-[10px] font-bold text-on-surface-variant bg-surface-container px-2 py-1 rounded-full">
+                  ${new Date(act.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                 </span>
-              </td>
-            </tr>
+              </div>
+              <p class="text-sm text-on-surface-variant line-clamp-2">${act.detail}</p>
+              ${act.status ? `
+                <div class="mt-4 flex items-center gap-2">
+                  <span class="px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wide ${
+                    act.status === 'Plan' ? 'bg-surface-container-highest text-on-surface' :
+                    act.status === 'To Do' ? 'bg-tertiary-container text-on-tertiary-container' :
+                    act.status === 'In Progress' ? 'bg-primary text-on-primary' :
+                    act.status === 'Done' ? 'bg-secondary-fixed text-on-secondary-container' :
+                    'bg-outline text-on-surface'
+                  }">
+                    ${act.status}
+                  </span>
+                </div>
+              ` : ''}
+            </div>
           `).join('');
 
         // Update recent logs
@@ -360,10 +369,13 @@
                   <span class="material-symbols-outlined text-outline-variant text-sm">calendar_today</span>
                   <span class="text-xs font-label text-on-surface-variant">${new Date(log.date).toLocaleDateString()}</span>
                 </div>
-                <span class="px-2 py-1 rounded-full text-[10px] font-label font-bold uppercase tracking-wide ${log.status === 'pending'
-            ? 'bg-tertiary-container text-on-tertiary-container'
-            : 'bg-secondary-fixed text-on-secondary-container'
-          }">
+                <span class="px-2 py-1 rounded-full text-[10px] font-label font-bold uppercase tracking-wide ${
+                  log.status === 'Plan' ? 'bg-surface-container-highest text-on-surface' :
+                  log.status === 'To Do' ? 'bg-tertiary-container text-on-tertiary-container' :
+                  log.status === 'In Progress' ? 'bg-primary text-on-primary' :
+                  log.status === 'Done' ? 'bg-secondary-fixed text-on-secondary-container' :
+                  'bg-outline text-on-surface'
+                }">
                   ${log.status}
                 </span>
               </div>
