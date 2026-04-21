@@ -310,6 +310,7 @@ app.get('/api/manager/dashboard', requireAdmin, async (req, res) => {
   }
 });
 
+<<<<<<< HEAD
 // Get all attendance for manager
 app.get('/api/manager/attendance', requireAdmin, async (req, res) => {
   try {
@@ -322,13 +323,38 @@ app.get('/api/manager/attendance', requireAdmin, async (req, res) => {
     res.json({ attendance });
   } catch (error) {
     console.error('Error fetching attendance:', error);
+=======
+app.get('/api/manager/calendar-data', requireAdmin, async (req, res) => {
+  try {
+    const [users] = await db.execute("SELECT id, full_name, username FROM users WHERE role = 'intern' AND username NOT IN ('intern', 'sarah')");
+    const [attendance] = await db.execute(`
+      SELECT a.*, u.full_name, u.username 
+      FROM attendance a 
+      JOIN users u ON a.user_id = u.id 
+      WHERE u.role = 'intern' AND u.username NOT IN ('intern', 'sarah')
+      ORDER BY a.date ASC, a.clock_in_time ASC
+    `);
+    const [logs] = await db.execute(`
+      SELECT dl.*, u.full_name, u.username 
+      FROM daily_logs dl 
+      JOIN users u ON dl.user_id = u.id 
+      WHERE u.role = 'intern' AND u.username NOT IN ('intern', 'sarah')
+      ORDER BY dl.date_start ASC, dl.id ASC
+    `);
+    res.json({ users, attendance, logs });
+  } catch (error) {
+    console.error('Manager calendar data error:', error);
+>>>>>>> 5e44387685ffbbf195ad9bc48dda440d127a4f91
     res.status(500).json({ error: 'Internal server error' });
   }
 });
 
+<<<<<<< HEAD
 // --- Logs Management Routes ---
 
 // Get all logs for manager review
+=======
+>>>>>>> 5e44387685ffbbf195ad9bc48dda440d127a4f91
 app.get('/api/logs/all', requireAdmin, async (req, res) => {
   try {
     const [logs] = await db.execute(`
