@@ -83,7 +83,7 @@ app.get('/api/session', (req, res) => {
   }
 });
 
-// Clock In
+// Clock In - allowed anytime, OT tracked on clock-out
 app.post('/api/clock-in', requireAuth, async (req, res) => {
   const userId = req.session.user.id;
   const today = new Date().toISOString().slice(0, 10);
@@ -104,7 +104,7 @@ app.post('/api/clock-in', requireAuth, async (req, res) => {
   }
 });
 
-// Clock Out
+// Clock Out - calculate total_hours and ot_hours
 app.post('/api/clock-out', requireAuth, async (req, res) => {
   const userId = req.session.user.id;
   const today = new Date().toISOString().slice(0, 10);
@@ -120,14 +120,11 @@ app.post('/api/clock-out', requireAuth, async (req, res) => {
     if (existing[0].clock_out_time) {
       return res.status(400).json({ error: 'Already clocked out for today' });
     }
-
-    // Calculate hours (simplified)
     const clockIn = existing[0].clock_in_time;
     const timeIn = new Date(`1970-01-01T${clockIn}Z`);
     const timeOut = new Date(`1970-01-01T${nowTime}Z`);
     let diff = (timeOut - timeIn) / (1000 * 60 * 60);
     if (diff < 0) diff = 0;
-
     await db.execute('UPDATE attendance SET clock_out_time = ?, total_hours = ? WHERE id = ?', [nowTime, diff.toFixed(2), existing[0].id]);
     res.json({ message: 'Clocked out successfully', time: nowTime, hours: diff.toFixed(2) });
   } catch (error) {
@@ -136,22 +133,30 @@ app.post('/api/clock-out', requireAuth, async (req, res) => {
   }
 });
 
-// Submit Daily Log
-app.post('/api/intern/log', requireAuth, async (req, res) => {
+// Get all logs for intern
+app.get('/api/intern/logs', requireAuth, async (req, res) => {
   const userId = req.session.user.id;
-  const { date, hours_spent, task_category, description, is_draft } = req.body;
-  const status = is_draft ? 'pending' : 'reviewed'; // As per UI it's pending initially, here using reviewed if it's not draft just to show diff, but usually it's pending. Let's make it pending by default.
-  const actualStatus = 'pending';
-
   try {
-    await db.execute('INSERT INTO daily_logs (user_id, date, hours_spent, task_category, description, status) VALUES (?, ?, ?, ?, ?, ?)', 
-      [userId, date, hours_spent, task_category, description, actualStatus]);
-    res.json({ message: 'Log submitted successfully' });
+    const [logs] = await db.execute('SELECT * FROM daily_logs WHERE user_id = ? ORDER BY date_start DESC, id DESC', [userId]);
+    res.json({ logs });
   } catch (error) {
-    console.error('Log submission error:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
 });
+
+// Create Daily Log
+app.post('/api/intern/log', requireAuth, async (req, res) => {
+  const userId = req.session.user.id;
+  const { date, hours_spent, task_category, description } = req.body;
+  try {
+    await db.execute('INSERT INTO daily_logs (user_id, date, hours_spent, task_category, description, status) VALUES (?, ?, ?, ?, ?, ?)',
+      [userId, date, hours_spent, task_category, description, 'pending']);
+    res.json({ message: 'Log submitted successfully' });
+  } catch (error) {
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
 
 // Get Intern Dashboard Data
 app.get('/api/intern/dashboard', requireAuth, async (req, res) => {
@@ -159,8 +164,13 @@ app.get('/api/intern/dashboard', requireAuth, async (req, res) => {
   try {
     const [attendance] = await db.execute('SELECT * FROM attendance WHERE user_id = ? ORDER BY date DESC, id DESC LIMIT 20', [userId]);
     const [logs] = await db.execute('SELECT * FROM daily_logs WHERE user_id = ? ORDER BY date DESC LIMIT 5', [userId]);
-    const [totalHoursRes] = await db.execute('SELECT SUM(total_hours) as total_hours FROM attendance WHERE user_id = ?', [userId]);
-    res.json({ attendance, logs, totalHours: totalHoursRes[0].total_hours || 0 });
+    const [totalHoursRes] = await db.execute('SELECT SUM(total_hours) as total_hours, SUM(ot_hours) as total_ot_hours FROM attendance WHERE user_id = ?', [userId]);
+    res.json({
+      attendance,
+      logs,
+      totalHours: totalHoursRes[0].total_hours || 0,
+      totalOtHours: totalHoursRes[0].total_ot_hours || 0
+    });
   } catch (error) {
     res.status(500).json({ error: 'Internal server error' });
   }
