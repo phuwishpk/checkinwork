@@ -649,45 +649,58 @@ document.addEventListener('DOMContentLoaded', async () => {
             }
             modal.classList.remove('opacity-0', 'pointer-events-none');
         };
-        const closeModal = () => modal.classList.add('opacity-0', 'pointer-events-none');
+        if (modal) {
+            const closeModal = () => modal.classList.add('opacity-0', 'pointer-events-none');
 
-        ['open-new-task-btn', 'open-new-task-btn2'].forEach(id => {
-            const el = document.getElementById(id);
-            if (el) el.addEventListener('click', () => openModal());
-        });
-        document.getElementById('close-modal-btn').addEventListener('click', closeModal);
-        document.getElementById('cancel-modal-btn').addEventListener('click', closeModal);
-        modal.addEventListener('click', (e) => { if (e.target === modal) closeModal(); });
+            ['open-new-task-btn', 'open-new-task-btn2'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.addEventListener('click', () => openModal());
+            });
+            
+            const closeBtn = document.getElementById('close-modal-btn');
+            if (closeBtn) closeBtn.addEventListener('click', closeModal);
+            
+            const cancelBtn = document.getElementById('cancel-modal-btn');
+            if (cancelBtn) cancelBtn.addEventListener('click', closeModal);
+            
+            modal.addEventListener('click', (e) => { if (e.target === modal) closeModal(); });
+        }
 
-        document.getElementById('log-form').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const editingId = document.getElementById('editing-log-id').value;
-            const payload = {
-                date_start:    document.getElementById('log-date-start').value,
-                date_finish:   document.getElementById('log-date-finish').value,
-                task_category: document.getElementById('log-category').value,
-                description:   document.getElementById('log-description').value,
-                color:         document.getElementById('log-color').value,
-                status:        'Plan' // Default status
-            };
-            try {
-                if (editingId) await apiCall(`/api/intern/log/${editingId}`, 'PUT', payload);
-                else await apiCall('/api/intern/log', 'POST', payload);
-                closeModal();
-                loadCalendarData();
-            } catch (err) { alert(err.message); }
-        });
-
-        document.getElementById('delete-log-btn').addEventListener('click', async () => {
-            const id = document.getElementById('editing-log-id').value;
-            if (id && confirm('Delete this task?')) {
+        const logForm = document.getElementById('log-form');
+        if (logForm) {
+            logForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const editingId = document.getElementById('editing-log-id').value;
+                const payload = {
+                    date_start:    document.getElementById('log-date-start').value,
+                    date_finish:   document.getElementById('log-date-finish').value,
+                    task_category: document.getElementById('log-category').value,
+                    description:   document.getElementById('log-description').value,
+                    color:         document.getElementById('log-color').value,
+                    status:        'Plan' // Default status
+                };
                 try {
-                    await apiCall(`/api/intern/log/${id}`, 'DELETE');
-                    closeModal();
+                    if (editingId) await apiCall(`/api/intern/log/${editingId}`, 'PUT', payload);
+                    else await apiCall('/api/intern/log', 'POST', payload);
+                    if (typeof closeModal === 'function') closeModal();
                     loadCalendarData();
-                } catch(e) { alert(e.message); }
-            }
-        });
+                } catch (err) { alert(err.message); }
+            });
+        }
+
+        const deleteLogBtn = document.getElementById('delete-log-btn');
+        if (deleteLogBtn) {
+            deleteLogBtn.addEventListener('click', async () => {
+                const id = document.getElementById('editing-log-id').value;
+                if (id && confirm('Delete this task?')) {
+                    try {
+                        await apiCall(`/api/intern/log/${id}`, 'DELETE');
+                        if (typeof closeModal === 'function') closeModal();
+                        loadCalendarData();
+                    } catch(e) { alert(e.message); }
+                }
+            });
+        }
 
         let isDragging = false;
         let dragStart = null;
@@ -721,44 +734,96 @@ document.addEventListener('DOMContentLoaded', async () => {
             for (let day = 1; day <= daysInMonth; day++) {
                 const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
                 
-                const att = allAttendance.find(a => a.date.startsWith(dateStr));
+                const dayAtts = allAttendance.filter(a => a.date.startsWith(dateStr));
                 let attHtml = '';
-                if (att) {
-                    attHtml = `<div class="flex items-center gap-1 text-[9px] font-bold text-primary mb-1 opacity-70">
-                        <span class="material-symbols-outlined text-[10px]">login</span> ${att.clock_in_time?.slice(0,5)}
-                        ${att.clock_out_time ? `<span class="material-symbols-outlined text-[10px]">logout</span> ${att.clock_out_time.slice(0,5)}` : ''}
-                    </div>`;
+                if (dayAtts.length > 0) {
+                    const count = dayAtts.length;
+                    attHtml = `
+                        <div class="mb-1">
+                            <div class="flex items-center justify-between text-[8px] font-black uppercase text-primary/60 mb-0.5">
+                                <span>Attendance</span>
+                                <span>${count} session${count > 1 ? 's' : ''}</span>
+                            </div>
+                            <div class="space-y-0.5">
+                                ${dayAtts.map(att => `
+                                    <div class="flex items-center gap-1 text-[9px] font-bold text-primary bg-primary/5 px-1 rounded">
+                                        <span class="material-symbols-outlined text-[10px]">login</span> ${att.clock_in_time?.slice(0,5)}
+                                        <span class="material-symbols-outlined text-[10px]">logout</span> ${att.clock_out_time ? att.clock_out_time.slice(0,5) : '...'}
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>`;
                 }
 
                 let logsHtml = '';
-                sortedLogs.forEach(l => {
+                // Calculate slots for all logs in this month view to keep vertical alignment
+                if (day === 1) {
+                    sortedLogs.forEach(l => delete l.slot);
+                    const slots = [];
+                    sortedLogs.forEach(log => {
+                        let assigned = false;
+                        const lStart = log.date_start;
+                        const lEnd = log.date_finish || log.date_start;
+                        
+                        for (let i = 0; i < slots.length; i++) {
+                            const hasOverlap = slots[i].some(s => {
+                                const sStart = s.date_start;
+                                const sEnd = s.date_finish || s.date_start;
+                                return (lStart <= sEnd && lEnd >= sStart);
+                            });
+                            if (!hasOverlap) {
+                                slots[i].push(log);
+                                log.slot = i;
+                                assigned = true;
+                                break;
+                            }
+                        }
+                        if (!assigned) {
+                            log.slot = slots.length;
+                            slots.push([log]);
+                        }
+                    });
+                }
+
+                const dayLogs = sortedLogs.filter(l => {
                     const start = l.date_start;
                     const finish = l.date_finish || l.date_start;
-                    if (dateStr >= start && dateStr <= finish) {
-                        const isStart = dateStr === start;
-                        const isEnd = dateStr === finish;
-                        const safeLog = encodeURIComponent(JSON.stringify(l));
-                        
-                        let spanClass = '';
-                        if (isStart && !isEnd) spanClass = 'span-start';
-                        else if (!isStart && !isEnd) spanClass = 'span-mid';
-                        else if (!isStart && isEnd) spanClass = 'span-end';
-
-                        logsHtml += `
-                        <div class="log-bar ${spanClass}" style="background-color: ${l.color || '#3e76fe'}" onclick="event.stopPropagation(); editLog('${safeLog}')">
-                            ${isStart ? `<span class="truncate">${l.task_category}: ${l.description}</span>` : ''}
-                        </div>`;
-                    }
+                    return (dateStr >= start && dateStr <= finish);
                 });
+
+                if (dayLogs.length > 0) {
+                    const maxSlot = Math.max(...dayLogs.map(l => l.slot));
+                    for (let s = 0; s <= maxSlot; s++) {
+                        const l = dayLogs.find(log => log.slot === s);
+                        if (l) {
+                            const isStart = dateStr === l.date_start;
+                            const isEnd = dateStr === (l.date_finish || l.date_start);
+                            const safeLog = encodeURIComponent(JSON.stringify(l));
+                            
+                            let spanClass = '';
+                            if (isStart && !isEnd) spanClass = 'span-start';
+                            else if (!isStart && !isEnd) spanClass = 'span-mid';
+                            else if (!isStart && isEnd) spanClass = 'span-end';
+
+                            logsHtml += `
+                            <div class="log-bar ${spanClass}" style="background-color: ${l.color || '#3e76fe'}" onclick="event.stopPropagation(); editLog('${safeLog}')">
+                                ${isStart ? `<span class="truncate">${l.task_category}: ${l.description}</span>` : ''}
+                            </div>`;
+                        } else {
+                            // Spacer to maintain vertical alignment
+                            logsHtml += `<div class="h-[24px] mb-[3px]"></div>`;
+                        }
+                    }
+                }
 
                 const cell = document.createElement('div');
                 cell.className = 'calendar-cell';
                 cell.dataset.date = dateStr;
                 cell.innerHTML = `
                     <span class="text-[11px] font-bold text-on-surface-variant/40 mb-1">${day}</span>
-                    <div class="flex-1 overflow-hidden pointer-events-none">
-                        ${attHtml}
+                    <div class="flex-1 overflow-hidden">
                         ${logsHtml}
+                        ${attHtml}
                     </div>
                 `;
 
@@ -828,5 +893,217 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (nextBtn) nextBtn.addEventListener('click', () => { currentDate.setMonth(currentDate.getMonth() + 1); renderCalendar(); });
 
         loadCalendarData();
+    }
+
+    if (path.includes('manager-attendance.html')) {
+        let currentDate = new Date();
+        let allData = { users: [], attendance: [], logs: [] };
+        const colors = ['#0053dc', '#10b981', '#f59e0b', '#8b5cf6', '#ec4899', '#06b6d4', '#f43f5e'];
+
+        const loadManagerCalendar = async () => {
+            try {
+                allData = await apiCall('/api/manager/calendar-data');
+                
+                // Populate filter
+                const filter = document.getElementById('intern-filter');
+                const currentVal = filter.value;
+                filter.innerHTML = '<option value="all">All Interns</option>';
+                allData.users.forEach((u, i) => {
+                    const color = colors[i % colors.length];
+                    filter.innerHTML += `<option value="${u.id}" data-color="${color}">${u.full_name}</option>`;
+                });
+                filter.value = currentVal;
+                
+                renderManagerCalendar();
+            } catch (err) { console.error(err); }
+        };
+
+        const renderManagerCalendar = () => {
+            const grid = document.getElementById('calendar-grid');
+            const header = document.getElementById('calendar-month-year');
+            if(!grid) return;
+
+            const year = currentDate.getFullYear();
+            const month = currentDate.getMonth();
+            header.textContent = new Intl.DateTimeFormat('en-US', { month: 'long', year: 'numeric' }).format(currentDate);
+            grid.innerHTML = '';
+
+            const firstDay = new Date(year, month, 1).getDay();
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
+            const selectedUserId = document.getElementById('intern-filter').value;
+            const viewMode = document.getElementById('view-mode').value;
+            const showTasks = viewMode === 'all' || viewMode === 'tasks';
+            const showAtts = viewMode === 'all' || viewMode === 'attendance';
+
+            for (let i = 0; i < firstDay; i++) grid.innerHTML += `<div class="calendar-cell bg-surface-container-low opacity-50"></div>`;
+
+            for (let day = 1; day <= daysInMonth; day++) {
+                const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+                const cell = document.createElement('div');
+                cell.className = 'calendar-cell';
+                
+                let contentHtml = '';
+                
+                if (selectedUserId === 'all') {
+                    // Grouped view by user
+                    allData.users.forEach((u, idx) => {
+                        const userColor = colors[idx % colors.length];
+                        const uAtts = showAtts ? allData.attendance.filter(a => a.user_id === u.id && a.date.startsWith(dateStr)) : [];
+                        const uLogs = showTasks ? allData.logs.filter(l => l.user_id === u.id && dateStr >= l.date_start && dateStr <= (l.date_finish || l.date_start)) : [];
+                        
+                        // Calculate slots for this user if it's the first day of the view
+                        if (day === 1) {
+                            const userAllLogs = allData.logs.filter(l => l.user_id === u.id);
+                            userAllLogs.forEach(l => delete l.slot);
+                            const userSlots = [];
+                            userAllLogs.forEach(log => {
+                                let assigned = false;
+                                for (let i = 0; i < userSlots.length; i++) {
+                                    const hasOverlap = userSlots[i].some(s => {
+                                        return (log.date_start <= (s.date_finish || s.date_start) && (log.date_finish || log.date_start) >= s.date_start);
+                                    });
+                                    if (!hasOverlap) {
+                                        userSlots[i].push(log);
+                                        log.slot = i;
+                                        assigned = true;
+                                        break;
+                                    }
+                                }
+                                if (!assigned) {
+                                    log.slot = userSlots.length;
+                                    userSlots.push([log]);
+                                }
+                            });
+                        }
+
+                        if (uAtts.length > 0 || uLogs.length > 0) {
+                            let logsMarkup = '';
+                            if (uLogs.length > 0) {
+                                const maxSlot = Math.max(...uLogs.map(l => l.slot));
+                                for (let s = 0; s <= maxSlot; s++) {
+                                    const l = uLogs.find(log => log.slot === s);
+                                    if (l) {
+                                        const isStart = dateStr === l.date_start;
+                                        const isEnd = dateStr === (l.date_finish || l.date_start);
+                                        let spanClass = '';
+                                        if (isStart && !isEnd) spanClass = 'span-start';
+                                        else if (!isStart && !isEnd) spanClass = 'span-mid';
+                                        else if (!isStart && isEnd) spanClass = 'span-end';
+
+                                        logsMarkup += `
+                                            <div class="text-[8px] px-1 mb-0.5 rounded truncate text-white font-bold ${spanClass}" style="background-color: ${l.color || userColor}">
+                                                ${isStart ? l.task_category : '&nbsp;'}
+                                            </div>`;
+                                    } else {
+                                        logsMarkup += `<div class="h-[12px] mb-0.5"></div>`;
+                                    }
+                                }
+                            }
+
+                            contentHtml += `
+                                <div class="user-box bg-white shadow-sm border border-outline-variant/10 mb-2" style="border-left-color: ${userColor}">
+                                    <div class="flex items-center justify-between mb-1">
+                                        <span class="text-[8px] font-black uppercase" style="color: ${userColor}">${u.full_name}</span>
+                                        ${uAtts.length > 0 ? `<span class="text-[7px] bg-slate-100 px-1 rounded">${uAtts.length} sess</span>` : ''}
+                                    </div>
+                                    <div class="space-y-0.5">
+                                        ${logsMarkup}
+                                        ${uAtts.map(a => `
+                                            <div class="text-[7px] text-slate-500 font-medium flex items-center gap-0.5">
+                                                <span class="material-symbols-outlined text-[8px]">login</span>${a.clock_in_time?.slice(0,5)}
+                                                ${a.clock_out_time ? `<span class="material-symbols-outlined text-[8px]">logout</span>${a.clock_out_time.slice(0,5)}` : ''}
+                                            </div>
+                                        `).join('')}
+                                    </div>
+                                </div>`;
+                        }
+                    });
+                } else {
+                    // Single intern view (Detailed)
+                    const uid = parseInt(selectedUserId);
+                    const userIdx = allData.users.findIndex(u => u.id === uid);
+                    const userColor = colors[userIdx % colors.length];
+                    const uAtts = showAtts ? allData.attendance.filter(a => a.user_id === uid && a.date.startsWith(dateStr)) : [];
+                    const uLogs = showTasks ? allData.logs.filter(l => l.user_id === uid && dateStr >= l.date_start && dateStr <= (l.date_finish || l.date_start)) : [];
+
+                    if (day === 1) {
+                        const userAllLogs = allData.logs.filter(l => l.user_id === uid);
+                        userAllLogs.forEach(l => delete l.slot);
+                        const userSlots = [];
+                        userAllLogs.forEach(log => {
+                            let assigned = false;
+                            for (let i = 0; i < userSlots.length; i++) {
+                                const hasOverlap = userSlots[i].some(s => {
+                                    return (log.date_start <= (s.date_finish || s.date_start) && (log.date_finish || log.date_start) >= s.date_start);
+                                });
+                                if (!hasOverlap) {
+                                    userSlots[i].push(log);
+                                    log.slot = i;
+                                    assigned = true;
+                                    break;
+                                }
+                            }
+                            if (!assigned) {
+                                log.slot = userSlots.length;
+                                userSlots.push([log]);
+                            }
+                        });
+                    }
+
+                    if (uLogs.length > 0) {
+                        const maxSlot = Math.max(...uLogs.map(l => l.slot));
+                        contentHtml += `<div class="space-y-0.5 mb-2">`;
+                        for (let s = 0; s <= maxSlot; s++) {
+                            const l = uLogs.find(log => log.slot === s);
+                            if (l) {
+                                const isStart = dateStr === l.date_start;
+                                const isEnd = dateStr === (l.date_finish || l.date_start);
+                                let spanClass = '';
+                                if (isStart && !isEnd) spanClass = 'span-start';
+                                else if (!isStart && !isEnd) spanClass = 'span-mid';
+                                else if (!isStart && isEnd) spanClass = 'span-end';
+
+                                contentHtml += `
+                                    <div class="log-bar ${spanClass}" style="background-color: ${l.color || userColor}">
+                                        <span class="truncate">${isStart ? `${l.task_category}: ${l.description}` : ''}</span>
+                                    </div>`;
+                            } else {
+                                contentHtml += `<div class="h-[22px] mb-[2px]"></div>`;
+                            }
+                        }
+                        contentHtml += `</div>`;
+                    }
+
+                    if (uAtts.length > 0) {
+                        contentHtml += `
+                            <div class="mt-auto pt-1 border-t border-dashed border-outline-variant/20">
+                                <p class="text-[7px] font-black uppercase text-slate-400 mb-0.5">Attendance (${uAtts.length})</p>
+                                ${uAtts.map(a => `
+                                    <div class="flex items-center gap-1 text-[9px] font-bold text-primary bg-primary/5 px-1 rounded mb-0.5">
+                                        <span class="material-symbols-outlined text-[10px]">login</span> ${a.clock_in_time?.slice(0,5)}
+                                        <span class="material-symbols-outlined text-[10px]">logout</span> ${a.clock_out_time ? a.clock_out_time.slice(0,5) : '...'}
+                                    </div>
+                                `).join('')}
+                            </div>`;
+                    }
+                }
+
+                cell.innerHTML = `
+                    <span class="text-[11px] font-bold text-on-surface-variant/40 mb-1">${day}</span>
+                    <div class="flex-1 overflow-y-auto custom-scrollbar">
+                        ${contentHtml}
+                    </div>`;
+                grid.appendChild(cell);
+            }
+        };
+
+        const filter1 = document.getElementById('intern-filter');
+        const filter2 = document.getElementById('view-mode');
+        if (filter1) filter1.addEventListener('change', renderManagerCalendar);
+        if (filter2) filter2.addEventListener('change', renderManagerCalendar);
+        document.getElementById('prev-month').addEventListener('click', () => { currentDate.setMonth(currentDate.getMonth() - 1); renderManagerCalendar(); });
+        document.getElementById('next-month').addEventListener('click', () => { currentDate.setMonth(currentDate.getMonth() + 1); renderManagerCalendar(); });
+
+        loadManagerCalendar();
     }
 });

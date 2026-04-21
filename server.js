@@ -298,6 +298,30 @@ app.get('/api/manager/dashboard', requireAdmin, async (req, res) => {
   }
 });
 
+app.get('/api/manager/calendar-data', requireAdmin, async (req, res) => {
+  try {
+    const [users] = await db.execute("SELECT id, full_name, username FROM users WHERE role = 'intern' AND username NOT IN ('intern', 'sarah')");
+    const [attendance] = await db.execute(`
+      SELECT a.*, u.full_name, u.username 
+      FROM attendance a 
+      JOIN users u ON a.user_id = u.id 
+      WHERE u.role = 'intern' AND u.username NOT IN ('intern', 'sarah')
+      ORDER BY a.date ASC, a.clock_in_time ASC
+    `);
+    const [logs] = await db.execute(`
+      SELECT dl.*, u.full_name, u.username 
+      FROM daily_logs dl 
+      JOIN users u ON dl.user_id = u.id 
+      WHERE u.role = 'intern' AND u.username NOT IN ('intern', 'sarah')
+      ORDER BY dl.date_start ASC, dl.id ASC
+    `);
+    res.json({ users, attendance, logs });
+  } catch (error) {
+    console.error('Manager calendar data error:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
 app.get('/api/logs/all', requireAdmin, async (req, res) => {
   try {
     const [logs] = await db.execute(`

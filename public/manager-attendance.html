@@ -101,41 +101,25 @@
 <p class="text-xs text-on-surface-variant font-body">Portal</p>
 </div>
 </div>
-<a href="/daily-log.html" class="w-full bg-gradient-to-br from-primary to-primary-container text-on-primary py-3 rounded-md font-medium text-sm shadow-[0_8px_32px_rgba(44,52,55,0.06)] hover:opacity-90 transition-opacity flex items-center justify-center space-x-2">
-<span class="material-symbols-outlined text-lg">add</span>
-<span>New Log Entry</span>
-</a>
-<div class="flex-1 mt-6">
-<ul class="space-y-2">
-<li>
+<nav class="flex-1 space-y-2 mt-8">
 <a class="flex items-center space-x-3 px-4 py-3 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/50 hover:translate-x-1 transition-all duration-300" href="manager-dashboard.html">
 <span class="material-symbols-outlined">grid_view</span>
 <span class="font-body text-sm">Dashboard</span>
 </a>
-</li>
-<li>
 <a class="flex items-center space-x-3 px-4 py-3 rounded-lg text-blue-700 dark:text-blue-300 font-semibold bg-blue-50 dark:bg-blue-900/20 active:scale-95 transition-all duration-300" href="manager-attendance.html">
 <span class="material-symbols-outlined">event_available</span>
 <span class="font-body text-sm">Attendance</span>
 </a>
-</li>
-<li>
 <a class="flex items-center space-x-3 px-4 py-3 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/50 hover:translate-x-1 transition-all duration-300" href="manager-loge.html">
 <span class="material-symbols-outlined">history_edu</span>
 <span class="font-body text-sm">Logs</span>
 </a>
-</li>
-</ul>
-</div>
-<div class="mt-auto">
-<ul class="space-y-2">
-<li>
-<button id="logout-btn" class="w-full flex items-center space-x-3 px-4 py-2 rounded-lg text-red-600 hover:bg-red-50 transition-colors">
-<span class="material-symbols-outlined text-sm">logout</span>
-<span class="font-body text-xs">Logout</span>
-</button>
-</li>
-</ul>
+</nav>
+<div class="mt-auto pt-6 border-t border-outline-variant/10">
+    <button id="logout-btn" class="w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-red-500 hover:bg-red-50 transition-all font-semibold group">
+        <span class="material-symbols-outlined group-hover:rotate-12 transition-transform">logout</span>
+        <span class="text-sm">Sign Out</span>
+    </button>
 </div>
 </nav>
 
@@ -157,200 +141,62 @@
 </header>
 
 <div class="p-8 max-w-7xl mx-auto w-full flex-1">
-<div class="flex justify-between items-center mb-6">
-    <h2 class="text-2xl font-bold font-headline text-on-surface" id="calendar-month-year">Loading...</h2>
-    <div class="flex space-x-2">
-        <button id="prev-month" class="p-2 rounded hover:bg-surface-container"><span class="material-symbols-outlined">chevron_left</span></button>
-        <button id="next-month" class="p-2 rounded hover:bg-surface-container"><span class="material-symbols-outlined">chevron_right</span></button>
+    <div class="flex justify-between items-center mb-6">
+        <h2 class="text-2xl font-bold font-headline text-on-surface" id="calendar-month-year">Loading...</h2>
+        <div class="flex items-center gap-4">
+            <select id="view-mode" class="min-w-[160px] bg-surface-container-low border-none rounded-xl px-4 py-2 text-sm font-bold focus:ring-2 focus:ring-primary/40">
+                <option value="all">All Info</option>
+                <option value="tasks">Tasks Only</option>
+                <option value="attendance">Attendance Only</option>
+            </select>
+            <select id="intern-filter" class="min-w-[200px] bg-surface-container-low border-none rounded-xl px-4 py-2 text-sm font-bold focus:ring-2 focus:ring-primary/40">
+                <option value="all">All Interns</option>
+                <!-- Interns will be populated here -->
+            </select>
+            <div class="flex bg-surface-container rounded-lg p-1">
+                <button id="prev-month" class="p-1.5 rounded-md hover:bg-white transition-colors"><span class="material-symbols-outlined">chevron_left</span></button>
+                <button id="next-month" class="p-1.5 rounded-md hover:bg-white transition-colors"><span class="material-symbols-outlined">chevron_right</span></button>
+            </div>
+        </div>
     </div>
-</div>
-<div class="bg-surface-container-lowest p-8 rounded-xl relative overflow-hidden group border-0">
-<div class="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-tertiary to-tertiary-container"></div>
-<p class="text-on-surface-variant text-sm font-semibold mb-4 uppercase tracking-wider">Days Present</p>
-<div class="flex items-baseline gap-2">
-<span class="text-5xl font-black text-on-surface font-headline">21</span>
-<span class="text-on-surface-variant font-medium">/ 22</span>
-</div>
-<div class="mt-4 flex items-center text-xs font-bold text-tertiary">
-<span class="material-symbols-outlined text-sm mr-1" data-icon="check_circle">check_circle</span>
-                    Excellent consistency
-                </div>
-</div>
-<div class="bg-surface-container-lowest p-8 rounded-xl relative overflow-hidden group border-0">
-<div class="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-secondary to-secondary-container"></div>
-<p class="text-on-surface-variant text-sm font-semibold mb-4 uppercase tracking-wider">Average Shift</p>
-<div class="flex items-baseline gap-2">
-<span class="text-5xl font-black text-on-surface font-headline">7.8</span>
-<span class="text-on-surface-variant font-medium">hrs</span>
-</div>
-<div class="mt-4 flex items-center text-xs font-bold text-secondary">
-<span class="material-symbols-outlined text-sm mr-1" data-icon="timer">timer</span>
-                    Excluding breaks
-                </div>
-</div>
-</section>
-<!-- Attendance Table Section -->
-<section class="bg-surface-container-lowest rounded-xl p-8 border-0">
-<div class="flex justify-between items-center mb-8">
-<h3 class="text-xl font-bold">November Records</h3>
-<div class="flex gap-2">
-<button class="p-2 rounded-lg hover:bg-surface-container transition-colors">
-<span class="material-symbols-outlined" data-icon="filter_list">filter_list</span>
-</button>
-<button class="p-2 rounded-lg hover:bg-surface-container transition-colors">
-<span class="material-symbols-outlined" data-icon="search">search</span>
-</button>
-</div>
-</div>
-<div class="overflow-x-auto">
-<table class="w-full text-left">
-<thead>
-<tr class="text-on-surface-variant border-b border-surface-container-high">
-<th class="pb-4 font-bold text-xs uppercase tracking-widest px-4">Date</th>
-<th class="pb-4 font-bold text-xs uppercase tracking-widest px-4">Clock-in</th>
-<th class="pb-4 font-bold text-xs uppercase tracking-widest px-4">Clock-out</th>
-<th class="pb-4 font-bold text-xs uppercase tracking-widest px-4">Duration</th>
-<th class="pb-4 font-bold text-xs uppercase tracking-widest px-4">Status</th>
-<th class="pb-4 font-bold text-xs uppercase tracking-widest px-4 text-right">Actions</th>
-</tr>
-</thead>
-<tbody class="divide-y divide-surface-container-low">
-<!-- Record 1 -->
-<tr class="group hover:bg-surface-container-low/50 transition-colors">
-<td class="py-5 px-4">
-<div class="font-bold text-on-surface">Nov 22, 2023</div>
-<div class="text-xs text-on-surface-variant">Wednesday</div>
-</td>
-<td class="py-5 px-4 font-medium text-on-surface-variant">08:54 AM</td>
-<td class="py-5 px-4 font-medium text-on-surface-variant">05:12 PM</td>
-<td class="py-5 px-4">
-<span class="font-bold text-on-surface">8.3 hrs</span>
-</td>
-<td class="py-5 px-4">
-<span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-secondary-fixed text-on-secondary-fixed">
-                                    Complete
-                                </span>
-</td>
-<td class="py-5 px-4 text-right">
-<button class="text-on-surface-variant hover:text-primary transition-colors">
-<span class="material-symbols-outlined" data-icon="more_vert">more_vert</span>
-</button>
-</td>
-</tr>
-<!-- Record 2 -->
-<tr class="group hover:bg-surface-container-low/50 transition-colors">
-<td class="py-5 px-4">
-<div class="font-bold text-on-surface text-primary">Nov 23, 2023</div>
-<div class="text-xs text-on-surface-variant">Thursday (Today)</div>
-</td>
-<td class="py-5 px-4 font-medium text-on-surface-variant">09:02 AM</td>
-<td class="py-5 px-4 font-medium text-on-surface-variant">—</td>
-<td class="py-5 px-4">
-<span class="font-bold text-on-surface">—</span>
-</td>
-<td class="py-5 px-4">
-<span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-tertiary-container text-on-tertiary-container">
-                                    On-going
-                                </span>
-</td>
-<td class="py-5 px-4 text-right">
-<button class="text-on-surface-variant hover:text-primary transition-colors">
-<span class="material-symbols-outlined" data-icon="more_vert">more_vert</span>
-</button>
-</td>
-</tr>
-<!-- Record 3 -->
-<tr class="group hover:bg-surface-container-low/50 transition-colors">
-<td class="py-5 px-4">
-<div class="font-bold text-on-surface">Nov 21, 2023</div>
-<div class="text-xs text-on-surface-variant">Tuesday</div>
-</td>
-<td class="py-5 px-4 font-medium text-on-surface-variant">08:45 AM</td>
-<td class="py-5 px-4 font-medium text-on-surface-variant">04:30 PM</td>
-<td class="py-5 px-4">
-<span class="font-bold text-on-surface">7.75 hrs</span>
-</td>
-<td class="py-5 px-4">
-<span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-secondary-fixed text-on-secondary-fixed">
-                                    Complete
-                                </span>
-</td>
-<td class="py-5 px-4 text-right">
-<button class="text-on-surface-variant hover:text-primary transition-colors">
-<span class="material-symbols-outlined" data-icon="more_vert">more_vert</span>
-</button>
-</td>
-</tr>
-<!-- Record 4 -->
-<tr class="group hover:bg-surface-container-low/50 transition-colors">
-<td class="py-5 px-4">
-<div class="font-bold text-on-surface">Nov 20, 2023</div>
-<div class="text-xs text-on-surface-variant">Monday</div>
-</td>
-<td class="py-5 px-4 font-medium text-on-surface-variant">—</td>
-<td class="py-5 px-4 font-medium text-on-surface-variant">—</td>
-<td class="py-5 px-4">
-<span class="font-bold text-on-surface">0 hrs</span>
-</td>
-<td class="py-5 px-4">
-<span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-surface-container text-on-surface-variant">
-                                    Holiday
-                                </span>
-</td>
-<td class="py-5 px-4 text-right">
-<button class="text-on-surface-variant hover:text-primary transition-colors">
-<span class="material-symbols-outlined" data-icon="more_vert">more_vert</span>
-</button>
-</td>
-</tr>
-<!-- Record 5 -->
-<tr class="group hover:bg-surface-container-low/50 transition-colors">
-<td class="py-5 px-4">
-<div class="font-bold text-on-surface">Nov 17, 2023</div>
-<div class="text-xs text-on-surface-variant">Friday</div>
-</td>
-<td class="py-5 px-4 font-medium text-on-surface-variant">09:15 AM</td>
-<td class="py-5 px-4 font-medium text-on-surface-variant">05:45 PM</td>
-<td class="py-5 px-4">
-<span class="font-bold text-on-surface">8.5 hrs</span>
-</td>
-<td class="py-5 px-4">
-<span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-secondary-fixed text-on-secondary-fixed">
-                                    Complete
-                                </span>
-</td>
-<td class="py-5 px-4 text-right">
-<button class="text-on-surface-variant hover:text-primary transition-colors">
-<span class="material-symbols-outlined" data-icon="more_vert">more_vert</span>
-</button>
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-<!-- Pagination/Footer -->
-<div class="mt-10 flex justify-between items-center text-sm">
-<p class="text-on-surface-variant">Showing 1 to 5 of 21 records</p>
-<div class="flex gap-2">
-<button class="px-4 py-2 rounded-lg border-0 bg-surface-container hover:bg-surface-container-high transition-colors text-on-surface font-semibold">Previous</button>
-<button class="px-4 py-2 rounded-lg border-0 bg-primary text-white font-semibold">1</button>
-<button class="px-4 py-2 rounded-lg border-0 bg-surface-container hover:bg-surface-container-high transition-colors text-on-surface font-semibold">2</button>
-<button class="px-4 py-2 rounded-lg border-0 bg-surface-container hover:bg-surface-container-high transition-colors text-on-surface font-semibold">3</button>
-<button class="px-4 py-2 rounded-lg border-0 bg-surface-container hover:bg-surface-container-high transition-colors text-on-surface font-semibold">Next</button>
-</div>
-</div>
-</section>
+
+    <div class="bg-white rounded-2xl shadow-sm border border-outline-variant/20 overflow-hidden">
+        <div class="grid grid-cols-7 bg-surface-container-low text-on-surface-variant font-bold text-[10px] uppercase tracking-widest py-3 text-center border-b border-outline-variant/10">
+            <div>Sun</div><div>Mon</div><div>Tue</div><div>Wed</div><div>Thu</div><div>Fri</div><div>Sat</div>
+        </div>
+        <div id="calendar-grid" class="calendar-grid"></div>
+    </div>
+  </div>
 </main>
-<script>
-    document.getElementById('logout-btn').addEventListener('click', async () => {
-        try {
-            const response = await fetch('/api/logout', { method: 'POST' });
-            if (response.ok) {
-                window.location.href = 'index.html';
-            }
-        } catch (error) {
-            console.error('Logout error:', error);
-        }
-    });
-</script>
+
+<style>
+    .calendar-grid { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); background-color: #e3e9ed; border-left: 1px solid #e3e9ed; border-top: 1px solid #e3e9ed; }
+    .calendar-cell { background-color: white; min-height: 160px; padding: 0.5rem; display: flex; flex-direction: column; position: relative; border-right: 1px solid #e3e9ed; border-bottom: 1px solid #e3e9ed; overflow: hidden; }
+    .log-bar { 
+        height: 22px; 
+        margin-bottom: 2px; 
+        padding: 0 6px; 
+        font-size: 9px; 
+        font-weight: 700; 
+        display: flex; 
+        align-items: center; 
+        border-radius: 4px;
+        color: white;
+        white-space: nowrap;
+        overflow: hidden;
+        cursor: pointer;
+    }
+    .span-start { border-top-right-radius: 0; border-bottom-right-radius: 0; margin-right: -0.51rem; width: calc(100% + 0.51rem); }
+    .span-mid { border-radius: 0; margin-left: -0.51rem; margin-right: -0.51rem; width: calc(100% + 1.02rem); }
+    .span-end { border-top-left-radius: 0; border-bottom-left-radius: 0; margin-left: -0.51rem; width: calc(100% + 0.51rem); }
+    
+    .user-box {
+        border-radius: 6px;
+        padding: 4px;
+        margin-bottom: 4px;
+        border-left: 3px solid;
+    }
+</style>
+
+<script src="/js/app.js"></script>
 </body></html>
