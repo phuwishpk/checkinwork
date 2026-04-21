@@ -4,73 +4,77 @@
   <head>
     <meta charset="utf-8" />
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
-    <title>InternHub - Intern Dashboard</title>
-    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <title>Manager Dashboard - Internship Manager</title>
     <link
-      href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;family=Inter:wght@400;500;600&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+      href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;family=Inter:wght@400;500;600&amp;display=swap"
       rel="stylesheet"
     />
     <link
       href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
       rel="stylesheet"
     />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+      rel="stylesheet"
+    />
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
     <script id="tailwind-config">
       tailwind.config = {
         darkMode: "class",
         theme: {
           extend: {
             colors: {
-              "error-dim": "#67040d",
-              "surface-container-lowest": "#ffffff",
-              "surface-container-low": "#f0f4f7",
-              "secondary-container": "#d3e4fe",
-              "on-secondary-fixed-variant": "#4d5d73",
-              "tertiary-dim": "#604a72",
-              "inverse-surface": "#0b0f10",
-              "tertiary-fixed": "#e6cafa",
-              "on-error": "#fff7f6",
-              "secondary-dim": "#44546a",
-              "surface-bright": "#f7f9fb",
-              "primary-fixed-dim": "#2d68f0",
-              "secondary-fixed-dim": "#c5d6f0",
-              secondary: "#506076",
-              "on-secondary-container": "#435368",
-              error: "#a83836",
-              "on-primary": "#faf8ff",
-              "surface-container": "#eaeff2",
-              background: "#f7f9fb",
               "on-error-container": "#6e0a12",
               "surface-container-highest": "#dce4e8",
-              "inverse-primary": "#618bff",
-              "on-secondary-fixed": "#314055",
-              "on-tertiary-fixed-variant": "#604a71",
-              "on-secondary": "#f7f9ff",
-              "surface-tint": "#0053dc",
-              "secondary-fixed": "#d3e4fe",
-              "error-container": "#fa746f",
-              "tertiary-container": "#e6cafa",
-              "on-surface": "#2c3437",
-              "on-background": "#2c3437",
-              "primary-dim": "#0049c2",
-              outline: "#747c80",
-              "outline-variant": "#acb3b7",
-              "on-primary-container": "#000000",
-              "on-tertiary": "#fff6fe",
-              "on-tertiary-container": "#564067",
-              "surface-dim": "#d4dbdf",
-              "primary-fixed": "#3e76fe",
               "surface-container-high": "#e3e9ed",
-              "on-tertiary-fixed": "#422d53",
-              "on-surface-variant": "#596064",
-              primary: "#0053dc",
-              "inverse-on-surface": "#9a9d9f",
-              tertiary: "#6d567f",
-              "tertiary-fixed-dim": "#d8bceb",
-              "on-primary-fixed-variant": "#f9f7ff",
-              "on-primary-fixed": "#ffffff",
-              "surface-variant": "#dce4e8",
-              surface: "#f7f9fb",
+              "error-dim": "#67040d",
+              "on-error": "#fff7f6",
+              "tertiary-container": "#e6cafa",
+              "surface-container-lowest": "#ffffff",
+              "secondary-container": "#d3e4fe",
+              "tertiary-fixed": "#e6cafa",
               "primary-container": "#3e76fe",
+              "surface-tint": "#0053dc",
+              surface: "#f7f9fb",
+              "on-tertiary-fixed": "#422d53",
+              error: "#a83836",
+              outline: "#747c80",
+              "surface-bright": "#f7f9fb",
+              "primary-fixed": "#3e76fe",
+              "on-secondary-fixed": "#314055",
+              "on-secondary": "#f7f9ff",
+              "on-primary-fixed-variant": "#f9f7ff",
+              "error-container": "#fa746f",
+              "secondary-fixed-dim": "#c5d6f0",
+              background: "#f7f9fb",
+              "surface-variant": "#dce4e8",
+              "secondary-fixed": "#d3e4fe",
+              "primary-dim": "#0049c2",
+              "on-background": "#2c3437",
+              "inverse-surface": "#0b0f10",
+              "inverse-primary": "#618bff",
+              secondary: "#506076",
+              "secondary-dim": "#44546a",
+              "on-tertiary-fixed-variant": "#604a71",
+              "tertiary-fixed-dim": "#d8bceb",
+              "on-surface": "#2c3437",
+              "outline-variant": "#acb3b7",
+              "inverse-on-surface": "#9a9d9f",
+              "on-primary-container": "#000000",
+              "surface-container": "#eaeff2",
+              "on-secondary-container": "#435368",
+              "surface-container-low": "#f0f4f7",
+              "primary-fixed-dim": "#2d68f0",
+              "on-secondary-fixed-variant": "#4d5d73",
+              "tertiary-dim": "#604a72",
+              "on-primary": "#faf8ff",
+              "on-tertiary-container": "#564067",
+              "on-primary-fixed": "#ffffff",
+              primary: "#0053dc",
+              tertiary: "#6d567f",
+              "on-surface-variant": "#596064",
+              "surface-dim": "#d4dbdf",
+              "on-tertiary": "#fff6fe",
             },
             borderRadius: {
               DEFAULT: "0.125rem",
@@ -79,9 +83,9 @@
               full: "0.75rem",
             },
             fontFamily: {
-              headline: ["Manrope"],
-              body: ["Inter"],
-              label: ["Inter"],
+              headline: ["Manrope", "sans-serif"],
+              body: ["Inter", "sans-serif"],
+              label: ["Inter", "sans-serif"],
             },
           },
         },
@@ -93,543 +97,345 @@
         background-color: #f7f9fb;
         color: #2c3437;
       }
-      .material-symbols-outlined {
-        font-variation-settings:
-          "FILL" 0,
-          "wght" 400,
-          "GRAD" 0,
-          "opsz" 24;
-      }
+      h1,
+      h2,
+      h3,
+      h4,
+      h5,
+      h6,
       .font-headline {
         font-family: "Manrope", sans-serif;
+        letter-spacing: -0.02em;
+      }
+      .glass-panel {
+        background: rgba(247, 249, 251, 0.8);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+      }
+      .ambient-shadow {
+        box-shadow: 0 8px 32px rgba(44, 52, 55, 0.06);
+      }
+      .gradient-text {
+        background: linear-gradient(135deg, #0053dc, #3e76fe);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
       }
     </style>
   </head>
-  <body class="bg-background text-on-background">
-    <!-- TopNavBar (Shared Component JSON Mapping) -->
+  <body
+    class="bg-background text-on-background min-h-screen flex flex-col md:flex-row"
+  >
+    <!-- TopNavBar (Web & Mobile, hidden on md if SideNav is present, but using as top bar per instruction if needed. Actually, instructed to use SideNav for Web. Let's use SideNavBar for md:flex and TopNavBar for md:hidden) -->
+    <!-- Mobile Top Navigation -->
     <nav
-      class="fixed top-0 z-40 w-full h-16 bg-[#f7f9fb]/80 backdrop-blur-lg flex justify-between items-center px-8 shadow-[0_8px_32px_rgba(44,52,55,0.06)]"
+      class="md:hidden glass-panel docked full-width top-0 sticky z-40 flex justify-between items-center w-full px-8 py-3 mx-auto shadow-[0_8px_32px_rgba(44,52,55,0.06)] no-border tonal-shift-bg bg-white/80 dark:bg-slate-900/80 backdrop-blur-md"
     >
-      <div class="flex items-center gap-8">
-        <span class="text-xl font-bold font-headline text-slate-900"
-          >InternHub</span
-        >
-        <div class="hidden md:flex gap-6">
-          <a
-            class="text-slate-500 hover:text-slate-900 transition-colors font-headline tracking-tight"
-            href="#"
-            >Programs</a
-          >
-          <a
-            class="text-slate-500 hover:text-slate-900 transition-colors font-headline tracking-tight"
-            href="#"
-            >Resources</a
-          >
-          <a
-            class="text-slate-500 hover:text-slate-900 transition-colors font-headline tracking-tight"
-            href="#"
-            >Help</a
-          >
-        </div>
+      <div
+        class="text-xl font-extrabold tracking-tight text-slate-900 dark:text-white font-headline"
+      >
+        Architect Portal
       </div>
-      <div class="flex items-center gap-4">
-        <button
-          class="p-2 hover:bg-slate-100/50 rounded-full transition-colors"
+      <div class="flex items-center space-x-4 text-blue-600 dark:text-blue-400">
+        <span
+          class="material-symbols-outlined cursor-pointer hover:text-blue-700 dark:hover:text-blue-300 transition-colors scale-95 active:scale-90 duration-200"
+          >notifications</span
         >
-          <span
-            class="material-symbols-outlined text-on-surface-variant"
-            data-icon="notifications"
-            >notifications</span
-          >
-        </button>
-        <button
-          class="p-2 hover:bg-slate-100/50 rounded-full transition-colors"
+        <span
+          class="material-symbols-outlined cursor-pointer hover:text-blue-700 dark:hover:text-blue-300 transition-colors scale-95 active:scale-90 duration-200"
+          >help_outline</span
         >
-          <span
-            class="material-symbols-outlined text-on-surface-variant"
-            data-icon="settings"
-            >settings</span
-          >
-        </button>
-        <div class="w-8 h-8 rounded-full overflow-hidden">
-          <img
-            alt="Intern Profile Avatar"
-            class="w-full h-full object-cover"
-            data-alt="professional headshot of a friendly young woman with a warm smile, soft natural lighting, office background in soft focus"
-            src="https://lh3.googleusercontent.com/aida-public/AB6AXuA4mlPKyGyVHjUr6c1ILclXYaJ0hmKz3EmBdgpRE0IjMjs80I3yx5CW82fLKeqlanKYG-4HdzI-ub9PqMy6xmn4c7s_B3ihUFbSGP6IQ65d-eqJ0poPULMjFbk1acA5r8T42MCT9fIKa2G8i9pGRKwx_7Y1wvkdGUs_DEogKaqSbcTpoI0ccGy4k27cilJ5dLuP8chtH1QzBk6fPhKmhAE4_edhXpOuei2VdWW7AKeNLi4DYJVb3aD2hoboVm-mN8tDkmZuHP6o4vfQ"
-          />
-        </div>
+        <img
+          alt="User profile photo"
+          class="w-8 h-8 rounded-full ml-2"
+          data-alt="Small circular user profile picture placeholder with gray background"
+          src="https://lh3.googleusercontent.com/aida-public/AB6AXuC2ursSRIxoOm7petVp8EOqpFiWBYTKWLxJwCEnuartaYPlOktm5hPZfaRLq_fOx7AO5QBl1fddJJ7bG5Wr4sd_dyqDE6xIgyHK3CyCJwhxq6rHf6_83TUy-NV5f3Xb1QdwuLFH35MB6n2B1kokmqtV8JaYivhC8nB1kSnugEIYT7c2nrr7ns3X5DUGY9EhMpn59vDI0u6W7btVKspONUyX7ejnikePJ1htlvHbPOQOII6r4TVnlZqsvJt3jtgkbV0c5VmMxW7jE4s"
+        />
       </div>
     </nav>
-    <!-- SideNavBar (Shared Component JSON Mapping) -->
+    <!-- SideNavBar (Web) -->
     <aside
-      class="h-screen w-64 fixed left-0 top-0 bg-[#f0f4f7] flex flex-col p-6 gap-y-8 z-30 pt-20"
+      class="hidden md:flex bg-slate-50 dark:bg-slate-950 docked left-0 h-screen w-64 bg-surface-container-low tonal-contrast flat no-shadows fixed left-0 top-0 flex flex-col h-full p-6 space-y-8 overflow-y-auto z-50"
     >
-      <div class="flex items-center gap-3">
+      <div class="flex items-center space-x-3">
         <div
-          class="w-10 h-10 bg-primary rounded-lg flex items-center justify-center"
+          class="w-10 h-10 rounded-lg bg-primary flex items-center justify-center text-on-primary font-headline font-bold"
         >
-          <span
-            class="material-symbols-outlined text-white"
-            data-icon="architecture"
-            data-weight="fill"
-            style="font-variation-settings: &quot;FILL&quot; 1"
-            >architecture</span
-          >
+          IM
         </div>
         <div>
-          <p class="font-headline font-extrabold text-blue-700 leading-tight">
-            Architect Academy
-          </p>
-          <p
-            class="text-[10px] text-on-surface-variant uppercase tracking-wider font-semibold"
+          <h1
+            class="text-lg font-bold text-slate-900 dark:text-white font-headline leading-tight"
           >
-            Spring 2024 Cohort
+            Internship Manager
+          </h1>
+          <p class="text-xs text-on-surface-variant font-label">
+            Institutional Authority
           </p>
         </div>
       </div>
-      <nav class="flex flex-col gap-2">
+      <nav class="flex-1 space-y-2 mt-8">
         <a
-          class="text-blue-600 font-bold flex items-center gap-3 px-4 py-3 bg-white rounded-xl shadow-sm transition-transform"
+          class="flex items-center space-x-3 px-4 py-3 text-blue-700 dark:text-blue-300 font-semibold bg-blue-50 dark:bg-blue-900/20 rounded-lg font-label text-sm hover:translate-x-1 transition-all duration-300"
           href="#"
         >
-          <span class="material-symbols-outlined" data-icon="dashboard"
-            >dashboard</span
+          <span
+            class="material-symbols-outlined"
+            style="font-variation-settings: &quot;FILL&quot; 1"
+            >grid_view</span
           >
           <span>Dashboard</span>
         </a>
         <a
-          class="text-slate-500 flex items-center gap-3 px-4 py-3 hover:translate-x-1 transition-transform"
-          href="#"
+          class="flex items-center space-x-3 px-4 py-3 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/50 rounded-lg font-label text-sm hover:translate-x-1 transition-all duration-300"
+          href="manager-attendance.html"
         >
-          <span class="material-symbols-outlined" data-icon="assignment"
-            >assignment</span
-          >
-          <span>Assignments</span>
+          <span class="material-symbols-outlined">event_available</span>
+          <span>Attendance</span>
         </a>
         <a
-          class="text-slate-500 flex items-center gap-3 px-4 py-3 hover:translate-x-1 transition-transform"
-          href="#"
+          class="flex items-center space-x-3 px-4 py-3 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/50 rounded-lg font-label text-sm hover:translate-x-1 transition-all duration-300"
+          href="manager-loge.html"
         >
-          <span class="material-symbols-outlined" data-icon="chat_bubble"
-            >chat_bubble</span
-          >
-          <span>Feedback</span>
-        </a>
-        <a
-          class="text-slate-500 flex items-center gap-3 px-4 py-3 hover:translate-x-1 transition-transform"
-          href="#"
-        >
-          <span class="material-symbols-outlined" data-icon="description"
-            >description</span
-          >
-          <span>Documents</span>
-        </a>
-        <a
-          class="text-slate-500 flex items-center gap-3 px-4 py-3 hover:translate-x-1 transition-transform"
-          href="#"
-        >
-          <span class="material-symbols-outlined" data-icon="group">group</span>
-          <span>Mentors</span>
+          <span class="material-symbols-outlined">history_edu</span>
+          <span>Logs</span>
         </a>
       </nav>
-      <div class="mt-auto">
-        <button
-          class="w-full py-3 bg-gradient-to-br from-primary to-primary-container text-white rounded-xl font-semibold shadow-lg shadow-primary/20 flex items-center justify-center gap-2"
-        >
-          <span class="material-symbols-outlined text-sm" data-icon="add_task"
-            >add_task</span
-          >
-          Submit Weekly Report
-        </button>
-      </div>
     </aside>
-    <!-- Main Content Canvas -->
-    <main class="pl-64 pt-16 min-h-screen bg-background">
-      <div class="p-8 max-w-7xl mx-auto grid grid-cols-12 gap-8">
-        <!-- Left Column: Main Dashboard Data -->
-        <div class="col-span-12 lg:col-span-8 space-y-8">
-          <!-- Welcome Section -->
-          <div>
-            <h1
-              class="text-3xl font-headline font-extrabold text-on-surface tracking-tight"
-            >
-              Good morning, Sarah
-            </h1>
-            <p class="text-on-surface-variant font-body">
-              Ready to design some amazing spaces today?
-            </p>
-          </div>
-          <!-- Bento Grid Layout -->
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <!-- Clock-in Timer (Highlight Card) -->
-            <div
-              class="md:col-span-2 bg-surface-container-lowest p-8 rounded-xl shadow-[0_8px_32px_rgba(44,52,55,0.06)] flex items-center justify-between"
-            >
-              <div class="flex items-center gap-6">
-                <div
-                  class="w-16 h-16 rounded-full border-[6px] border-primary/10 border-t-primary flex items-center justify-center"
-                >
-                  <span
-                    class="material-symbols-outlined text-primary text-3xl"
-                    data-icon="schedule"
-                    >schedule</span
-                  >
-                </div>
-                <div>
-                  <p
-                    class="text-on-surface-variant text-sm font-semibold uppercase tracking-wider"
-                  >
-                    Session Time
-                  </p>
-                  <p class="text-4xl font-headline font-bold text-on-surface">
-                    04:32:18
-                  </p>
-                </div>
-              </div>
-              <button
-                class="px-8 py-3 bg-gradient-to-br from-primary to-primary-container text-white rounded-xl font-bold text-lg hover:shadow-xl transition-all"
-              >
-                Clock Out
-              </button>
-            </div>
-            <!-- Program Progress -->
-            <div
-              class="bg-surface-container-lowest p-8 rounded-xl shadow-[0_8px_32px_rgba(44,52,55,0.06)] relative overflow-hidden"
-            >
-              <div class="absolute left-0 top-0 bottom-0 w-1 bg-primary"></div>
-              <p
-                class="text-on-surface-variant text-sm font-semibold uppercase tracking-wider mb-4"
-              >
-                Internship Completion
-              </p>
-              <div class="flex items-end gap-2 mb-2">
-                <span
-                  class="text-5xl font-headline font-extrabold text-on-surface"
-                  >65</span
-                >
-                <span class="text-xl font-headline font-bold text-primary mb-1"
-                  >%</span
-                >
-              </div>
-              <p class="text-on-surface-variant text-sm">
-                24 days remaining in Spring Cohort
-              </p>
-              <div class="mt-6 w-full h-2 bg-surface-container rounded-full">
-                <div class="h-full w-[65%] bg-primary rounded-full"></div>
-              </div>
-            </div>
-            <!-- Attendance Tracking -->
-            <div
-              class="bg-surface-container-lowest p-8 rounded-xl shadow-[0_8px_32px_rgba(44,52,55,0.06)]"
-            >
-              <p
-                class="text-on-surface-variant text-sm font-semibold uppercase tracking-wider mb-4"
-              >
-                Weekly Attendance
-              </p>
-              <div class="flex justify-between items-center gap-2">
-                <div class="flex flex-col items-center gap-2">
-                  <span
-                    class="w-10 h-10 rounded-full bg-secondary-container text-on-secondary-container flex items-center justify-center font-bold"
-                    >M</span
-                  >
-                  <span
-                    class="material-symbols-outlined text-primary"
-                    data-icon="check_circle"
-                    data-weight="fill"
-                    style="font-variation-settings: &quot;FILL&quot; 1"
-                    >check_circle</span
-                  >
-                </div>
-                <div class="flex flex-col items-center gap-2">
-                  <span
-                    class="w-10 h-10 rounded-full bg-secondary-container text-on-secondary-container flex items-center justify-center font-bold"
-                    >T</span
-                  >
-                  <span
-                    class="material-symbols-outlined text-primary"
-                    data-icon="check_circle"
-                    data-weight="fill"
-                    style="font-variation-settings: &quot;FILL&quot; 1"
-                    >check_circle</span
-                  >
-                </div>
-                <div class="flex flex-col items-center gap-2">
-                  <span
-                    class="w-10 h-10 rounded-full bg-primary text-white flex items-center justify-center font-bold"
-                    >W</span
-                  >
-                  <span
-                    class="material-symbols-outlined text-primary"
-                    data-icon="pending"
-                    data-weight="fill"
-                    style="font-variation-settings: &quot;FILL&quot; 1"
-                    >pending</span
-                  >
-                </div>
-                <div class="flex flex-col items-center gap-2">
-                  <span
-                    class="w-10 h-10 rounded-full bg-surface-container text-on-surface-variant flex items-center justify-center font-bold"
-                    >T</span
-                  >
-                  <span class="w-1.5 h-1.5 rounded-full bg-surface-dim"></span>
-                </div>
-                <div class="flex flex-col items-center gap-2">
-                  <span
-                    class="w-10 h-10 rounded-full bg-surface-container text-on-surface-variant flex items-center justify-center font-bold"
-                    >F</span
-                  >
-                  <span class="w-1.5 h-1.5 rounded-full bg-surface-dim"></span>
-                </div>
-              </div>
-            </div>
-          </div>
-          <!-- Recent Tasks (Asymmetric Detail) -->
-          <div class="bg-surface-container-low p-8 rounded-2xl">
-            <div class="flex justify-between items-center mb-6">
-              <h3 class="text-xl font-headline font-bold text-on-surface">
-                Upcoming Deadlines
+    <!-- Main Content Area -->
+    <main class="flex-1 md:ml-64 p-6 md:p-12 max-w-7xl mx-auto w-full">
+      <!-- Header Section -->
+      <header
+        class="mb-12 flex flex-col md:flex-row md:items-end justify-between gap-4"
+      >
+        <div>
+          <p
+            class="text-on-surface-variant font-label text-sm mb-1 uppercase tracking-wider"
+          >
+            Overview
+          </p>
+          <h2 class="text-4xl font-headline font-extrabold text-on-surface">
+            Good morning, Admin
+          </h2>
+        </div>
+        <div
+          class="flex items-center space-x-4 bg-surface-container-lowest px-4 py-2 rounded-xl ambient-shadow"
+        >
+          <span class="text-sm font-label text-on-surface-variant"
+            >Current Term:</span
+          >
+          <span class="text-sm font-label font-semibold text-primary"
+            >Fall 2024</span
+          >
+        </div>
+      </header>
+      <!-- Bento Grid Layout -->
+      <div class="grid grid-cols-1 md:grid-cols-12 gap-8">
+        <!-- Hero Metric: Progress Glass (Col Span 8) -->
+        <div
+          class="md:col-span-8 bg-surface-container-lowest rounded-xl p-8 ambient-shadow relative overflow-hidden flex flex-col justify-between"
+        >
+          <div
+            class="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-primary to-primary-container"
+          ></div>
+          <div class="flex justify-between items-start mb-8">
+            <div>
+              <h3 class="font-headline text-xl font-bold text-on-surface mb-1">
+                Total Program Hours
               </h3>
-              <a class="text-primary font-semibold text-sm" href="#"
-                >View Calendar</a
-              >
+              <p class="text-sm text-on-surface-variant font-label">
+                Across 3 active interns this month
+              </p>
             </div>
-            <div class="space-y-4">
-              <div
-                class="bg-surface-container-lowest p-6 rounded-xl flex items-center gap-4"
-              >
-                <div class="p-3 bg-tertiary-container rounded-lg">
-                  <span
-                    class="material-symbols-outlined text-on-tertiary-container"
-                    data-icon="palette"
-                    >palette</span
-                  >
-                </div>
-                <div class="flex-1">
-                  <p class="font-bold text-on-surface">
-                    Moodboard Finalization
-                  </p>
-                  <p class="text-sm text-on-surface-variant">
-                    Residential Project B-12
-                  </p>
-                </div>
-                <div
-                  class="text-right px-4 py-2 bg-error-container/10 rounded-full"
-                >
-                  <p class="text-xs font-bold text-error uppercase">Today</p>
-                </div>
-              </div>
-              <div
-                class="bg-surface-container-lowest p-6 rounded-xl flex items-center gap-4"
-              >
-                <div class="p-3 bg-secondary-container rounded-lg">
-                  <span
-                    class="material-symbols-outlined text-on-secondary-container"
-                    data-icon="architecture"
-                    >architecture</span
-                  >
-                </div>
-                <div class="flex-1">
-                  <p class="font-bold text-on-surface">Floor Plan Revision</p>
-                  <p class="text-sm text-on-surface-variant">
-                    Downtown Loft Series
-                  </p>
-                </div>
-                <div
-                  class="text-right px-4 py-2 bg-surface-container rounded-full"
-                >
-                  <p
-                    class="text-xs font-bold text-on-surface-variant uppercase"
-                  >
-                    In 2 Days
-                  </p>
-                </div>
-              </div>
-            </div>
+            <span
+              class="material-symbols-outlined text-primary bg-primary-container/10 p-2 rounded-full"
+              >schedule</span
+            >
+          </div>
+          <div class="flex items-end space-x-4">
+            <span
+              class="font-headline text-6xl font-extrabold gradient-text tracking-tighter"
+              id="totalProgramHours"
+              >0</span
+            >
+            <span class="text-on-surface-variant font-label text-lg mb-2"
+              >hrs logged</span
+            >
           </div>
         </div>
-        <!-- Right Column: Personal Profile Card (Request Specific) -->
-        <div class="col-span-12 lg:col-span-4">
-          <div class="sticky top-24">
-            <!-- Profile ID Card -->
-            <div
-              class="bg-surface-container-lowest rounded-[1.5rem] shadow-[0_20px_50px_rgba(0,83,220,0.08)] overflow-hidden"
+        <!-- Real-time Status (Col Span 4) -->
+        <div
+          class="md:col-span-4 bg-surface-container-low rounded-xl p-6 flex flex-col"
+        >
+          <h3
+            class="font-headline text-lg font-bold text-on-surface mb-6 flex items-center justify-between"
+          >
+            <span>Live Roster</span>
+            <span class="flex h-3 w-3 relative">
+              <span
+                class="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"
+              ></span>
+              <span
+                class="relative inline-flex rounded-full h-3 w-3 bg-primary"
+              ></span>
+            </span>
+          </h3>
+          <div class="space-y-4 flex-1" id="rosterContainer">
+            <!-- Intern entries will be populated by JavaScript -->
+          </div>
+        </div>
+        <!-- Attendance Summary Table (Col Span 12) -->
+        <div
+          class="md:col-span-12 bg-surface-container-lowest rounded-xl pt-8 pb-4 ambient-shadow overflow-hidden"
+        >
+          <div class="px-8 mb-6 flex justify-between items-end">
+            <h3 class="font-headline text-xl font-bold text-on-surface">
+              Monthly Overview
+            </h3>
+            <button
+              class="text-sm font-label font-medium text-primary hover:text-primary-dim transition-colors"
             >
-              <!-- Top Header Accent -->
-              <div
-                class="h-24 bg-gradient-to-r from-primary to-primary-container relative"
+              Export Report
+            </button>
+          </div>
+          <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse">
+              <thead>
+                <tr
+                  class="bg-surface text-on-surface-variant font-label text-xs uppercase tracking-wider"
+                >
+                  <th class="py-4 px-8 font-medium">Intern</th>
+                  <th class="py-4 px-8 font-medium">Role</th>
+                  <th class="py-4 px-8 font-medium">Total Hours</th>
+                  <th class="py-4 px-8 font-medium">Days Present</th>
+                  <th class="py-4 px-8 font-medium">Status</th>
+                </tr>
+              </thead>
+              <tbody
+                class="text-sm font-label text-on-surface divide-y divide-surface-container-low"
+                id="overviewTableBody"
               >
-                <div class="absolute -bottom-12 left-1/2 -translate-x-1/2">
-                  <div
-                    class="w-24 h-24 rounded-2xl border-4 border-surface-container-lowest overflow-hidden shadow-lg"
-                  >
-                    <img
-                      alt="Sarah Jenkins"
-                      class="w-full h-full object-cover"
-                      data-alt="close-up portrait of a young woman with a friendly expression, professional designer aesthetic, studio lighting, soft cream background"
-                      src="https://lh3.googleusercontent.com/aida-public/AB6AXuCEMxtU2cxVfvYVPD2f4NBIEBxPdUVwyekhFICWx9RtIfS4CW9Qo87g5BT5nOcnUEOKIvMLJfFU9ByEEJZqzZnlnia-15rJXQQzNRHfaV68gDoWFp57x9X6tSY5BjoNz_ldmvDnXR7MdDjp2k3N5WDKIRNSqavzy9Al_7SJvnsK6oraLpj6t2ka8Clu8ono3PcJIGW-EWlIjEftxZdDjZoi0ishMlm6JDfwrkyKBYsiI3E92UqxTZONaFYvXe1_bvfGaqinsv2Yef4b"
-                    />
-                  </div>
-                </div>
-              </div>
-              <!-- Content Body -->
-              <div class="pt-16 pb-8 px-8 text-center">
-                <h2
-                  class="text-2xl font-headline font-extrabold text-on-surface"
-                >
-                  Sarah Jenkins
-                </h2>
-                <p
-                  class="text-primary font-bold text-sm uppercase tracking-[0.1em] mt-1"
-                >
-                  UX Design Intern
-                </p>
-                <div class="mt-8 space-y-4 text-left">
-                  <div
-                    class="flex items-center gap-4 p-3 bg-surface-container-low rounded-xl"
-                  >
-                    <div
-                      class="w-10 h-10 bg-white rounded-lg flex items-center justify-center text-primary shadow-sm"
-                    >
-                      <span
-                        class="material-symbols-outlined text-[20px]"
-                        data-icon="mail"
-                        >mail</span
-                      >
-                    </div>
-                    <div>
-                      <p
-                        class="text-[10px] text-on-surface-variant uppercase font-bold tracking-tight"
-                      >
-                        Email
-                      </p>
-                      <p class="text-sm font-semibold text-on-surface">
-                        s.jenkins@academy.io
-                      </p>
-                    </div>
-                  </div>
-                  <div
-                    class="flex items-center gap-4 p-3 bg-surface-container-low rounded-xl"
-                  >
-                    <div
-                      class="w-10 h-10 bg-white rounded-lg flex items-center justify-center text-primary shadow-sm"
-                    >
-                      <span
-                        class="material-symbols-outlined text-[20px]"
-                        data-icon="phone"
-                        >phone</span
-                      >
-                    </div>
-                    <div>
-                      <p
-                        class="text-[10px] text-on-surface-variant uppercase font-bold tracking-tight"
-                      >
-                        Phone
-                      </p>
-                      <p class="text-sm font-semibold text-on-surface">
-                        +1 (555) 012-3456
-                      </p>
-                    </div>
-                  </div>
-                  <div
-                    class="flex items-center gap-4 p-3 bg-surface-container-low rounded-xl"
-                  >
-                    <div
-                      class="w-10 h-10 bg-white rounded-lg flex items-center justify-center text-primary shadow-sm"
-                    >
-                      <span
-                        class="material-symbols-outlined text-[20px]"
-                        data-icon="location_on"
-                        >location_on</span
-                      >
-                    </div>
-                    <div>
-                      <p
-                        class="text-[10px] text-on-surface-variant uppercase font-bold tracking-tight"
-                      >
-                        Location
-                      </p>
-                      <p class="text-sm font-semibold text-on-surface">
-                        New York, NY
-                      </p>
-                    </div>
-                  </div>
-                </div>
-                <div
-                  class="mt-8 pt-8 border-t border-surface-container flex justify-between items-center px-4"
-                >
-                  <div>
-                    <p class="text-2xl font-headline font-bold text-on-surface">
-                      12
-                    </p>
-                    <p
-                      class="text-[10px] text-on-surface-variant uppercase font-bold"
-                    >
-                      Tasks Done
-                    </p>
-                  </div>
-                  <div class="h-8 w-[1px] bg-surface-container"></div>
-                  <div>
-                    <p class="text-2xl font-headline font-bold text-on-surface">
-                      4.9
-                    </p>
-                    <p
-                      class="text-[10px] text-on-surface-variant uppercase font-bold"
-                    >
-                      Rating
-                    </p>
-                  </div>
-                  <div class="h-8 w-[1px] bg-surface-container"></div>
-                  <div>
-                    <p class="text-2xl font-headline font-bold text-on-surface">
-                      86%
-                    </p>
-                    <p
-                      class="text-[10px] text-on-surface-variant uppercase font-bold"
-                    >
-                      Progress
-                    </p>
-                  </div>
-                </div>
-                <button
-                  class="w-full mt-8 py-3 rounded-xl border-2 border-primary/20 text-primary font-bold text-sm hover:bg-primary hover:text-white transition-all flex items-center justify-center gap-2"
-                >
-                  <span
-                    class="material-symbols-outlined text-sm"
-                    data-icon="edit"
-                    >edit</span
-                  >
-                  Edit Public Profile
-                </button>
-              </div>
-            </div>
-            <!-- Mentor Insight Card (Floating Context) -->
-            <div
-              class="mt-6 bg-tertiary-container/30 p-6 rounded-2xl flex items-start gap-4"
-            >
-              <div class="p-2 bg-white rounded-lg shadow-sm">
-                <span
-                  class="material-symbols-outlined text-on-tertiary-container"
-                  data-icon="lightbulb"
-                  >lightbulb</span
-                >
-              </div>
-              <div>
-                <p class="text-on-tertiary-container font-bold text-sm">
-                  Mentor Tip
-                </p>
-                <p
-                  class="text-on-tertiary-container/80 text-xs mt-1 leading-relaxed"
-                >
-                  Focus on the spatial flow of your Floor Plan B tonight. Great
-                  progress on the material selection!
-                </p>
-              </div>
-            </div>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <!-- Recent Logs List (Col Span 12) -->
+        <div class="md:col-span-12 mt-4">
+          <h3 class="font-headline text-xl font-bold text-on-surface mb-6 px-2">
+            Recent Daily Logs
+          </h3>
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="recentLogsContainer">
+            <!-- Log cards will be populated by JavaScript -->
           </div>
         </div>
       </div>
     </main>
+    <script>
+      // Fetch and populate manager dashboard with real data
+      async function loadDashboard() {
+        try {
+          const response = await fetch('/api/manager/dashboard');
+          if (!response.ok) {
+            window.location.href = 'index.html';
+            return;
+          }
+          const data = await response.json();
+          
+          // Update total program hours
+          document.getElementById('totalProgramHours').textContent = Math.round(data.totalProgramHours);
+          
+          // Update roster
+          const rosterContainer = document.getElementById('rosterContainer');
+          rosterContainer.innerHTML = data.roster.map(intern => `
+            <div class="flex items-center justify-between bg-surface-container-lowest p-3 rounded-xl ambient-shadow">
+              <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center text-xs font-bold text-primary">
+                  ${intern.full_name.split(' ').map(n => n[0]).join('').substring(0, 2)}
+                </div>
+                <div>
+                  <p class="font-label text-sm font-semibold text-on-surface">${intern.full_name}</p>
+                  <p class="font-label text-xs text-on-surface-variant">${intern.username}</p>
+                </div>
+              </div>
+              <span class="px-3 py-1 rounded-full text-xs font-label font-medium ${
+                intern.status === 'online' 
+                  ? 'bg-tertiary-container text-on-tertiary-container' 
+                  : 'bg-secondary-fixed text-on-secondary-container'
+              }">${intern.status === 'online' ? 'Clocked In' : 'Offline'}</span>
+            </div>
+          `).join('');
+          
+          // Update overview table
+          const overviewBody = document.getElementById('overviewTableBody');
+          overviewBody.innerHTML = data.overview.map((intern, index) => `
+            <tr class="hover:bg-surface-bright transition-colors group">
+              <td class="py-5 px-8 font-medium flex items-center space-x-3">
+                <div class="w-8 h-8 rounded-full bg-secondary-container text-on-secondary-container flex items-center justify-center text-xs font-bold">
+                  ${intern.full_name.split(' ').map(n => n[0]).join('').substring(0, 2)}
+                </div>
+                <span>${intern.full_name}</span>
+              </td>
+              <td class="py-5 px-8 text-on-surface-variant">${intern.role}</td>
+              <td class="py-5 px-8 font-semibold">${parseFloat(intern.total_hours).toFixed(1)}</td>
+              <td class="py-5 px-8">${intern.days_present} days</td>
+              <td class="py-5 px-8">
+                <span class="px-3 py-1 rounded-full text-xs font-medium ${
+                  parseFloat(intern.total_hours) > 100 
+                    ? 'bg-secondary-fixed text-on-secondary-container' 
+                    : 'bg-tertiary-container text-on-tertiary-container'
+                }">
+                  ${parseFloat(intern.total_hours) > 100 ? 'On Track' : 'Needs Review'}
+                </span>
+              </td>
+            </tr>
+          `).join('');
+          
+          // Update recent logs
+          const logsContainer = document.getElementById('recentLogsContainer');
+          logsContainer.innerHTML = data.recentLogs.map(log => `
+            <div class="bg-surface-container-lowest rounded-xl p-6 ambient-shadow cursor-pointer hover:-translate-y-1 transition-transform duration-300">
+              <div class="flex justify-between items-start mb-4">
+                <div class="flex items-center space-x-2">
+                  <span class="material-symbols-outlined text-outline-variant text-sm">calendar_today</span>
+                  <span class="text-xs font-label text-on-surface-variant">${new Date(log.date).toLocaleDateString()}</span>
+                </div>
+                <span class="px-2 py-1 rounded-full text-[10px] font-label font-bold uppercase tracking-wide ${
+                  log.status === 'pending' 
+                    ? 'bg-tertiary-container text-on-tertiary-container' 
+                    : 'bg-secondary-fixed text-on-secondary-container'
+                }">
+                  ${log.status}
+                </span>
+              </div>
+              <h4 class="font-headline font-semibold text-on-surface mb-2">${log.task_category}</h4>
+              <p class="text-sm font-label text-on-surface-variant line-clamp-2 mb-4">${log.description}</p>
+              <div class="flex items-center justify-between pt-4 border-t border-outline-variant/15">
+                <span class="text-sm font-label font-medium text-on-surface">${log.full_name}</span>
+                <span class="text-sm font-label font-bold text-primary">${parseFloat(log.hours_spent).toFixed(1)} hrs</span>
+              </div>
+            </div>
+          `).join('');
+        } catch (error) {
+          console.error('Error loading dashboard:', error);
+        }
+      }
+
+      // Check session and load dashboard
+      async function checkSession() {
+        try {
+          const response = await fetch('/api/session');
+          const data = await response.json();
+          if (data.user && data.user.role === 'admin') {
+            loadDashboard();
+          } else {
+            window.location.href = 'index.html';
+          }
+        } catch (error) {
+          window.location.href = 'index.html';
+        }
+      }
+
+      // Load on page load
+      checkSession();
+    </script>
   </body>
 </html>
