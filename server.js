@@ -209,6 +209,56 @@ app.get('/api/manager/dashboard', requireAdmin, async (req, res) => {
   }
 });
 
+// --- Logs Management Routes ---
+
+// Get all logs for manager review
+app.get('/api/logs/all', requireAdmin, async (req, res) => {
+  try {
+    const [logs] = await db.execute(`
+      SELECT dl.*, u.full_name, u.username
+      FROM daily_logs dl
+      JOIN users u ON dl.user_id = u.id
+      ORDER BY dl.date DESC, dl.created_at DESC
+    `);
+    res.json({ logs });
+  } catch (error) {
+    console.error('Error fetching logs:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// Approve a log
+app.post('/api/logs/:id/approve', requireAdmin, async (req, res) => {
+  const logId = req.params.id;
+
+  try {
+    await db.execute(
+      'UPDATE daily_logs SET status = ? WHERE id = ?',
+      ['approved', logId]
+    );
+    res.json({ message: 'Log approved successfully' });
+  } catch (error) {
+    console.error('Error approving log:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// Reject a log
+app.post('/api/logs/:id/reject', requireAdmin, async (req, res) => {
+  const logId = req.params.id;
+
+  try {
+    await db.execute(
+      'UPDATE daily_logs SET status = ? WHERE id = ?',
+      ['rejected', logId]
+    );
+    res.json({ message: 'Log rejected successfully' });
+  } catch (error) {
+    console.error('Error rejecting log:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
 // 404 handler
 app.use((req, res) => {
   res.status(404).json({ error: 'Not found' });
