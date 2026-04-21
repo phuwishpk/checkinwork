@@ -384,6 +384,14 @@ app.post('/api/logs/:id/reject', requireAdmin, async (req, res) => {
   }
 });
 
+// Clean URL routes
+app.get('/dashboard',           (req, res) => res.sendFile(path.join(__dirname, 'public/intern-dashboard.html')));
+app.get('/daily-log',           (req, res) => res.sendFile(path.join(__dirname, 'public/daily-log.html')));
+app.get('/attendance',          (req, res) => res.sendFile(path.join(__dirname, 'public/attendance.html')));
+app.get('/manager',             (req, res) => res.sendFile(path.join(__dirname, 'public/manager-dashboard.html')));
+app.get('/manager/logs',        (req, res) => res.sendFile(path.join(__dirname, 'public/manager-loge.html')));
+app.get('/manager/attendance',  (req, res) => res.sendFile(path.join(__dirname, 'public/manager-attendance.html')));
+
 // Health check
 app.get('/health', async (req, res) => {
   try {
