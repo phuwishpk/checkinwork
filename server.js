@@ -1,5 +1,6 @@
 const express = require('express');
 const session = require('express-session');
+const MySQLStore = require('express-mysql-session')(session);
 const cors = require('cors');
 const path = require('path');
 const bcrypt = require('bcryptjs');
@@ -21,17 +22,33 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, 'public')));
 
+// Session store — MySQL so sessions survive across multiple Passenger workers
+const sessionStore = new MySQLStore({
+  host:     process.env.DB_HOST || 'localhost',
+  port:     parseInt(process.env.DB_PORT) || 3306,
+  user:     process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+  database: process.env.DB_NAME,
+  createDatabaseTable: true,
+  schema: {
+    tableName: 'sessions',
+    columnNames: { session_id: 'session_id', expires: 'expires', data: 'data' }
+  }
+});
+
 // Session configuration
 app.use(session({
   secret: (() => {
     if (!process.env.SESSION_SECRET) throw new Error('SESSION_SECRET environment variable is required');
     return process.env.SESSION_SECRET;
   })(),
+  store: sessionStore,
   resave: false,
   saveUninitialized: false,
   cookie: {
     secure: process.env.NODE_ENV === 'production',
     httpOnly: true,
+    sameSite: 'lax',
     maxAge: parseInt(process.env.SESSION_MAX_AGE) || 1000 * 60 * 60 * 24
   }
 }));
@@ -69,7 +86,13 @@ app.post('/api/login', async (req, res) => {
       return res.status(401).json({ error: 'Invalid username or password' });
     }
     req.session.user = { id: user.id, username: user.username, role: user.role, full_name: user.full_name };
-    res.json({ message: 'Login successful', user: req.session.user });
+    req.session.save((err) => {
+      if (err) {
+        console.error('Session save error:', err);
+        return res.status(500).json({ error: 'Internal server error' });
+      }
+      res.json({ message: 'Login successful', user: req.session.user });
+    });
   } catch (error) {
     console.error('Login error:', error);
     res.status(500).json({ error: 'Internal server error' });
