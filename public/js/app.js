@@ -222,104 +222,74 @@ document.addEventListener('DOMContentLoaded', async () => {
             const timeSpan = document.getElementById('clock-in-time');
             const otContainer = document.getElementById('ot-container');
             const otTimer = document.getElementById('ot-timer');
-            const dailyBarContainer = document.getElementById('daily-bar-container');
-            const dailyBar = document.getElementById('daily-progress-bar');
-            const dailyLabel = document.getElementById('daily-bar-label');
+
+            if (!btn || !timer) return;
 
             if (isClockedIn) {
-                btn.className = "relative z-10 w-32 h-32 rounded-full bg-gradient-to-br from-red-200 to-red-500 text-white flex flex-col items-center justify-center shadow-lg hover:opacity-90 transition-all transform hover:scale-105 active:scale-95 group-hover:-translate-y-1";
+                btn.className = "w-32 h-32 rounded-full bg-red-500 text-white flex flex-col items-center justify-center clock-btn-ring hover:scale-105 active:scale-95 transition-all shadow-xl shadow-red-200";
                 icon.textContent = "stop_circle";
                 text.textContent = "Clock Out";
-                info.classList.remove('hidden');
-                if (dailyBarContainer) dailyBarContainer.classList.remove('hidden');
+                info?.classList.remove('hidden');
                 
                 const hrs = clockInTime.getHours().toString().padStart(2, '0');
                 const mins = clockInTime.getMinutes().toString().padStart(2, '0');
-                timeSpan.textContent = `Clocked in at ${hrs}:${mins}`;
+                if (timeSpan) timeSpan.textContent = `Clocked in at ${hrs}:${mins}`;
 
                 if (timerInterval) clearInterval(timerInterval);
                 timerInterval = setInterval(() => {
                     const now = new Date();
                     const diffMs = now.getTime() - clockInTime.getTime();
                     
-                    // 17:00 limit for regular hours
                     const limit17 = new Date();
                     limit17.setHours(17, 0, 0, 0);
-                    const maxRegularMs = Math.max(0, limit17.getTime() - clockInTime.getTime());
-                    
-                    let regularMs = diffMs;
-                    let otMs = 0;
-                    
-                    if (now.getTime() > limit17.getTime()) {
-                        regularMs = maxRegularMs;
-                        otMs = now.getTime() - limit17.getTime();
-                    }
 
-                    // Avoid negative times if clock in is somehow after 17
-                    if (regularMs < 0) regularMs = 0;
+                    timer.textContent = formatMs(diffMs);
 
-                    const formatMs = (ms) => {
-                        const totalSecs = Math.floor(ms / 1000);
-                        const h = String(Math.floor(totalSecs / 3600)).padStart(2, '0');
-                        const m = String(Math.floor((totalSecs % 3600) / 60)).padStart(2, '0');
-                        const s = String(totalSecs % 60).padStart(2, '0');
-                        return `${h}:${m}:${s}`;
-                    };
-
-                    if (timer) timer.textContent = formatMs(regularMs);
-
-                    if (otMs > 0 && otContainer && otTimer) {
-                        otContainer.classList.remove('hidden');
-                        otContainer.classList.add('flex');
-                        otTimer.textContent = formatMs(otMs);
-                    } else if (otContainer) {
-                        otContainer.classList.add('hidden');
-                        otContainer.classList.remove('flex');
-                    }
-
-                    // Daily Time Bar (09:00 - 17:00)
-                    const start9 = new Date();
-                    start9.setHours(9, 0, 0, 0);
-                    const totalDailyMs = limit17.getTime() - start9.getTime();
-                    let passedDailyMs = now.getTime() - start9.getTime();
-                    if (passedDailyMs < 0) passedDailyMs = 0;
-                    if (passedDailyMs > totalDailyMs) passedDailyMs = totalDailyMs;
-                    
-                    const dailyPct = (passedDailyMs / totalDailyMs) * 100;
-                    if (dailyBar && dailyLabel) {
-                        dailyBar.style.width = `${dailyPct}%`;
-                        dailyLabel.textContent = `${dailyPct.toFixed(0)}%`;
+                    if (now > limit17) {
+                        otContainer?.classList.remove('hidden');
+                        const otMs = now.getTime() - Math.max(clockInTime.getTime(), limit17.getTime());
+                        if (otTimer) otTimer.textContent = `OT Active: ${formatMs(otMs)}`;
+                    } else {
+                        otContainer?.classList.add('hidden');
                     }
                 }, 1000);
             } else {
-                btn.className = "relative z-10 w-32 h-32 rounded-full bg-gradient-to-br from-primary to-primary-container text-on-primary flex flex-col items-center justify-center shadow-[0_12px_24px_rgba(0,83,220,0.25)] hover:shadow-[0_16px_32px_rgba(0,83,220,0.35)] transition-all transform hover:scale-105 active:scale-95 group-hover:-translate-y-1";
+                btn.className = "w-32 h-32 rounded-full bg-primary text-white flex flex-col items-center justify-center clock-btn-ring hover:scale-105 active:scale-95 transition-all shadow-xl shadow-primary/20";
                 icon.textContent = "play_circle";
                 text.textContent = "Clock In";
-                info.classList.add('hidden');
-                if (timer) timer.textContent = "00:00:00";
-                if (otContainer) {
-                    otContainer.classList.add('hidden');
-                    otContainer.classList.remove('flex');
-                }
-                if (dailyBarContainer) dailyBarContainer.classList.add('hidden');
+                info?.classList.add('hidden');
+                otContainer?.classList.add('hidden');
+                timer.textContent = "00:00:00";
                 if (timerInterval) clearInterval(timerInterval);
             }
         };
 
-        document.getElementById('clock-btn').addEventListener('click', async () => {
-            try {
-                if (isClockedIn) {
-                    await apiCall('/api/clock-out', 'POST');
-                    isClockedIn = false;
-                } else {
-                    await apiCall('/api/clock-in', 'POST');
-                    isClockedIn = true;
+        const formatMs = (ms) => {
+            if (ms < 0) ms = 0;
+            const s = Math.floor(ms / 1000);
+            const hrs = Math.floor(s / 3600).toString().padStart(2, '0');
+            const mins = Math.floor((s % 3600) / 60).toString().padStart(2, '0');
+            const secs = (s % 60).toString().padStart(2, '0');
+            return `${hrs}:${mins}:${secs}`;
+        };
+
+        const clockBtn = document.getElementById('clock-btn');
+        if (clockBtn) {
+            clockBtn.addEventListener('click', async () => {
+                try {
+                    if (isClockedIn) {
+                        await apiCall('/api/clock-out', 'POST');
+                        isClockedIn = false;
+                    } else {
+                        await apiCall('/api/clock-in', 'POST');
+                        isClockedIn = true;
+                    }
+                    loadInternData();
+                } catch (err) {
+                    alert(err.message);
                 }
-                loadInternData();
-            } catch (err) {
-                alert(err.message);
-            }
-        });
+            });
+        }
 
         loadInternData();
     }
@@ -612,7 +582,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         // --- Modal helpers ---
         const modal = document.getElementById('log-modal');
-        const openModal = (log = null) => {
+        let openModal = (log = null) => {
             const form = document.getElementById('log-form');
             const msgEl = document.getElementById('log-message');
             const editingId = document.getElementById('editing-log-id');
@@ -678,6 +648,10 @@ document.addEventListener('DOMContentLoaded', async () => {
             }
         });
 
+        let isDragging = false;
+        let dragStart = null;
+        let dragEnd = null;
+
         const loadCalendarData = async () => {
             try {
                 const data = await apiCall('/api/intern/calendar');
@@ -701,13 +675,11 @@ document.addEventListener('DOMContentLoaded', async () => {
 
             for (let i = 0; i < firstDay; i++) grid.innerHTML += `<div class="calendar-cell bg-surface-container-low opacity-50"></div>`;
 
-            // Sort logs to keep vertical positions consistent
             const sortedLogs = [...allLogs].sort((a,b) => a.id - b.id);
 
             for (let day = 1; day <= daysInMonth; day++) {
                 const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
                 
-                // Attendance
                 const att = allAttendance.find(a => a.date.startsWith(dateStr));
                 let attHtml = '';
                 if (att) {
@@ -717,7 +689,6 @@ document.addEventListener('DOMContentLoaded', async () => {
                     </div>`;
                 }
 
-                // Logs with spanning logic
                 let logsHtml = '';
                 sortedLogs.forEach(l => {
                     const start = l.date_start;
@@ -733,20 +704,76 @@ document.addEventListener('DOMContentLoaded', async () => {
                         else if (!isStart && isEnd) spanClass = 'span-end';
 
                         logsHtml += `
-                        <div class="log-bar ${spanClass}" style="background-color: ${l.color || '#3e76fe'}" onclick="editLog('${safeLog}')">
+                        <div class="log-bar ${spanClass}" style="background-color: ${l.color || '#3e76fe'}" onclick="event.stopPropagation(); editLog('${safeLog}')">
                             ${isStart ? `<span class="truncate">${l.task_category}: ${l.description}</span>` : ''}
                         </div>`;
                     }
                 });
 
-                grid.innerHTML += `
-                <div class="calendar-cell">
+                const cell = document.createElement('div');
+                cell.className = 'calendar-cell';
+                cell.dataset.date = dateStr;
+                cell.innerHTML = `
                     <span class="text-[11px] font-bold text-on-surface-variant/40 mb-1">${day}</span>
-                    <div class="flex-1 overflow-hidden">
+                    <div class="flex-1 overflow-hidden pointer-events-none">
                         ${attHtml}
                         ${logsHtml}
                     </div>
-                </div>`;
+                `;
+
+                // Drag Selection Events
+                cell.addEventListener('mousedown', () => {
+                    isDragging = true;
+                    dragStart = dateStr;
+                    dragEnd = dateStr;
+                    updateSelectionUI();
+                });
+
+                cell.addEventListener('mouseenter', () => {
+                    if (isDragging) {
+                        dragEnd = dateStr;
+                        updateSelectionUI();
+                    }
+                });
+
+                grid.appendChild(cell);
+            }
+        };
+
+        const updateSelectionUI = () => {
+            const cells = document.querySelectorAll('.calendar-cell[data-date]');
+            const start = dragStart < dragEnd ? dragStart : dragEnd;
+            const end = dragStart < dragEnd ? dragEnd : dragStart;
+
+            cells.forEach(cell => {
+                const date = cell.dataset.date;
+                if (date >= start && date <= end) {
+                    cell.classList.add('bg-primary/10', 'border-primary/30');
+                } else {
+                    cell.classList.remove('bg-primary/10', 'border-primary/30');
+                }
+            });
+        };
+
+        window.addEventListener('mouseup', () => {
+            if (isDragging) {
+                isDragging = false;
+                const start = dragStart < dragEnd ? dragStart : dragEnd;
+                const end = dragStart < dragEnd ? dragEnd : dragStart;
+                
+                openModal(null, start, end);
+                
+                // Clear UI highlight
+                document.querySelectorAll('.calendar-cell[data-date]').forEach(c => c.classList.remove('bg-primary/10', 'border-primary/30'));
+            }
+        });
+
+        const originalOpenModal = openModal;
+        openModal = (log = null, start = null, end = null) => {
+            originalOpenModal(log);
+            if (!log && start && end) {
+                document.getElementById('log-date-start').value = start;
+                document.getElementById('log-date-finish').value = end;
             }
         };
 

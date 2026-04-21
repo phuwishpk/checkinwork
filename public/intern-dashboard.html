@@ -12,70 +12,20 @@
     theme: {
         extend: {
         "colors": {
-                "on-error-container": "#6e0a12",
-                "surface-container-highest": "#dce4e8",
-                "surface-container-high": "#e3e9ed",
-                "error-dim": "#67040d",
-                "on-error": "#fff7f6",
-                "tertiary-container": "#e6cafa",
-                "surface-container-lowest": "#ffffff",
-                "secondary-container": "#d3e4fe",
-                "tertiary-fixed": "#e6cafa",
-                "primary-container": "#3e76fe",
-                "surface-tint": "#0053dc",
-                "surface": "#f7f9fb",
-                "on-tertiary-fixed": "#422d53",
-                "error": "#a83836",
-                "outline": "#747c80",
-                "surface-bright": "#f7f9fb",
-                "primary-fixed": "#3e76fe",
-                "on-secondary-fixed": "#314055",
-                "on-secondary": "#f7f9ff",
-                "on-primary-fixed-variant": "#f9f7ff",
-                "error-container": "#fa746f",
-                "secondary-fixed-dim": "#c5d6f0",
-                "background": "#f7f9fb",
-                "surface-variant": "#dce4e8",
-                "secondary-fixed": "#d3e4fe",
-                "primary-dim": "#0049c2",
-                "on-background": "#2c3437",
-                "inverse-surface": "#0b0f10",
-                "inverse-primary": "#618bff",
-                "secondary": "#506076",
-                "secondary-dim": "#44546a",
-                "on-tertiary-fixed-variant": "#604a71",
-                "tertiary-fixed-dim": "#d8bceb",
-                "on-surface": "#2c3437",
-                "outline-variant": "#acb3b7",
-                "inverse-on-surface": "#9a9d9f",
-                "on-primary-container": "#000000",
-                "surface-container": "#eaeff2",
-                "on-secondary-container": "#435368",
-                "surface-container-low": "#f0f4f7",
-                "primary-fixed-dim": "#2d68f0",
-                "on-secondary-fixed-variant": "#4d5d73",
-                "tertiary-dim": "#604a72",
-                "on-primary": "#faf8ff",
-                "on-tertiary-container": "#564067",
-                "on-primary-fixed": "#ffffff",
-                "primary": "#0053dc",
-                "tertiary": "#6d567f",
-                "on-surface-variant": "#596064",
-                "surface-dim": "#d4dbdf",
-                "on-tertiary": "#fff6fe"
-        },
-        "borderRadius": {
-                "DEFAULT": "0.125rem",
-                "lg": "0.25rem",
-                "xl": "0.5rem",
-                "full": "0.75rem"
+            "primary": "#0053dc",
+            "background": "#f7f9fb",
+            "surface": "#ffffff",
+            "surface-container": "#eaeff2",
+            "surface-container-low": "#f0f4f7",
+            "on-surface": "#2c3437",
+            "on-surface-variant": "#596064",
+            "outline-variant": "#acb3b7",
         },
         "fontFamily": {
-                "headline": ["Manrope"],
-                "body": ["Inter"],
-                "label": ["Inter"]
+            headline: ["Manrope"],
+            body: ["Inter"]
         }
-    },
+        },
     },
     }
 </script>
@@ -83,229 +33,129 @@
     body { font-family: 'Inter', sans-serif; }
     h1, h2, h3, h4, h5, h6, .font-headline { font-family: 'Manrope', sans-serif; letter-spacing: -0.02em; }
     .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
-    .material-symbols-outlined.fill { font-variation-settings: 'FILL' 1; }
+    .clock-btn-ring { box-shadow: 0 0 0 8px rgba(0, 83, 220, 0.1); }
 </style>
 </head>
 <body class="bg-background text-on-surface antialiased min-h-screen flex flex-col md:flex-row">
-<!-- SideNavBar -->
-<nav class="hidden md:flex bg-slate-50 dark:bg-slate-950 text-blue-600 dark:text-blue-400 font-headline docked left-0 h-screen w-64 bg-surface-container-low tonal-contrast flat no-shadows fixed left-0 top-0 flex flex-col h-full p-6 space-y-8 overflow-y-auto z-50">
-<div class="flex items-center space-x-3 mb-8">
-<div class="w-10 h-10 rounded-full bg-primary flex items-center justify-center text-on-primary font-bold text-lg">
-<span class="material-symbols-outlined">domain</span>
-</div>
-<div>
-<h1 class="text-lg font-bold text-slate-900 dark:text-white leading-tight">Internship System</h1>
-<p class="text-xs text-on-surface-variant font-body">Portal</p>
-</div>
-</div>
-<a href="/daily-log.html" class="w-full bg-gradient-to-br from-primary to-primary-container text-on-primary py-3 rounded-md font-medium text-sm shadow-[0_8px_32px_rgba(44,52,55,0.06)] hover:opacity-90 transition-opacity flex items-center justify-center space-x-2">
-<span class="material-symbols-outlined text-lg">add</span>
-<span>New Log Entry</span>
-</a>
-<div class="flex-1 mt-6">
-<ul class="space-y-2">
-<li>
-<a class="flex items-center space-x-3 px-4 py-3 rounded-lg text-blue-700 dark:text-blue-300 font-semibold bg-blue-50 dark:bg-blue-900/20 active:scale-95 transition-all duration-300" href="/intern-dashboard.html">
-<span class="material-symbols-outlined">grid_view</span>
-<span class="font-body text-sm">Dashboard</span>
-</a>
-</li>
-<li>
-<a class="flex items-center space-x-3 px-4 py-3 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/50 hover:translate-x-1 transition-all duration-300" href="/attendance.html">
-<span class="material-symbols-outlined">event_available</span>
-<span class="font-body text-sm">Attendance</span>
-</a>
-</li>
-<li>
-<a class="flex items-center space-x-3 px-4 py-3 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/50 hover:translate-x-1 transition-all duration-300" href="/daily-log.html">
-<span class="material-symbols-outlined">history_edu</span>
-<span class="font-body text-sm">Logs</span>
-</a>
-</li>
-</ul>
-</div>
-<div class="mt-auto">
-<ul class="space-y-2">
-<li>
-<button id="logout-btn" class="w-full flex items-center space-x-3 px-4 py-2 rounded-lg text-red-600 hover:bg-red-50 transition-colors">
-<span class="material-symbols-outlined text-sm">logout</span>
-<span class="font-body text-xs">Logout</span>
-</button>
-</li>
-</ul>
-</div>
+
+<nav class="hidden md:flex flex-col fixed left-0 top-0 h-full w-64 bg-[#f0f4f7] p-6 gap-y-8 z-50 pt-8">
+  <div class="flex items-center gap-3">
+    <div class="w-10 h-10 flex-shrink-0 bg-primary rounded-lg flex items-center justify-center shadow-md">
+      <span class="material-symbols-outlined text-white text-lg">domain</span>
+    </div>
+    <div>
+      <p class="font-headline font-extrabold text-blue-700 leading-tight">Internship Portal</p>
+      <p class="text-[10px] text-on-surface-variant uppercase tracking-wider font-semibold">Intern Workspace</p>
+    </div>
+  </div>
+  <div class="flex flex-col gap-2">
+    <a class="text-blue-600 font-bold flex items-center gap-3 px-4 py-3 bg-white rounded-xl shadow-sm transition-transform" href="/intern-dashboard.html">
+      <span class="material-symbols-outlined fill text-[20px]" style="font-variation-settings:'FILL' 1">grid_view</span>
+      <span class="text-sm">Dashboard</span>
+    </a>
+    <a class="text-slate-500 flex items-center gap-3 px-4 py-3 hover:translate-x-1 transition-transform" href="/attendance.html">
+      <span class="material-symbols-outlined text-[20px]">event_available</span>
+      <span class="text-sm font-medium">Attendance</span>
+    </a>
+    <a class="text-slate-500 flex items-center gap-3 px-4 py-3 hover:translate-x-1 transition-transform" href="/daily-log.html">
+      <span class="material-symbols-outlined text-[20px]">history_edu</span>
+      <span class="text-sm font-medium">Daily Logs</span>
+    </a>
+  </div>
+  <div class="mt-auto space-y-4">
+    <button id="logout-btn" class="flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-red-500 hover:bg-red-50 w-full transition-colors font-medium">
+      <span class="material-symbols-outlined text-[20px]">logout</span>
+      <span class="text-sm">Sign Out</span>
+    </button>
+  </div>
 </nav>
 
-<!-- Main Content -->
 <main class="flex-1 md:ml-64 flex flex-col min-h-screen bg-background">
-
-  <!-- Top Header -->
   <header class="sticky top-0 z-40 bg-white/80 backdrop-blur-md border-b border-outline-variant/20 shadow-sm flex items-center justify-between px-8 py-3.5">
-    <div class="flex items-center space-x-3">
-      <button class="md:hidden p-2 rounded-lg hover:bg-surface-container">
-        <span class="material-symbols-outlined text-on-surface-variant">menu</span>
-      </button>
-      <span class="text-base font-bold text-on-surface font-headline hidden md:block">Dashboard</span>
-    </div>
+    <span class="text-base font-bold text-on-surface font-headline">Dashboard</span>
     <div class="flex items-center space-x-3">
       <div class="text-right">
-        <div id="user-name" class="text-sm font-bold text-on-surface">Loading...</div>
-        <div id="user-role" class="text-xs text-on-surface-variant capitalize">Intern</div>
+        <div id="user-name" class="text-sm font-bold">Loading...</div>
+        <div class="text-[10px] text-on-surface-variant uppercase font-bold tracking-wider">Intern</div>
       </div>
-      <div class="w-9 h-9 rounded-full bg-gradient-to-br from-primary to-primary-container flex items-center justify-center shadow">
-        <span class="material-symbols-outlined text-white text-sm">person</span>
+      <div class="w-9 h-9 rounded-full bg-primary flex items-center justify-center shadow text-white">
+        <span class="material-symbols-outlined text-sm">person</span>
       </div>
     </div>
   </header>
 
-  <!-- Page Content -->
-  <div class="flex-1 p-6 md:p-8 max-w-7xl w-full mx-auto space-y-8">
-
-    <!-- Welcome Section -->
-    <div>
-      <h2 class="text-3xl font-extrabold text-on-surface font-headline" id="greeting-name">Good morning! 👋</h2>
-      <p class="text-on-surface-variant text-sm mt-1">Here is your internship overview for today.</p>
-    </div>
-
-    <!-- Top Row: Clock In + Progress -->
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-
-      <!-- Clock In Card (spans 2/3) -->
-      <div class="lg:col-span-2 bg-white rounded-2xl p-8 relative overflow-hidden shadow-sm border border-outline-variant/10 accent-bar">
-        <div class="flex flex-col sm:flex-row items-center justify-between gap-6">
-          <div>
-            <p class="text-xs font-semibold text-on-surface-variant uppercase tracking-widest mb-1">Current Session</p>
-            <div id="session-timer" class="text-6xl font-extrabold text-on-surface font-headline tracking-tight mb-3">00:00:00</div>
-            <div id="clock-in-info" class="hidden flex items-center space-x-2 text-sm text-green-600 font-medium">
-              <span class="w-2 h-2 rounded-full bg-green-500 animate-pulse inline-block"></span>
+  <div class="p-8 max-w-7xl mx-auto w-full space-y-8">
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <!-- Session Card -->
+      <div class="lg:col-span-2 bg-white rounded-3xl p-8 shadow-sm border border-outline-variant/10 relative overflow-hidden">
+        <div class="absolute top-0 right-0 w-40 h-40 bg-primary/5 rounded-full -translate-y-20 translate-x-20"></div>
+        <div class="flex flex-col sm:flex-row items-center justify-between gap-8">
+          <div class="text-center sm:text-left">
+            <p class="text-[10px] font-bold text-on-surface-variant uppercase tracking-widest mb-2">Today's Session</p>
+            <div id="session-timer" class="text-6xl font-extrabold text-on-surface font-headline tracking-tight mb-2">00:00:00</div>
+            <div id="clock-in-info" class="hidden flex items-center justify-center sm:justify-start space-x-2 text-sm text-green-600 font-bold">
+              <span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
               <span id="clock-in-time">Clocked in at --:--</span>
             </div>
-            <div id="clock-out-prompt" class="hidden text-xs text-on-surface-variant mt-2">Don't forget to clock out at the end of the day.</div>
+            <!-- OT Label when working late -->
+            <div id="ot-container" class="hidden mt-2 flex items-center gap-2 text-orange-600">
+               <span class="material-symbols-outlined text-sm animate-bounce">timer</span>
+               <span id="ot-timer" class="text-xs font-black uppercase">OT Active: 00:00:00</span>
+            </div>
           </div>
-          <div class="flex flex-col items-center gap-3">
-            <button id="clock-btn" class="w-28 h-28 rounded-full bg-gradient-to-br from-primary to-primary-fixed-dim text-white flex flex-col items-center justify-center clock-btn-ring hover:scale-105 active:scale-95 transition-transform">
-              <span id="clock-icon" class="material-symbols-outlined text-3xl mb-1">play_circle</span>
-              <span id="clock-text" class="text-sm font-bold tracking-wide">Clock In</span>
-            </button>
-          </div>
+          <button id="clock-btn" class="w-32 h-32 rounded-full bg-primary text-white flex flex-col items-center justify-center clock-btn-ring hover:scale-105 active:scale-95 transition-all shadow-xl shadow-primary/20">
+            <span id="clock-icon" class="material-symbols-outlined text-4xl mb-1">play_circle</span>
+            <span id="clock-text" class="text-xs font-black uppercase tracking-wider">Clock In</span>
+          </button>
         </div>
       </div>
 
-      <!-- Progress Card (spans 1/3) -->
-      <div class="bg-white rounded-2xl p-7 shadow-sm border border-outline-variant/10 relative overflow-hidden flex flex-col justify-between">
-        <div class="absolute top-0 right-0 w-28 h-28 bg-secondary-container/30 rounded-full -translate-y-10 translate-x-10"></div>
-        <div>
-          <p class="text-xs font-semibold text-on-surface-variant uppercase tracking-widest mb-4">Program Progress</p>
-          <div class="flex items-end space-x-2 mb-3">
-            <span id="progress-hours" class="text-5xl font-extrabold text-primary font-headline tracking-tight">0</span>
-            <span class="text-on-surface-variant mb-1 text-sm">/ 400 hrs</span>
-          </div>
-          <div class="w-full bg-surface-container-high h-2.5 rounded-full overflow-hidden mb-2">
-            <div id="progress-bar" class="bg-gradient-to-r from-primary to-primary-container h-full rounded-full transition-all duration-1000" style="width:0%"></div>
-          </div>
-          <p id="progress-pct" class="text-xs text-on-surface-variant">0% complete</p>
-        </div>
-        <div class="mt-6 pt-4 border-t border-outline-variant/20">
-          <p class="text-xs text-on-surface-variant font-medium">400 hours total program</p>
-        </div>
-      </div>
-    </div>
-
-    <!-- Bottom Row: Attendance + Logs -->
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-
-      <!-- Recent Attendance (spans 2/3) -->
-      <div class="lg:col-span-2 bg-white rounded-2xl p-7 shadow-sm border border-outline-variant/10">
-        <div class="flex justify-between items-center mb-5">
-          <h3 class="text-lg font-bold font-headline text-on-surface">Recent Attendance</h3>
-          <a href="/attendance.html" class="text-xs font-semibold text-primary hover:underline flex items-center gap-1">
-            View Calendar <span class="material-symbols-outlined text-sm">arrow_forward</span>
-          </a>
-        </div>
-        <div id="weekly-attendance-list" class="space-y-3">
-          <div class="flex items-center justify-center py-8 text-on-surface-variant text-sm">
-            <span class="material-symbols-outlined animate-spin mr-2 text-primary">progress_activity</span>
-            Loading attendance data...
-          </div>
-        </div>
-      </div>
-
-      <!-- Right Column: Logs + Profile -->
+      <!-- Stats Stack -->
       <div class="flex flex-col gap-6">
-        <!-- Recent Logs -->
-        <div class="bg-white rounded-2xl p-7 shadow-sm border border-outline-variant/10 flex flex-col">
-          <div class="flex justify-between items-center mb-5">
-            <h3 class="text-lg font-bold font-headline text-on-surface">Recent Logs</h3>
-            <a href="/daily-log.html" class="p-2 rounded-xl bg-surface-container hover:bg-surface-container-high transition-colors">
-              <span class="material-symbols-outlined text-primary text-sm">edit_document</span>
-            </a>
+        <!-- Progress -->
+        <div class="bg-white rounded-2xl p-6 shadow-sm border border-outline-variant/10">
+          <p class="text-[10px] font-bold text-on-surface-variant uppercase tracking-widest mb-4">Program Progress</p>
+          <div class="flex items-baseline gap-2 mb-3">
+            <span id="progress-hours" class="text-4xl font-extrabold text-primary font-headline">0</span>
+            <span class="text-xs text-on-surface-variant font-bold">/ 400 hrs</span>
           </div>
-          <div id="recent-logs-list" class="flex-1 space-y-3">
-            <div class="flex items-center justify-center py-6 text-on-surface-variant text-sm">
-              <span class="material-symbols-outlined animate-spin mr-2 text-primary">progress_activity</span>
-              Loading logs...
-            </div>
+          <div class="w-full bg-surface-container h-2 rounded-full overflow-hidden">
+            <div id="progress-bar" class="bg-primary h-full rounded-full transition-all duration-1000" style="width:0%"></div>
           </div>
-          <a href="/daily-log.html" class="mt-5 py-2.5 text-sm text-primary font-semibold border border-primary/30 hover:bg-primary hover:text-white rounded-xl transition-all text-center block">
-            View All Logs →
-          </a>
+          <p id="progress-pct" class="text-[10px] text-on-surface-variant font-bold mt-2">0% complete</p>
         </div>
-
-        <!-- Profile Card -->
-        <div class="bg-white rounded-2xl shadow-sm border border-outline-variant/10 overflow-hidden relative">
-          <!-- Top Header Accent -->
-          <div class="h-20 bg-gradient-to-r from-primary to-primary-container relative">
-            <div class="absolute -bottom-10 left-1/2 -translate-x-1/2">
-              <div class="w-20 h-20 rounded-2xl border-4 border-white overflow-hidden shadow-sm bg-white">
-                <img
-                  alt="Sarah Jenkins"
-                  class="w-full h-full object-cover"
-                  src="https://lh3.googleusercontent.com/aida-public/AB6AXuCEMxtU2cxVfvYVPD2f4NBIEBxPdUVwyekhFICWx9RtIfS4CW9Qo87g5BT5nOcnUEOKIvMLJfFU9ByEEJZqzZnlnia-15rJXQQzNRHfaV68gDoWFp57x9X6tSY5BjoNz_ldmvDnXR7MdDjp2k3N5WDKIRNSqavzy9Al_7SJvnsK6oraLpj6t2ka8Clu8ono3PcJIGW-EWlIjEftxZdDjZoi0ishMlm6JDfwrkyKBYsiI3E92UqxTZONaFYvXe1_bvfGaqinsv2Yef4b"
-                />
-              </div>
-            </div>
+        <!-- OT Box -->
+        <div class="bg-white rounded-2xl p-6 shadow-sm border border-outline-variant/10 relative overflow-hidden">
+          <div class="absolute right-0 bottom-0 w-16 h-16 bg-orange-50 rounded-full translate-y-8 translate-x-8"></div>
+          <p class="text-[10px] font-bold text-on-surface-variant uppercase tracking-widest mb-4 text-orange-600">Overtime (OT)</p>
+          <div class="flex items-baseline gap-2">
+            <span id="ot-total-hours" class="text-4xl font-extrabold text-orange-600 font-headline">0.00</span>
+            <span class="text-xs text-on-surface-variant font-bold">hrs</span>
           </div>
-          <!-- Content Body -->
-          <div class="pt-14 pb-6 px-6 text-center">
-            <h2 class="text-xl font-headline font-extrabold text-on-surface" id="profile-card-name">
-              Intern
-            </h2>
-            <p class="text-primary font-bold text-xs uppercase tracking-[0.1em] mt-1" id="profile-card-role">
-              UX Design Intern
-            </p>
-
-            <div class="mt-6 space-y-3 text-left">
-              <div class="flex items-center gap-3 p-2 bg-surface-container-low rounded-xl">
-                <div class="w-8 h-8 bg-white rounded-lg flex items-center justify-center text-primary shadow-sm">
-                  <span class="material-symbols-outlined text-[18px]">mail</span>
-                </div>
-                <div>
-                  <p class="text-[9px] text-on-surface-variant uppercase font-bold tracking-tight">Email</p>
-                  <p class="text-xs font-semibold text-on-surface">intern@checkinwork.app</p>
-                </div>
-              </div>
-              <div class="flex items-center gap-3 p-2 bg-surface-container-low rounded-xl">
-                <div class="w-8 h-8 bg-white rounded-lg flex items-center justify-center text-primary shadow-sm">
-                  <span class="material-symbols-outlined text-[18px]">phone</span>
-                </div>
-                <div>
-                  <p class="text-[9px] text-on-surface-variant uppercase font-bold tracking-tight">Phone</p>
-                  <p class="text-xs font-semibold text-on-surface">+1 (555) 012-3456</p>
-                </div>
-              </div>
-            </div>
-
-            <button class="w-full mt-6 py-2.5 rounded-xl border border-primary/20 text-primary font-bold text-xs hover:bg-primary hover:text-white transition-all flex items-center justify-center gap-2">
-              <span class="material-symbols-outlined text-[16px]">edit</span>
-              Edit Profile
-            </button>
-          </div>
+          <p class="text-[9px] text-orange-800 font-bold mt-3 bg-orange-50 p-2 rounded-lg inline-block">Total accumulated OT hours</p>
         </div>
       </div>
     </div>
 
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <div class="lg:col-span-2 space-y-6">
+        <div class="flex justify-between items-center">
+          <h3 class="text-xl font-bold font-headline text-on-surface">Recent Attendance</h3>
+          <a href="/attendance.html" class="text-xs font-bold text-primary hover:underline">View All</a>
+        </div>
+        <div id="weekly-attendance-list" class="space-y-3"></div>
+      </div>
+      <div class="space-y-6">
+        <div class="flex justify-between items-center">
+          <h3 class="text-xl font-bold font-headline text-on-surface">Daily Logs</h3>
+          <a href="/daily-log.html" class="text-xs font-bold text-primary hover:underline">View All</a>
+        </div>
+        <div id="recent-logs-list" class="space-y-4"></div>
+      </div>
+    </div>
   </div>
 </main>
+
 <script src="/js/app.js"></script>
 </body>
 </html>
