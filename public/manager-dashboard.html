@@ -346,21 +346,28 @@
           // Update roster
           const rosterContainer = document.getElementById('rosterContainer');
           rosterContainer.innerHTML = data.roster.map(intern => `
-            <div class="flex items-center justify-between bg-surface-container-lowest p-3 rounded-xl ambient-shadow">
-              <div class="flex items-center space-x-3">
-                <div class="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center text-xs font-bold text-primary">
-                  ${intern.full_name.split(' ').map(n => n[0]).join('').substring(0, 2)}
+            <div class="flex items-center justify-between bg-white p-4 rounded-2xl shadow-sm border border-outline-variant/5 hover:border-primary/20 transition-all group">
+              <div class="flex items-center space-x-4">
+                <div class="relative">
+                  <img src="https://ui-avatars.com/api/?name=${encodeURIComponent(intern.full_name)}&background=random&color=fff" 
+                       class="w-12 h-12 rounded-full object-cover border-2 border-white shadow-sm" />
+                  <span class="absolute bottom-0 right-0 w-3 h-3 rounded-full border-2 border-white ${intern.status === 'online' ? 'bg-green-500' : 'bg-slate-300'}"></span>
                 </div>
                 <div>
-                  <p class="font-label text-sm font-semibold text-on-surface">${intern.full_name}</p>
-                  <p class="font-label text-xs text-on-surface-variant">${intern.username}</p>
+                  <p class="font-headline font-bold text-sm text-on-surface group-hover:text-primary transition-colors">${intern.full_name}</p>
+                  <p class="font-label text-[10px] text-on-surface-variant uppercase tracking-wider font-bold">${intern.username}</p>
                 </div>
               </div>
-              <span class="px-3 py-1 rounded-full text-xs font-label font-medium ${
-                intern.status === 'online' 
-                  ? 'bg-tertiary-container text-on-tertiary-container' 
-                  : 'bg-secondary-fixed text-on-secondary-container'
-              }">${intern.status === 'online' ? 'Clocked In' : 'Offline'}</span>
+              <div class="flex flex-col items-end">
+                <span class="text-[9px] font-bold uppercase tracking-widest ${intern.status === 'online' ? 'text-green-600' : 'text-slate-400'} mb-1">
+                  ${intern.status === 'online' ? 'Clocked In' : 'Offline'}
+                </span>
+                <div class="flex space-x-1">
+                  <div class="w-1 h-1 rounded-full bg-primary/20"></div>
+                  <div class="w-1 h-1 rounded-full bg-primary/20"></div>
+                  <div class="w-1 h-1 rounded-full bg-primary/20"></div>
+                </div>
+              </div>
             </div>
           `).join('');
           
@@ -369,10 +376,9 @@
           overviewBody.innerHTML = data.overview.map((intern, index) => `
             <tr class="hover:bg-surface-bright transition-colors group">
               <td class="py-5 px-8 font-medium flex items-center space-x-3">
-                <div class="w-8 h-8 rounded-full bg-secondary-container text-on-secondary-container flex items-center justify-center text-xs font-bold">
-                  ${intern.full_name.split(' ').map(n => n[0]).join('').substring(0, 2)}
-                </div>
-                <span>${intern.full_name}</span>
+                <img src="https://ui-avatars.com/api/?name=${encodeURIComponent(intern.full_name)}&background=random&color=fff" 
+                     class="w-9 h-9 rounded-full border border-white shadow-sm" />
+                <span class="font-bold text-on-surface">${intern.full_name}</span>
               </td>
               <td class="py-5 px-8 text-on-surface-variant">${intern.role}</td>
               <td class="py-5 px-8 font-semibold">${parseFloat(intern.total_hours).toFixed(1)}</td>

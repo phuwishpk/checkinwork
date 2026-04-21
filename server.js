@@ -73,6 +73,15 @@ app.post('/api/login', async (req, res) => {
   }
 });
 
+// Logout
+app.post('/api/logout', (req, res) => {
+  req.session.destroy((err) => {
+    if (err) return res.status(500).json({ error: 'Could not log out' });
+    res.clearCookie('connect.sid');
+    res.json({ message: 'Logout successful' });
+  });
+});
+
 // Get Session
 app.get('/api/session', (req, res) => {
   if (req.session.user) {
@@ -88,8 +97,8 @@ app.post('/api/clock-in', requireAuth, async (req, res) => {
   const today = new Date().toISOString().slice(0, 10);
   const nowTime = new Date().toTimeString().slice(0, 8);
   try {
-    const [existing] = await db.execute('SELECT * FROM attendance WHERE user_id = ? AND date = ?', [userId, today]);
-    if (existing.length > 0) return res.status(400).json({ error: 'Already clocked in for today' });
+    const [active] = await db.execute('SELECT * FROM attendance WHERE user_id = ? AND clock_out_time IS NULL', [userId]);
+    if (active.length > 0) return res.status(400).json({ error: 'You are already clocked in' });
     await db.execute('INSERT INTO attendance (user_id, date, clock_in_time) VALUES (?, ?, ?)', [userId, today, nowTime]);
     res.json({ message: 'Clocked in successfully', time: nowTime });
   } catch (error) {
@@ -103,18 +112,23 @@ app.post('/api/clock-out', requireAuth, async (req, res) => {
   const today = new Date().toISOString().slice(0, 10);
   const nowTime = new Date().toTimeString().slice(0, 8);
   try {
-    const [existing] = await db.execute('SELECT * FROM attendance WHERE user_id = ? AND date = ?', [userId, today]);
-    if (existing.length === 0) return res.status(400).json({ error: 'No clock-in record found' });
-    if (existing[0].clock_out_time) return res.status(400).json({ error: 'Already clocked out' });
+    const [active] = await db.execute('SELECT * FROM attendance WHERE user_id = ? AND clock_out_time IS NULL ORDER BY id DESC LIMIT 1', [userId]);
+    if (active.length === 0) return res.status(400).json({ error: 'No active clock-in record found' });
     
-    const clockIn = existing[0].clock_in_time;
+    const clockIn = active[0].clock_in_time;
     const timeIn = new Date(`1970-01-01T${clockIn}Z`);
     const timeOut = new Date(`1970-01-01T${nowTime}Z`);
     let diff = (timeOut - timeIn) / (1000 * 60 * 60);
     if (diff < 0) diff = 0;
 
-    await db.execute('UPDATE attendance SET clock_out_time = ?, total_hours = ? WHERE id = ?', [nowTime, diff.toFixed(2), existing[0].id]);
-    res.json({ message: 'Clocked out successfully', time: nowTime, hours: diff.toFixed(2) });
+    const normalHours = Math.min(diff, 8);
+    const otHours = Math.max(0, diff - 8);
+
+    await db.execute(
+      'UPDATE attendance SET clock_out_time = ?, total_hours = ?, ot_hours = ? WHERE id = ?',
+      [nowTime, normalHours.toFixed(2), otHours.toFixed(2), active[0].id]
+    );
+    res.json({ message: 'Clocked out successfully', time: nowTime, hours: normalHours.toFixed(2), ot: otHours.toFixed(2) });
   } catch (error) {
     res.status(500).json({ error: 'Internal server error' });
   }
