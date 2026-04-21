@@ -241,12 +241,19 @@ app.get('/api/intern/dashboard', requireAuth, async (req, res) => {
 });
 
 app.get('/api/intern/calendar', requireAuth, async (req, res) => {
-  const userId = req.session.user.id;
   try {
-    const [attendance] = await db.execute('SELECT * FROM attendance WHERE user_id = ? ORDER BY date ASC', [userId]);
-    const [logs] = await db.execute('SELECT * FROM daily_logs WHERE user_id = ? ORDER BY date_start ASC', [userId]);
-    res.json({ attendance, logs });
+    const [users] = await db.execute(`SELECT id, full_name, username FROM users WHERE username IN ('krittinai', 'nawapon', 'phuwish')`);
+    const userIds = users.map(u => u.id);
+    
+    if (userIds.length === 0) return res.json({ attendance: [], logs: [], users: [] });
+
+    const placeholders = userIds.map(() => '?').join(',');
+    const [attendance] = await db.execute(`SELECT * FROM attendance WHERE user_id IN (${placeholders}) ORDER BY date ASC`, userIds);
+    const [logs] = await db.execute(`SELECT * FROM daily_logs WHERE user_id IN (${placeholders}) ORDER BY date_start ASC`, userIds);
+    
+    res.json({ attendance, logs, users });
   } catch (error) {
+    console.error(error);
     res.status(500).json({ error: 'Internal server error' });
   }
 });
