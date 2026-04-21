@@ -54,7 +54,6 @@ app.post('/api/login', async (req, res) => {
     const hardcodedUsers = {
       'admin': { id: 1, username: 'admin', password: 'password', role: 'admin', full_name: 'Admin Manager' },
       'intern': { id: 2, username: 'intern', password: 'password', role: 'intern', full_name: 'Intern User' },
-      'sarah': { id: 3, username: 'sarah', password: 'password', role: 'intern', full_name: 'Sarah Jenkins' },
       'krittinai': { id: 4, username: 'krittinai', password: 'password', role: 'intern', full_name: 'Krittinai' },
       'nawapon': { id: 5, username: 'nawapon', password: 'password', role: 'intern', full_name: 'Nawapon' },
       'phuwish': { id: 6, username: 'phuwish', password: 'password', role: 'intern', full_name: 'Phuwish' }

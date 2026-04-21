@@ -1,0 +1,634 @@
+<!doctype html>
+
+<html class="light" lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Architect Interns - Manager's Log Review</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;family=Inter:wght@400;500;600&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+      rel="stylesheet"
+    />
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "on-secondary": "#f7f9ff",
+              outline: "#747c80",
+              "primary-fixed-dim": "#2d68f0",
+              "surface-bright": "#f7f9fb",
+              "on-tertiary-fixed": "#422d53",
+              "tertiary-fixed-dim": "#d8bceb",
+              tertiary: "#6d567f",
+              "error-container": "#fa746f",
+              "outline-variant": "#acb3b7",
+              "secondary-container": "#d3e4fe",
+              "on-primary-fixed-variant": "#f9f7ff",
+              "error-dim": "#67040d",
+              "secondary-fixed": "#d3e4fe",
+              primary: "#0053dc",
+              "surface-container-low": "#f0f4f7",
+              "surface-container-high": "#e3e9ed",
+              "surface-container-highest": "#dce4e8",
+              "on-error-container": "#6e0a12",
+              "primary-fixed": "#3e76fe",
+              error: "#a83836",
+              "on-tertiary": "#fff6fe",
+              "secondary-dim": "#44546a",
+              "on-primary": "#faf8ff",
+              "on-secondary-container": "#435368",
+              "surface-dim": "#d4dbdf",
+              "on-error": "#fff7f6",
+              "surface-container": "#eaeff2",
+              "on-background": "#2c3437",
+              "inverse-on-surface": "#9a9d9f",
+              "tertiary-fixed": "#e6cafa",
+              "surface-container-lowest": "#ffffff",
+              "primary-dim": "#0049c2",
+              "tertiary-container": "#e6cafa",
+              "on-surface-variant": "#596064",
+              "on-secondary-fixed": "#314055",
+              "inverse-surface": "#0b0f10",
+              "on-primary-fixed": "#ffffff",
+              "primary-container": "#3e76fe",
+              background: "#f7f9fb",
+              "on-tertiary-fixed-variant": "#604a71",
+              "on-surface": "#2c3437",
+              "on-primary-container": "#000000",
+              secondary: "#506076",
+              "on-secondary-fixed-variant": "#4d5d73",
+              surface: "#f7f9fb",
+              "surface-tint": "#0053dc",
+              "inverse-primary": "#618bff",
+              "surface-variant": "#dce4e8",
+              "on-tertiary-container": "#564067",
+              "secondary-fixed-dim": "#c5d6f0",
+              "tertiary-dim": "#604a72",
+            },
+            borderRadius: {
+              DEFAULT: "0.125rem",
+              lg: "0.25rem",
+              xl: "0.5rem",
+              full: "0.75rem",
+            },
+            fontFamily: {
+              headline: ["Manrope"],
+              body: ["Inter"],
+              label: ["Inter"],
+            },
+          },
+        },
+      };
+    </script>
+    <style>
+      .material-symbols-outlined {
+        font-variation-settings:
+          "FILL" 0,
+          "wght" 400,
+          "GRAD" 0,
+          "opsz" 24;
+      }
+      body {
+        font-family: "Inter", sans-serif;
+      }
+      h1,
+      h2,
+      h3,
+      h4,
+      .font-headline {
+        font-family: "Manrope", sans-serif;
+      }
+      .glass-effect {
+        backdrop-filter: blur(12px);
+        background: rgba(255, 255, 255, 0.8);
+      }
+    </style>
+  </head>
+  <body class="bg-background text-on-surface flex min-h-screen">
+    <!-- SideNavBar -->
+    <aside
+      class="fixed left-0 top-0 h-full w-72 bg-[#f0f4f7] dark:bg-slate-900 tonal-shift-only no-border z-50"
+    >
+      <div class="flex flex-col h-full py-8 space-y-2">
+        <div class="px-8 mb-8">
+          <div class="flex items-center space-x-3 mb-2">
+            <div
+              class="w-10 h-10 bg-primary-container rounded-lg flex items-center justify-center text-white"
+            >
+              <span class="material-symbols-outlined" data-icon="architecture"
+                >architecture</span
+              >
+            </div>
+            <div>
+              <h2
+                class="text-lg font-bold font-manrope text-[#2c3437] dark:text-white"
+              >
+                Management
+              </h2>
+              <p class="text-xs text-on-surface-variant font-medium">
+                The Curated Architect
+              </p>
+            </div>
+          </div>
+        </div>
+        <nav class="flex-1 space-y-1">
+          <a
+            class="flex items-center space-x-3 text-[#596064] dark:text-slate-400 py-3 px-6 hover:bg-white/50 dark:hover:bg-slate-800/50 hover:text-blue-600 transition-colors"
+            href="#"
+          >
+            <span class="material-symbols-outlined" data-icon="dashboard"
+              >dashboard</span
+            >
+            <span class="font-inter text-sm font-medium">Dashboard</span>
+          </a>
+          <a
+            class="flex items-center space-x-3 text-[#596064] dark:text-slate-400 py-3 px-6 hover:bg-white/50 dark:hover:bg-slate-800/50 hover:text-blue-600 transition-colors"
+            href="#"
+          >
+            <span class="material-symbols-outlined" data-icon="calendar_today"
+              >calendar_today</span
+            >
+            <span class="font-inter text-sm font-medium">Attendance</span>
+          </a>
+          <!-- Active Tab: Logs -->
+          <a
+            class="flex items-center space-x-3 bg-white dark:bg-slate-800 text-blue-600 dark:text-blue-300 rounded-r-full py-3 px-6 shadow-sm translate-x-1 transition-transform duration-200"
+            href="#"
+          >
+            <span class="material-symbols-outlined" data-icon="description"
+              >description</span
+            >
+            <span class="font-inter text-sm font-medium">Logs</span>
+          </a>
+          <a
+            class="flex items-center space-x-3 text-[#596064] dark:text-slate-400 py-3 px-6 hover:bg-white/50 dark:hover:bg-slate-800/50 hover:text-blue-600 transition-colors"
+            href="#"
+          >
+            <span class="material-symbols-outlined" data-icon="group"
+              >group</span
+            >
+            <span class="font-inter text-sm font-medium">Interns</span>
+          </a>
+          <a
+            class="flex items-center space-x-3 text-[#596064] dark:text-slate-400 py-3 px-6 hover:bg-white/50 dark:hover:bg-slate-800/50 hover:text-blue-600 transition-colors"
+            href="#"
+          >
+            <span class="material-symbols-outlined" data-icon="assessment"
+              >assessment</span
+            >
+            <span class="font-inter text-sm font-medium">Reports</span>
+          </a>
+        </nav>
+        <div class="px-6 mt-auto">
+          <button
+            class="w-full bg-gradient-to-br from-primary to-primary-container text-on-primary py-3 px-4 rounded-xl font-semibold shadow-lg shadow-primary/20 flex items-center justify-center space-x-2 scale-95 active:opacity-80 transition-transform"
+          >
+            <span class="material-symbols-outlined" data-icon="add">add</span>
+            <span>New Report</span>
+          </button>
+        </div>
+      </div>
+    </aside>
+    <!-- Main Content Wrapper -->
+    <div class="flex-1 ml-72">
+      <!-- TopAppBar -->
+      <header
+        class="sticky top-0 z-40 bg-[#f7f9fb] dark:bg-slate-950 flex justify-between items-center w-full px-8 py-4 no-border"
+      >
+        <div class="flex items-center space-x-8">
+          <h1
+            class="text-xl font-extrabold text-[#2c3437] dark:text-white font-manrope tracking-tight"
+          >
+            Architect Interns
+          </h1>
+          <div class="relative">
+            <span
+              class="absolute inset-y-0 left-0 pl-3 flex items-center text-on-surface-variant"
+            >
+              <span class="material-symbols-outlined text-sm" data-icon="search"
+                >search</span
+              >
+            </span>
+            <input
+              class="bg-surface-container-highest border-none rounded-full py-2 pl-10 pr-4 text-sm w-64 focus:ring-2 focus:ring-primary/40 focus:outline-none transition-all"
+              placeholder="Quick search logs..."
+              type="text"
+            />
+          </div>
+        </div>
+        <div class="flex items-center space-x-4">
+          <button
+            class="p-2 rounded-full hover:bg-[#eaeff2] dark:hover:bg-slate-800 transition-all duration-300 text-on-surface-variant"
+          >
+            <span class="material-symbols-outlined" data-icon="notifications"
+              >notifications</span
+            >
+          </button>
+          <button
+            class="p-2 rounded-full hover:bg-[#eaeff2] dark:hover:bg-slate-800 transition-all duration-300 text-on-surface-variant"
+          >
+            <span class="material-symbols-outlined" data-icon="settings"
+              >settings</span
+            >
+          </button>
+          <div class="h-8 w-px bg-outline-variant/30"></div>
+          <div class="flex items-center space-x-3 ml-2">
+            <img
+              alt="Admin Profile Avatar"
+              class="w-8 h-8 rounded-full bg-surface-container-high"
+              data-alt="professional portrait of a senior male architect with grey hair and glasses in a modern studio setting"
+              src="https://lh3.googleusercontent.com/aida-public/AB6AXuBC1arm9KGW-MssIuadV9LBSWUvv-JRpvRSBDmFYbcnWz1ftVQ0oLDaOrhcuQqWbPxXqCzAi5OJdvpA5NT1X0-ZWa9lKyPpO6PL0fOLrWCmRPJgjgLr9yfNsvtvaabGv0xyKqOvuCwEeJ58t9uWU2Z_2NaImO7RrR3BObR8shxKiVcMqvVXRvTxYBIEoyxYWqRgTZ8amIYmKwQUFN-cPmHUNHI-6nw7nVkFxXDZdTp-P3LClJFnrMUtUT8I7nEWFRQjzGaIDVv3WBkl"
+            />
+            <div class="text-right">
+              <p class="text-xs font-bold font-manrope text-on-surface">
+                Admin
+              </p>
+              <p class="text-[10px] text-on-surface-variant">Manager View</p>
+            </div>
+          </div>
+        </div>
+      </header>
+      <!-- Main Dashboard Canvas -->
+      <main class="p-8 space-y-8">
+        <!-- Hero Title Section -->
+        <div class="flex justify-between items-end">
+          <div>
+            <h2
+              class="text-4xl font-extrabold font-manrope text-on-surface tracking-tighter"
+            >
+              All Intern Logs
+            </h2>
+            <p class="text-on-surface-variant mt-2 max-w-lg">
+              Review and validate daily activities submitted by architectural
+              interns across all project departments.
+            </p>
+          </div>
+          <div class="flex space-x-3">
+            <button
+              class="bg-secondary-container text-on-secondary-container px-4 py-2 rounded-xl font-medium text-sm flex items-center space-x-2 transition-all hover:opacity-90"
+            >
+              <span
+                class="material-symbols-outlined text-base"
+                data-icon="download"
+                >download</span
+              >
+              <span>Export CSV</span>
+            </button>
+          </div>
+        </div>
+        <!-- Filters Section -->
+        <section
+          class="bg-surface-container p-6 rounded-full flex items-center justify-between shadow-sm"
+        >
+          <div class="flex items-center space-x-6 overflow-x-auto">
+            <div class="flex flex-col">
+              <label
+                class="text-[10px] font-bold text-on-surface-variant uppercase tracking-wider ml-1 mb-1"
+                >Date Range</label
+              >
+              <div
+                class="bg-surface-container-lowest px-4 py-2 rounded-full flex items-center space-x-2 text-sm font-medium cursor-pointer hover:bg-white transition-colors"
+              >
+                <span
+                  class="material-symbols-outlined text-sm"
+                  data-icon="calendar_month"
+                  >calendar_month</span
+                >
+                <span>Oct 1 - Oct 31, 2023</span>
+              </div>
+            </div>
+            <div class="flex flex-col">
+              <label
+                class="text-[10px] font-bold text-on-surface-variant uppercase tracking-wider ml-1 mb-1"
+                >Intern Name</label
+              >
+              <select
+                class="bg-surface-container-lowest border-none px-4 py-2 rounded-full text-sm font-medium focus:ring-0 cursor-pointer min-w-[160px]"
+              >
+                <option>All Interns</option>
+                <option>Sarah Jenkins</option>
+                <option>Marcus Thorne</option>
+                <option>Elena Rodriguez</option>
+              </select>
+            </div>
+            <div class="flex flex-col">
+              <label
+                class="text-[10px] font-bold text-on-surface-variant uppercase tracking-wider ml-1 mb-1"
+                >Status</label
+              >
+              <div class="flex space-x-2">
+                <button
+                  class="px-4 py-2 rounded-full text-xs font-bold bg-primary text-on-primary"
+                >
+                  All
+                </button>
+                <button
+                  class="px-4 py-2 rounded-full text-xs font-bold bg-surface-container-lowest text-on-surface hover:bg-white"
+                >
+                  Pending
+                </button>
+                <button
+                  class="px-4 py-2 rounded-full text-xs font-bold bg-surface-container-lowest text-on-surface hover:bg-white"
+                >
+                  Approved
+                </button>
+              </div>
+            </div>
+          </div>
+          <button
+            class="bg-on-surface text-surface py-2 px-6 rounded-full text-sm font-bold flex items-center space-x-2 hover:bg-on-surface-variant transition-colors"
+          >
+            <span
+              class="material-symbols-outlined text-sm"
+              data-icon="filter_list"
+              >filter_list</span
+            >
+            <span>Apply Filters</span>
+          </button>
+        </section>
+        <!-- Logs Table/List Section -->
+        <div class="space-y-4">
+          <!-- Table Header -->
+          <div
+            class="grid grid-cols-12 gap-4 px-6 text-[11px] font-bold text-on-surface-variant uppercase tracking-widest"
+          >
+            <div class="col-span-3">Intern</div>
+            <div class="col-span-1 text-center">Date</div>
+            <div class="col-span-4">Task Title &amp; Category</div>
+            <div class="col-span-1 text-center">Hours</div>
+            <div class="col-span-1 text-center">Status</div>
+            <div class="col-span-2 text-right">Actions</div>
+          </div>
+          <!-- Log Entry 1 -->
+          <div
+            class="bg-surface-container-lowest p-6 rounded-xl shadow-[0_8px_32px_rgba(44,52,55,0.04)] grid grid-cols-12 gap-4 items-center transition-all hover:scale-[1.005]"
+          >
+            <div class="col-span-3 flex items-center space-x-3">
+              <img
+                alt="Sarah Jenkins Avatar"
+                class="w-10 h-10 rounded-xl object-cover bg-tertiary-container/30"
+                data-alt="close-up portrait of a young woman with curly hair smiling in a bright architectural office"
+                src="https://lh3.googleusercontent.com/aida-public/AB6AXuCWLp0XEQN6qfhfz8b_GIIEHLa0yiyMid3t7jcJsscDaq8Dxnw9e5czkVPCaw4BiPjal8JCGU_PbjPtpuoJrfyLdyffyZQZFmlgjD4GQYX4vz3G2MIZ9vNt7itbP8HeEVzOzdnViik5fTwLu0Ed2tjXQ1tkc_pjWcOew2uB7qXjwxVDr3dGkFG12JgC8Nzv9k6kv4mkHyxHtucXkTZdHhqhChVgVqmBIXYH1e4Jqo8ZmqS8H3uld-2rB9QaLyX7__n8BXdfCj023bp9"
+              />
+              <div>
+                <p class="text-sm font-bold text-on-surface">Sarah Jenkins</p>
+                <p class="text-[11px] text-on-surface-variant">
+                  Junior Architect Intern
+                </p>
+              </div>
+            </div>
+            <div class="col-span-1 text-center">
+              <p class="text-sm font-medium text-on-surface">Oct 24</p>
+            </div>
+            <div class="col-span-4">
+              <p class="text-sm font-bold text-on-surface">
+                Sustainability Site Audit
+              </p>
+              <div class="flex items-center space-x-2 mt-1">
+                <span
+                  class="bg-tertiary-container text-on-tertiary-container text-[10px] px-2 py-0.5 rounded-full font-bold"
+                  >DESIGN</span
+                >
+                <span class="text-[10px] text-on-surface-variant"
+                  >• Project: Skygarden Tower</span
+                >
+              </div>
+            </div>
+            <div class="col-span-1 text-center">
+              <div class="flex flex-col items-center">
+                <p class="text-lg font-headline font-extrabold text-primary">
+                  6.5
+                </p>
+                <p class="text-[9px] font-bold text-on-surface-variant">HRS</p>
+              </div>
+            </div>
+            <div class="col-span-1 flex justify-center">
+              <span
+                class="bg-tertiary-container text-on-tertiary-container px-3 py-1 rounded-full text-[10px] font-bold uppercase"
+                >Pending</span
+              >
+            </div>
+            <div class="col-span-2 flex justify-end space-x-2">
+              <button
+                class="p-2 text-primary hover:bg-primary-container/10 rounded-lg transition-colors"
+                title="Review details"
+              >
+                <span class="material-symbols-outlined" data-icon="visibility"
+                  >visibility</span
+                >
+              </button>
+              <button
+                class="bg-primary text-on-primary px-4 py-2 rounded-lg text-xs font-bold shadow-sm shadow-primary/20 hover:primary-container transition-all"
+              >
+                Approve
+              </button>
+            </div>
+          </div>
+          <!-- Log Entry 2 -->
+          <div
+            class="bg-surface-container-lowest p-6 rounded-xl shadow-[0_8px_32px_rgba(44,52,55,0.04)] grid grid-cols-12 gap-4 items-center transition-all hover:scale-[1.005]"
+          >
+            <div class="col-span-3 flex items-center space-x-3">
+              <img
+                alt="Marcus Thorne Avatar"
+                class="w-10 h-10 rounded-xl object-cover bg-secondary-container/30"
+                data-alt="portrait of a focused young man with dark hair wearing glasses working on a computer screen"
+                src="https://lh3.googleusercontent.com/aida-public/AB6AXuC2WuOAZLCWKvYV6nJBfJcuAtmbSrCiFpE7sXrKVN8iihOjfFskdIIxKk80ttNOpv9GbCVNOsWBsCSEmGL5QSTSS0K_RRnIjOMzpxKkQ-2vcxg9S8pacQQLXQlgdFJQvxy2B8PfhDIwhYi8rIz6HBXAnsjEUTCzguu_LgnTVCJIPaO9n9gNLcPZQvk7J8ZeVbW0PGXJN0_rhLrdkk2R9nsfZBFrrYOxTKC_ZyKydlm33wmmL53uVjAkvBb8BCN0_B4DVv4dr-8QyXsp"
+              />
+              <div>
+                <p class="text-sm font-bold text-on-surface">Marcus Thorne</p>
+                <p class="text-[11px] text-on-surface-variant">
+                  Structural Engineering Intern
+                </p>
+              </div>
+            </div>
+            <div class="col-span-1 text-center">
+              <p class="text-sm font-medium text-on-surface">Oct 24</p>
+            </div>
+            <div class="col-span-4">
+              <p class="text-sm font-bold text-on-surface">
+                Revit Structural Framework
+              </p>
+              <div class="flex items-center space-x-2 mt-1">
+                <span
+                  class="bg-secondary-fixed text-on-secondary-fixed text-[10px] px-2 py-0.5 rounded-full font-bold"
+                  >ENGINEERING</span
+                >
+                <span class="text-[10px] text-on-surface-variant"
+                  >• Project: Bridge Complex</span
+                >
+              </div>
+            </div>
+            <div class="col-span-1 text-center">
+              <div class="flex flex-col items-center">
+                <p class="text-lg font-headline font-extrabold text-primary">
+                  8.0
+                </p>
+                <p class="text-[9px] font-bold text-on-surface-variant">HRS</p>
+              </div>
+            </div>
+            <div class="col-span-1 flex justify-center">
+              <span
+                class="bg-secondary-fixed text-on-secondary-fixed px-3 py-1 rounded-full text-[10px] font-bold uppercase"
+                >Draft</span
+              >
+            </div>
+            <div class="col-span-2 flex justify-end space-x-2">
+              <button
+                class="p-2 text-outline hover:bg-surface-container rounded-lg transition-colors"
+                title="Edit Log"
+              >
+                <span class="material-symbols-outlined" data-icon="edit"
+                  >edit</span
+                >
+              </button>
+              <button
+                class="bg-surface-container-high text-on-surface-variant px-4 py-2 rounded-lg text-xs font-bold cursor-not-allowed"
+              >
+                Review
+              </button>
+            </div>
+          </div>
+          <!-- Log Entry 3 -->
+          <div
+            class="bg-surface-container-lowest p-6 rounded-xl shadow-[0_8px_32px_rgba(44,52,55,0.04)] grid grid-cols-12 gap-4 items-center transition-all hover:scale-[1.005]"
+          >
+            <div class="col-span-3 flex items-center space-x-3">
+              <img
+                alt="Elena Rodriguez Avatar"
+                class="w-10 h-10 rounded-xl object-cover bg-primary-container/20"
+                data-alt="cheerful young woman with sleek dark hair in a professional white blazer against a neutral studio background"
+                src="https://lh3.googleusercontent.com/aida-public/AB6AXuA4nWinmruOAVjbPY-JvwNta2iE6yZDRhtI9dEb8hCSK2ioiXZQ_0daSJda3bSdzcxMFueo21wjoYkO3oWINSfgfTcSDhAJhNuo-mQgkA0VsUoshNBrRps7NtM7UqJcg_4R14HLInj_Pz5guYlsIKWPfRWazjOAIeQdkxAL8Sf6ZRVkE8ko217nxYcypo-WtiFKa4aRNKXZ-S6uSltHx9rrMBPdiqnQEb7FOMEymDDj_PH1YIM7HQvCp8W99-oewfAaTADh9e0slfBn"
+              />
+              <div>
+                <p class="text-sm font-bold text-on-surface">Elena Rodriguez</p>
+                <p class="text-[11px] text-on-surface-variant">
+                  Interior Design Intern
+                </p>
+              </div>
+            </div>
+            <div class="col-span-1 text-center">
+              <p class="text-sm font-medium text-on-surface">Oct 23</p>
+            </div>
+            <div class="col-span-4">
+              <p class="text-sm font-bold text-on-surface">
+                Material Selection Board
+              </p>
+              <div class="flex items-center space-x-2 mt-1">
+                <span
+                  class="bg-tertiary-container text-on-tertiary-container text-[10px] px-2 py-0.5 rounded-full font-bold"
+                  >DESIGN</span
+                >
+                <span class="text-[10px] text-on-surface-variant"
+                  >• Project: Hotel Lobby Reno</span
+                >
+              </div>
+            </div>
+            <div class="col-span-1 text-center">
+              <div class="flex flex-col items-center">
+                <p class="text-lg font-headline font-extrabold text-primary">
+                  4.0
+                </p>
+                <p class="text-[9px] font-bold text-on-surface-variant">HRS</p>
+              </div>
+            </div>
+            <div class="col-span-1 flex justify-center">
+              <div
+                class="flex items-center text-green-600 bg-green-50 px-3 py-1 rounded-full text-[10px] font-bold uppercase"
+              >
+                <span
+                  class="material-symbols-outlined text-[12px] mr-1"
+                  style="font-variation-settings: &quot;FILL&quot; 1"
+                  >check_circle</span
+                >
+                Approved
+              </div>
+            </div>
+            <div class="col-span-2 flex justify-end space-x-2">
+              <button
+                class="p-2 text-outline hover:bg-surface-container rounded-lg transition-colors"
+              >
+                <span class="material-symbols-outlined" data-icon="more_vert"
+                  >more_vert</span
+                >
+              </button>
+            </div>
+          </div>
+          <!-- Log Entry 4 (Asymmetric Variation) -->
+          <div
+            class="bg-white/40 border-2 border-dashed border-outline-variant/20 p-8 rounded-xl flex flex-col items-center justify-center space-y-3"
+          >
+            <span
+              class="material-symbols-outlined text-4xl text-outline-variant/40"
+              data-icon="history"
+              >history</span
+            >
+            <p class="text-on-surface-variant text-sm font-medium">
+              12 more entries hidden by filters
+            </p>
+            <button class="text-primary text-xs font-bold hover:underline">
+              View All Log History
+            </button>
+          </div>
+        </div>
+        <!-- Footer Pagination (Floating Style) -->
+        <div
+          class="flex justify-between items-center py-4 bg-surface-container-low/50 px-8 rounded-2xl border border-white/50"
+        >
+          <p class="text-xs text-on-surface-variant font-medium">
+            Showing <span class="text-on-surface font-bold">3</span> of 15
+            entries
+          </p>
+          <div class="flex space-x-2">
+            <button
+              class="p-2 rounded-lg bg-surface-container hover:bg-surface-container-high transition-colors"
+            >
+              <span
+                class="material-symbols-outlined text-sm"
+                data-icon="chevron_left"
+                >chevron_left</span
+              >
+            </button>
+            <button
+              class="w-8 h-8 rounded-lg bg-primary text-on-primary text-xs font-bold"
+            >
+              1
+            </button>
+            <button
+              class="w-8 h-8 rounded-lg bg-surface-container hover:bg-surface-container-high text-on-surface text-xs font-bold transition-colors"
+            >
+              2
+            </button>
+            <button
+              class="p-2 rounded-lg bg-surface-container hover:bg-surface-container-high transition-colors"
+            >
+              <span
+                class="material-symbols-outlined text-sm"
+                data-icon="chevron_right"
+                >chevron_right</span
+              >
+            </button>
+          </div>
+        </div>
+      </main>
+    </div>
+    <!-- Background Decoration -->
+    <div
+      class="fixed top-0 right-0 -z-10 w-1/2 h-full opacity-30 pointer-events-none"
+    >
+      <div
+        class="absolute top-20 right-20 w-96 h-96 bg-primary-container rounded-full blur-[120px]"
+      ></div>
+      <div
+        class="absolute bottom-20 right-40 w-64 h-64 bg-tertiary-container rounded-full blur-[100px]"
+      ></div>
+    </div>
+  </body>
+</html>

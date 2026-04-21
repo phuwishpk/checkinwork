@@ -200,12 +200,6 @@
           <span>Logs</span>
         </a>
       </nav>
-      <button
-        class="w-full py-3 px-4 rounded-md bg-gradient-to-br from-primary to-primary-container text-on-primary font-label text-sm font-medium hover:opacity-90 transition-opacity flex items-center justify-center space-x-2"
-      >
-        <span class="material-symbols-outlined text-sm">add</span>
-        <span>New Entry</span>
-      </button>
     </aside>
     <!-- Main Content Area -->
     <main class="flex-1 md:ml-64 p-6 md:p-12 max-w-7xl mx-auto w-full">
@@ -260,25 +254,12 @@
           <div class="flex items-end space-x-4">
             <span
               class="font-headline text-6xl font-extrabold gradient-text tracking-tighter"
-              >342</span
+              id="totalProgramHours"
+              >0</span
             >
             <span class="text-on-surface-variant font-label text-lg mb-2"
               >hrs logged</span
             >
-          </div>
-          <div class="mt-8 flex gap-4">
-            <div class="flex-1 bg-surface rounded-lg p-4">
-              <p class="text-xs text-on-surface-variant font-label mb-1">
-                Target
-              </p>
-              <p class="font-headline font-bold text-on-surface">450 hrs</p>
-            </div>
-            <div class="flex-1 bg-surface rounded-lg p-4">
-              <p class="text-xs text-on-surface-variant font-label mb-1">
-                On Track
-              </p>
-              <p class="font-headline font-bold text-emerald-600">76%</p>
-            </div>
           </div>
         </div>
         <!-- Real-time Status (Col Span 4) -->
@@ -298,82 +279,8 @@
               ></span>
             </span>
           </h3>
-          <div class="space-y-4 flex-1">
-            <!-- Intern 1 -->
-            <div
-              class="flex items-center justify-between bg-surface-container-lowest p-3 rounded-xl ambient-shadow"
-            >
-              <div class="flex items-center space-x-3">
-                <img
-                  alt="Sarah Jenkins"
-                  class="w-10 h-10 rounded-full object-cover"
-                  data-alt="Headshot placeholder for Sarah Jenkins"
-                  src="https://lh3.googleusercontent.com/aida-public/AB6AXuBcaIyTbrcqTM-QUXPL-JNMqBgiUTJr9jwxhGFy-Bm8QmvIdVYY-0FVqb_aUbiiT_yofXFb-mIIojkKkG9bjHAeWnCwujKaBKZtZiDeS6iYO6gDe9DrsHzLh2NKzaj_Zm2Hr8tblnLVx1ZxWdI1tw4yJtVX5xXZs8iaPjE0C-C3-vH5_XjvvsLm6s1bKr271Wi3dR6aNRl3bM600cRiWHQpHAvYB4kjlPzqxQ-Bd4Mz7MREXyqxY5gRFoEhqIG_Rw73mgXwljbxZbw"
-                />
-                <div>
-                  <p class="font-label text-sm font-semibold text-on-surface">
-                    Sarah Jenkins
-                  </p>
-                  <p class="font-label text-xs text-on-surface-variant">
-                    Design
-                  </p>
-                </div>
-              </div>
-              <span
-                class="px-3 py-1 rounded-full text-xs font-label font-medium bg-tertiary-container text-on-tertiary-container"
-                >Clocked In</span
-              >
-            </div>
-            <!-- Intern 2 -->
-            <div
-              class="flex items-center justify-between bg-surface-container-lowest p-3 rounded-xl ambient-shadow"
-            >
-              <div class="flex items-center space-x-3">
-                <img
-                  alt="Marcus Chen"
-                  class="w-10 h-10 rounded-full object-cover"
-                  data-alt="Headshot placeholder for Marcus Chen"
-                  src="https://lh3.googleusercontent.com/aida-public/AB6AXuAMvml8Io8lLb-KOvQn6trN-dbCgyGcihTy71A8om10XovUgw7jv6jqWQOKC7Cm89bNGPNukERskoXUIlanJaVE83XIm6HERCiFJcor8IGZL4lX1g83dpkc26EK0OKhhd1Jl21cQf0mxZaWnvmR1Z5vCoPcrrcn52PPNmOf_Z0-J5vCK75L8X9GMZqCBEZpNgt_BeA7-29p-kVxs7D4rBSREEc53em6wAPcIqE92tPLrxAb6hFivEbZlLmeOljL2aZgOYQvITQWVdQ"
-                />
-                <div>
-                  <p class="font-label text-sm font-semibold text-on-surface">
-                    Marcus Chen
-                  </p>
-                  <p class="font-label text-xs text-on-surface-variant">
-                    Engineering
-                  </p>
-                </div>
-              </div>
-              <span
-                class="px-3 py-1 rounded-full text-xs font-label font-medium bg-secondary-fixed text-on-secondary-container"
-                >Offline</span
-              >
-            </div>
-            <!-- Intern 3 -->
-            <div
-              class="flex items-center justify-between bg-surface-container-lowest p-3 rounded-xl ambient-shadow"
-            >
-              <div class="flex items-center space-x-3">
-                <img
-                  alt="Elena Perez"
-                  class="w-10 h-10 rounded-full object-cover"
-                  data-alt="Headshot placeholder for Elena Perez"
-                  src="https://lh3.googleusercontent.com/aida-public/AB6AXuD7x5Dxx2IMLLgmrus8lfs6FbQxe4nmZuPgbJE0JMj84foXXGxFuTIHYhT3eoU7vJZ6xAXvP331tsHIRJwz9Khr1YbBjYTCySX_pZaLkSAEVUNwIX53zFINsiL6srIggT4KyhnckCZjPJIaE0NOf5wyEWNOvO7f8G074cqnHqXqN98w5R1YYKb7uby3-XM2DXQQUg9TCWsLOJTY4aSGFxopslaQwPtaRBAWaursyc8n1lQWGDZfs_WKmKUjg0CaFeNU0ul3VFKZlwQ"
-                />
-                <div>
-                  <p class="font-label text-sm font-semibold text-on-surface">
-                    Elena Perez
-                  </p>
-                  <p class="font-label text-xs text-on-surface-variant">
-                    Marketing
-                  </p>
-                </div>
-              </div>
-              <span
-                class="px-3 py-1 rounded-full text-xs font-label font-medium bg-tertiary-container text-on-tertiary-container"
-                >Clocked In</span
-              >
-            </div>
+          <div class="space-y-4 flex-1" id="rosterContainer">
+            <!-- Intern entries will be populated by JavaScript -->
           </div>
         </div>
         <!-- Attendance Summary Table (Col Span 12) -->
@@ -399,72 +306,14 @@
                   <th class="py-4 px-8 font-medium">Intern</th>
                   <th class="py-4 px-8 font-medium">Role</th>
                   <th class="py-4 px-8 font-medium">Total Hours</th>
+                  <th class="py-4 px-8 font-medium">Days Present</th>
                   <th class="py-4 px-8 font-medium">Status</th>
                 </tr>
               </thead>
               <tbody
                 class="text-sm font-label text-on-surface divide-y divide-surface-container-low"
+                id="overviewTableBody"
               >
-                <tr class="hover:bg-surface-bright transition-colors group">
-                  <td class="py-5 px-8 font-medium flex items-center space-x-3">
-                    <div
-                      class="w-8 h-8 rounded-full bg-secondary-container text-on-secondary-container flex items-center justify-center text-xs font-bold"
-                    >
-                      SJ
-                    </div>
-                    <span>Sarah Jenkins</span>
-                  </td>
-                  <td class="py-5 px-8 text-on-surface-variant">
-                    UX Design Intern
-                  </td>
-                  <td class="py-5 px-8 font-semibold">124.5</td>
-                  <td class="py-5 px-8">
-                    <span
-                      class="px-3 py-1 rounded-full text-xs font-medium bg-secondary-fixed text-on-secondary-container"
-                      >On Track</span
-                    >
-                  </td>
-                </tr>
-                <tr class="hover:bg-surface-bright transition-colors group">
-                  <td class="py-5 px-8 font-medium flex items-center space-x-3">
-                    <div
-                      class="w-8 h-8 rounded-full bg-secondary-container text-on-secondary-container flex items-center justify-center text-xs font-bold"
-                    >
-                      MC
-                    </div>
-                    <span>Marcus Chen</span>
-                  </td>
-                  <td class="py-5 px-8 text-on-surface-variant">
-                    Frontend Dev Intern
-                  </td>
-                  <td class="py-5 px-8 font-semibold">98.0</td>
-                  <td class="py-5 px-8">
-                    <span
-                      class="px-3 py-1 rounded-full text-xs font-medium bg-tertiary-container text-on-tertiary-container"
-                      >Needs Review</span
-                    >
-                  </td>
-                </tr>
-                <tr class="hover:bg-surface-bright transition-colors group">
-                  <td class="py-5 px-8 font-medium flex items-center space-x-3">
-                    <div
-                      class="w-8 h-8 rounded-full bg-secondary-container text-on-secondary-container flex items-center justify-center text-xs font-bold"
-                    >
-                      EP
-                    </div>
-                    <span>Elena Perez</span>
-                  </td>
-                  <td class="py-5 px-8 text-on-surface-variant">
-                    Content Intern
-                  </td>
-                  <td class="py-5 px-8 font-semibold">119.5</td>
-                  <td class="py-5 px-8">
-                    <span
-                      class="px-3 py-1 rounded-full text-xs font-medium bg-secondary-fixed text-on-secondary-container"
-                      >On Track</span
-                    >
-                  </td>
-                </tr>
               </tbody>
             </table>
           </div>
@@ -474,127 +323,119 @@
           <h3 class="font-headline text-xl font-bold text-on-surface mb-6 px-2">
             Recent Daily Logs
           </h3>
-          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <!-- Log Card 1 -->
-            <div
-              class="bg-surface-container-lowest rounded-xl p-6 ambient-shadow cursor-pointer hover:-translate-y-1 transition-transform duration-300"
-            >
-              <div class="flex justify-between items-start mb-4">
-                <div class="flex items-center space-x-2">
-                  <span
-                    class="material-symbols-outlined text-outline-variant text-sm"
-                    >calendar_today</span
-                  >
-                  <span class="text-xs font-label text-on-surface-variant"
-                    >Oct 24, 2024</span
-                  >
-                </div>
-                <span
-                  class="px-2 py-1 rounded-full text-[10px] font-label font-bold uppercase tracking-wide bg-tertiary-container text-on-tertiary-container"
-                  >Pending</span
-                >
-              </div>
-              <h4 class="font-headline font-semibold text-on-surface mb-2">
-                Wireframing Dashboard Concepts
-              </h4>
-              <p
-                class="text-sm font-label text-on-surface-variant line-clamp-2 mb-4"
-              >
-                Completed initial low-fidelity wireframes for the new analytics
-                module. Met with lead designer for feedback.
-              </p>
-              <div
-                class="flex items-center justify-between pt-4 border-t border-outline-variant/15"
-              >
-                <span class="text-sm font-label font-medium text-on-surface"
-                  >Sarah Jenkins</span
-                >
-                <span class="text-sm font-label font-bold text-primary"
-                  >6.5 hrs</span
-                >
-              </div>
-            </div>
-            <!-- Log Card 2 -->
-            <div
-              class="bg-surface-container-lowest rounded-xl p-6 ambient-shadow cursor-pointer hover:-translate-y-1 transition-transform duration-300"
-            >
-              <div class="flex justify-between items-start mb-4">
-                <div class="flex items-center space-x-2">
-                  <span
-                    class="material-symbols-outlined text-outline-variant text-sm"
-                    >calendar_today</span
-                  >
-                  <span class="text-xs font-label text-on-surface-variant"
-                    >Oct 24, 2024</span
-                  >
-                </div>
-                <span
-                  class="px-2 py-1 rounded-full text-[10px] font-label font-bold uppercase tracking-wide bg-secondary-fixed text-on-secondary-container"
-                  >Approved</span
-                >
-              </div>
-              <h4 class="font-headline font-semibold text-on-surface mb-2">
-                API Integration Debugging
-              </h4>
-              <p
-                class="text-sm font-label text-on-surface-variant line-clamp-2 mb-4"
-              >
-                Resolved CORS issues on the staging environment. Began writing
-                unit tests for the authentication endpoints.
-              </p>
-              <div
-                class="flex items-center justify-between pt-4 border-t border-outline-variant/15"
-              >
-                <span class="text-sm font-label font-medium text-on-surface"
-                  >Marcus Chen</span
-                >
-                <span class="text-sm font-label font-bold text-primary"
-                  >8.0 hrs</span
-                >
-              </div>
-            </div>
-            <!-- Log Card 3 -->
-            <div
-              class="bg-surface-container-lowest rounded-xl p-6 ambient-shadow cursor-pointer hover:-translate-y-1 transition-transform duration-300"
-            >
-              <div class="flex justify-between items-start mb-4">
-                <div class="flex items-center space-x-2">
-                  <span
-                    class="material-symbols-outlined text-outline-variant text-sm"
-                    >calendar_today</span
-                  >
-                  <span class="text-xs font-label text-on-surface-variant"
-                    >Oct 23, 2024</span
-                  >
-                </div>
-                <span
-                  class="px-2 py-1 rounded-full text-[10px] font-label font-bold uppercase tracking-wide bg-secondary-fixed text-on-secondary-container"
-                  >Approved</span
-                >
-              </div>
-              <h4 class="font-headline font-semibold text-on-surface mb-2">
-                Q4 Social Media Calendar
-              </h4>
-              <p
-                class="text-sm font-label text-on-surface-variant line-clamp-2 mb-4"
-              >
-                Drafted copy for November campaigns and scheduled posts across
-                LinkedIn and Twitter.
-              </p>
-              <div
-                class="flex items-center justify-between pt-4 border-t border-outline-variant/15"
-              >
-                <span class="text-sm font-label font-medium text-on-surface"
-                  >Elena Perez</span
-                >
-                <span class="text-sm font-label font-bold text-primary"
-                  >7.5 hrs</span
-                >
-              </div>
-            </div>
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="recentLogsContainer">
+            <!-- Log cards will be populated by JavaScript -->
           </div>
         </div>
       </div>
     </main>
+    <script>
+      // Fetch and populate manager dashboard with real data
+      async function loadDashboard() {
+        try {
+          const response = await fetch('/api/manager/dashboard');
+          if (!response.ok) {
+            window.location.href = 'index.html';
+            return;
+          }
+          const data = await response.json();
+          
+          // Update total program hours
+          document.getElementById('totalProgramHours').textContent = Math.round(data.totalProgramHours);
+          
+          // Update roster
+          const rosterContainer = document.getElementById('rosterContainer');
+          rosterContainer.innerHTML = data.roster.map(intern => `
+            <div class="flex items-center justify-between bg-surface-container-lowest p-3 rounded-xl ambient-shadow">
+              <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center text-xs font-bold text-primary">
+                  ${intern.full_name.split(' ').map(n => n[0]).join('').substring(0, 2)}
+                </div>
+                <div>
+                  <p class="font-label text-sm font-semibold text-on-surface">${intern.full_name}</p>
+                  <p class="font-label text-xs text-on-surface-variant">${intern.username}</p>
+                </div>
+              </div>
+              <span class="px-3 py-1 rounded-full text-xs font-label font-medium ${
+                intern.status === 'online' 
+                  ? 'bg-tertiary-container text-on-tertiary-container' 
+                  : 'bg-secondary-fixed text-on-secondary-container'
+              }">${intern.status === 'online' ? 'Clocked In' : 'Offline'}</span>
+            </div>
+          `).join('');
+          
+          // Update overview table
+          const overviewBody = document.getElementById('overviewTableBody');
+          overviewBody.innerHTML = data.overview.map((intern, index) => `
+            <tr class="hover:bg-surface-bright transition-colors group">
+              <td class="py-5 px-8 font-medium flex items-center space-x-3">
+                <div class="w-8 h-8 rounded-full bg-secondary-container text-on-secondary-container flex items-center justify-center text-xs font-bold">
+                  ${intern.full_name.split(' ').map(n => n[0]).join('').substring(0, 2)}
+                </div>
+                <span>${intern.full_name}</span>
+              </td>
+              <td class="py-5 px-8 text-on-surface-variant">${intern.role}</td>
+              <td class="py-5 px-8 font-semibold">${parseFloat(intern.total_hours).toFixed(1)}</td>
+              <td class="py-5 px-8">${intern.days_present} days</td>
+              <td class="py-5 px-8">
+                <span class="px-3 py-1 rounded-full text-xs font-medium ${
+                  parseFloat(intern.total_hours) > 100 
+                    ? 'bg-secondary-fixed text-on-secondary-container' 
+                    : 'bg-tertiary-container text-on-tertiary-container'
+                }">
+                  ${parseFloat(intern.total_hours) > 100 ? 'On Track' : 'Needs Review'}
+                </span>
+              </td>
+            </tr>
+          `).join('');
+          
+          // Update recent logs
+          const logsContainer = document.getElementById('recentLogsContainer');
+          logsContainer.innerHTML = data.recentLogs.map(log => `
+            <div class="bg-surface-container-lowest rounded-xl p-6 ambient-shadow cursor-pointer hover:-translate-y-1 transition-transform duration-300">
+              <div class="flex justify-between items-start mb-4">
+                <div class="flex items-center space-x-2">
+                  <span class="material-symbols-outlined text-outline-variant text-sm">calendar_today</span>
+                  <span class="text-xs font-label text-on-surface-variant">${new Date(log.date).toLocaleDateString()}</span>
+                </div>
+                <span class="px-2 py-1 rounded-full text-[10px] font-label font-bold uppercase tracking-wide ${
+                  log.status === 'pending' 
+                    ? 'bg-tertiary-container text-on-tertiary-container' 
+                    : 'bg-secondary-fixed text-on-secondary-container'
+                }">
+                  ${log.status}
+                </span>
+              </div>
+              <h4 class="font-headline font-semibold text-on-surface mb-2">${log.task_category}</h4>
+              <p class="text-sm font-label text-on-surface-variant line-clamp-2 mb-4">${log.description}</p>
+              <div class="flex items-center justify-between pt-4 border-t border-outline-variant/15">
+                <span class="text-sm font-label font-medium text-on-surface">${log.full_name}</span>
+                <span class="text-sm font-label font-bold text-primary">${parseFloat(log.hours_spent).toFixed(1)} hrs</span>
+              </div>
+            </div>
+          `).join('');
+        } catch (error) {
+          console.error('Error loading dashboard:', error);
+        }
+      }
+
+      // Check session and load dashboard
+      async function checkSession() {
+        try {
+          const response = await fetch('/api/session');
+          const data = await response.json();
+          if (data.user && data.user.role === 'admin') {
+            loadDashboard();
+          } else {
+            window.location.href = 'index.html';
+          }
+        } catch (error) {
+          window.location.href = 'index.html';
+        }
+      }
+
+      // Load on page load
+      checkSession();
+    </script>
   </body>
 </html>
