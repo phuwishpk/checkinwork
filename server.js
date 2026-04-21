@@ -2,24 +2,35 @@ const express = require('express');
 const session = require('express-session');
 const cors = require('cors');
 const path = require('path');
-const db = require('./database');
+const bcrypt = require('bcryptjs');
+const db = require('./src/config/database');
 require('dotenv').config();
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
 // Middleware
-app.use(cors());
+app.use(cors({
+  origin: process.env.CORS_ORIGIN || '*',
+  credentials: true
+}));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, 'public')));
 
 // Session configuration
 app.use(session({
-  secret: process.env.SESSION_SECRET || 'secret_key',
+  secret: (() => {
+    if (!process.env.SESSION_SECRET) throw new Error('SESSION_SECRET environment variable is required');
+    return process.env.SESSION_SECRET;
+  })(),
   resave: false,
   saveUninitialized: false,
-  cookie: { secure: false, maxAge: 1000 * 60 * 60 * 24 } // 24 hours
+  cookie: {
+    secure: process.env.NODE_ENV === 'production',
+    httpOnly: true,
+    maxAge: parseInt(process.env.SESSION_MAX_AGE) || 1000 * 60 * 60 * 24
+  }
 }));
 
 // --- Authentication Middleware ---
@@ -42,18 +53,20 @@ const requireAdmin = (req, res, next) => {
 // Login
 app.post('/api/login', async (req, res) => {
   const { username, password } = req.body;
-
+  if (!username || !password) {
+    return res.status(400).json({ error: 'Username and password are required' });
+  }
   try {
-    const [rows] = await db.execute('SELECT * FROM users WHERE username = ?', [username]);
+    const [rows] = await db.execute(
+      'SELECT id, username, password, role, full_name FROM users WHERE username = ?',
+      [username]
+    );
     const user = rows[0];
-
-    // In a real application, you should hash passwords and use bcrypt.compare
-    if (user && user.password === password) {
-      req.session.user = { id: user.id, username: user.username, role: user.role, full_name: user.full_name };
-      res.json({ message: 'Login successful', user: req.session.user });
-    } else {
-      res.status(401).json({ error: 'Invalid username or password' });
+    if (!user || !(await bcrypt.compare(password, user.password))) {
+      return res.status(401).json({ error: 'Invalid username or password' });
     }
+    req.session.user = { id: user.id, username: user.username, role: user.role, full_name: user.full_name };
+    res.json({ message: 'Login successful', user: req.session.user });
   } catch (error) {
     console.error('Login error:', error);
     res.status(500).json({ error: 'Internal server error' });
@@ -62,8 +75,11 @@ app.post('/api/login', async (req, res) => {
 
 // Logout
 app.post('/api/logout', (req, res) => {
-  req.session.destroy();
-  res.json({ message: 'Logged out successfully' });
+  req.session.destroy((err) => {
+    if (err) return res.status(500).json({ error: 'Could not log out' });
+    res.clearCookie('connect.sid');
+    res.json({ message: 'Logout successful' });
+  });
 });
 
 // Get Session
@@ -80,18 +96,12 @@ app.post('/api/clock-in', requireAuth, async (req, res) => {
   const userId = req.session.user.id;
   const today = new Date().toISOString().slice(0, 10);
   const nowTime = new Date().toTimeString().slice(0, 8);
-
   try {
-    const [existing] = await db.execute('SELECT * FROM attendance WHERE user_id = ? AND date = ?', [userId, today]);
-    
-    if (existing.length > 0) {
-      return res.status(400).json({ error: 'Already clocked in for today' });
-    }
-
+    const [active] = await db.execute('SELECT * FROM attendance WHERE user_id = ? AND clock_out_time IS NULL', [userId]);
+    if (active.length > 0) return res.status(400).json({ error: 'You are already clocked in' });
     await db.execute('INSERT INTO attendance (user_id, date, clock_in_time) VALUES (?, ?, ?)', [userId, today, nowTime]);
     res.json({ message: 'Clocked in successfully', time: nowTime });
   } catch (error) {
-    console.error('Clock-in error:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
 });
@@ -101,117 +111,266 @@ app.post('/api/clock-out', requireAuth, async (req, res) => {
   const userId = req.session.user.id;
   const today = new Date().toISOString().slice(0, 10);
   const nowTime = new Date().toTimeString().slice(0, 8);
-
   try {
-    const [existing] = await db.execute('SELECT * FROM attendance WHERE user_id = ? AND date = ?', [userId, today]);
+    const [active] = await db.execute('SELECT * FROM attendance WHERE user_id = ? AND clock_out_time IS NULL ORDER BY id DESC LIMIT 1', [userId]);
+    if (active.length === 0) return res.status(400).json({ error: 'No active clock-in record found' });
     
-    if (existing.length === 0) {
-      return res.status(400).json({ error: 'No clock-in record found for today' });
-    }
-
-    if (existing[0].clock_out_time) {
-      return res.status(400).json({ error: 'Already clocked out for today' });
-    }
-
-    // Calculate hours (simplified)
-    const clockIn = existing[0].clock_in_time;
-    const timeIn = new Date(`1970-01-01T\${clockIn}Z`);
-    const timeOut = new Date(`1970-01-01T\${nowTime}Z`);
+    // Calculate duration for this session
+    const clockIn = active[0].clock_in_time;
+    const dateStr = active[0].date; // YYYY-MM-DD
+    const timeIn = new Date(`1970-01-01T${clockIn}Z`);
+    const timeOut = new Date(`1970-01-01T${nowTime}Z`);
     let diff = (timeOut - timeIn) / (1000 * 60 * 60);
-    if (diff < 0) diff = 0;
+    if (diff < 0) diff += 24;
 
-    await db.execute('UPDATE attendance SET clock_out_time = ?, total_hours = ? WHERE id = ?', [nowTime, diff.toFixed(2), existing[0].id]);
-    res.json({ message: 'Clocked out successfully', time: nowTime, hours: diff.toFixed(2) });
+    const dayOfWeek = new Date(dateStr).getDay(); // 0 = Sun, 6 = Sat
+    const isWeekend = (dayOfWeek === 0 || dayOfWeek === 6);
+
+    // Calculate how much is after 17:00
+    const limit17 = new Date(`1970-01-01T17:00:00Z`);
+    let normalDiff = diff;
+    let otDiff = 0;
+
+    if (isWeekend) {
+      // All weekend work is OT
+      normalDiff = 0;
+      otDiff = diff;
+    } else {
+      // Split based on 5 PM limit
+      if (timeIn < limit17) {
+        if (timeOut > limit17) {
+          normalDiff = (limit17 - timeIn) / (1000 * 60 * 60);
+          otDiff = (timeOut - limit17) / (1000 * 60 * 60);
+        } else {
+          normalDiff = diff;
+          otDiff = 0;
+        }
+      } else {
+        // Started after 5 PM
+        normalDiff = 0;
+        otDiff = diff;
+      }
+
+      // Also cap normal hours at 8 per day total
+      const [todayTotal] = await db.execute(
+        'SELECT SUM(total_hours) as total FROM attendance WHERE user_id = ? AND date = ? AND id != ?',
+        [userId, dateStr, active[0].id]
+      );
+      const hoursAlreadyLogged = todayTotal[0].total || 0;
+      const remainingNormalCap = Math.max(0, 8 - hoursAlreadyLogged);
+      
+      const cappedNormal = Math.min(normalDiff, remainingNormalCap);
+      const excessFromCap = normalDiff - cappedNormal;
+      
+      normalDiff = cappedNormal;
+      otDiff += excessFromCap;
+    }
+
+    await db.execute(
+      'UPDATE attendance SET clock_out_time = ?, total_hours = ?, ot_hours = ? WHERE id = ?',
+      [nowTime, normalDiff.toFixed(2), otDiff.toFixed(2), active[0].id]
+    );
+    res.json({ message: 'Clocked out successfully', time: nowTime, hours: normalDiff.toFixed(2), ot: otDiff.toFixed(2) });
   } catch (error) {
-    console.error('Clock-out error:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
 });
 
-// Submit Daily Log
+// Intern Logs CRUD
+app.get('/api/intern/logs', requireAuth, async (req, res) => {
+  const userId = req.session.user.id;
+  try {
+    const [logs] = await db.execute('SELECT * FROM daily_logs WHERE user_id = ? ORDER BY date_start DESC, id DESC', [userId]);
+    res.json({ logs });
+  } catch (error) {
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
 app.post('/api/intern/log', requireAuth, async (req, res) => {
   const userId = req.session.user.id;
-  const { date, hours_spent, task_category, description, is_draft } = req.body;
-  const status = is_draft ? 'pending' : 'reviewed'; // As per UI it's pending initially, here using reviewed if it's not draft just to show diff, but usually it's pending. Let's make it pending by default.
-  const actualStatus = 'pending';
-
+  const { date_start, date_finish, task_category, description, status, color } = req.body;
   try {
-    await db.execute('INSERT INTO daily_logs (user_id, date, hours_spent, task_category, description, status) VALUES (?, ?, ?, ?, ?, ?)', 
-      [userId, date, hours_spent, task_category, description, actualStatus]);
-    res.json({ message: 'Log submitted successfully' });
+    await db.execute(
+      'INSERT INTO daily_logs (user_id, date, date_start, date_finish, task_category, description, status, color) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
+      [userId, date_start || new Date().toISOString().slice(0,10), date_start, date_finish, task_category, description, status || 'Plan', color || '#3e76fe']
+    );
+    res.json({ message: 'Log created successfully' });
   } catch (error) {
-    console.error('Log submission error:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
 });
 
-// Get Intern Dashboard Data
+app.put('/api/intern/log/:id', requireAuth, async (req, res) => {
+  const userId = req.session.user.id;
+  const { id } = req.params;
+  const { date_start, date_finish, task_category, description, status, color } = req.body;
+  try {
+    await db.execute(
+      'UPDATE daily_logs SET date=?, date_start=?, date_finish=?, task_category=?, description=?, status=?, color=? WHERE id=? AND user_id=?',
+      [date_start || new Date().toISOString().slice(0,10), date_start, date_finish, task_category, description, status, color, id, userId]
+    );
+    res.json({ message: 'Log updated successfully' });
+  } catch (error) {
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+app.delete('/api/intern/log/:id', requireAuth, async (req, res) => {
+  const userId = req.session.user.id;
+  const { id } = req.params;
+  try {
+    await db.execute('DELETE FROM daily_logs WHERE id=? AND user_id=?', [id, userId]);
+    res.json({ message: 'Log deleted successfully' });
+  } catch (error) {
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// Intern Dash & Calendar
 app.get('/api/intern/dashboard', requireAuth, async (req, res) => {
   const userId = req.session.user.id;
   try {
-    const [attendance] = await db.execute('SELECT * FROM attendance WHERE user_id = ? ORDER BY date DESC LIMIT 7', [userId]);
-    const [logs] = await db.execute('SELECT * FROM daily_logs WHERE user_id = ? ORDER BY date DESC LIMIT 5', [userId]);
-    
-    // Total hours
-    const [totalHoursRes] = await db.execute('SELECT SUM(total_hours) as total_hours FROM attendance WHERE user_id = ?', [userId]);
-    
-    res.json({
-      attendance,
-      logs,
-      totalHours: totalHoursRes[0].total_hours || 0
-    });
+    const [attendance] = await db.execute('SELECT * FROM attendance WHERE user_id = ? ORDER BY date DESC, id DESC', [userId]);
+    const [logs] = await db.execute('SELECT * FROM daily_logs WHERE user_id = ? ORDER BY date DESC', [userId]);
+    const [totalHoursRes] = await db.execute('SELECT SUM(total_hours) as total_hours, SUM(ot_hours) as total_ot_hours FROM attendance WHERE user_id = ?', [userId]);
+    res.json({ attendance, logs, totalHours: totalHoursRes[0].total_hours || 0, totalOtHours: totalHoursRes[0].total_ot_hours || 0 });
   } catch (error) {
     res.status(500).json({ error: 'Internal server error' });
   }
 });
 
-// Get Manager Dashboard Data
+app.get('/api/intern/calendar', requireAuth, async (req, res) => {
+  try {
+    const [users] = await db.execute(`SELECT id, full_name, username FROM users WHERE role = 'intern'`);
+    const userIds = users.map(u => u.id);
+    
+    if (userIds.length === 0) return res.json({ attendance: [], logs: [], users: [] });
+
+    const placeholders = userIds.map(() => '?').join(',');
+    const [attendance] = await db.execute(`SELECT * FROM attendance WHERE user_id IN (${placeholders}) ORDER BY date ASC`, userIds);
+    const [logs] = await db.execute(`SELECT * FROM daily_logs WHERE user_id IN (${placeholders}) ORDER BY date_start ASC`, userIds);
+    
+    res.json({ attendance, logs, users });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// Manager Endpoints
 app.get('/api/manager/dashboard', requireAdmin, async (req, res) => {
   try {
-    // Total program hours
+    // 1. Total Program Hours (Sum of all attendance total_hours)
     const [totalHoursRes] = await db.execute('SELECT SUM(total_hours) as total_program_hours FROM attendance');
     
-    // Live roster (Check if there is a clock in without clock out today)
-    const today = new Date().toISOString().slice(0, 10);
     const [roster] = await db.execute(`
       SELECT u.id, u.full_name, u.username,
-        CASE WHEN a.clock_in_time IS NOT NULL AND a.clock_out_time IS NULL THEN 'online' ELSE 'offline' END as status
+        (SELECT CASE WHEN COUNT(*) > 0 THEN 'online' ELSE 'offline' END
+         FROM attendance a
+         WHERE a.user_id = u.id AND a.clock_out_time IS NULL) as status
       FROM users u
-      LEFT JOIN attendance a ON u.id = a.user_id AND a.date = ?
       WHERE u.role = 'intern'
-    `, [today]);
-
-    // Monthly overview
-    const [overview] = await db.execute(`
-      SELECT u.full_name, u.role, 
-             IFNULL(SUM(a.total_hours), 0) as total_hours,
-             COUNT(a.id) as days_present
-      FROM users u
-      LEFT JOIN attendance a ON u.id = a.user_id
-      WHERE u.role = 'intern'
-      GROUP BY u.id
     `);
 
-    // Recent logs
-    const [recentLogs] = await db.execute(`
-      SELECT l.*, u.full_name 
+    const [attendanceLogs] = await db.execute(`
+      SELECT 'attendance' as type, u.full_name, a.date, a.clock_in_time as time_in, a.clock_out_time as time_out,
+             a.total_hours, a.ot_hours, a.id as record_id
+      FROM attendance a
+      JOIN users u ON a.user_id = u.id
+      WHERE u.role = 'intern'
+      ORDER BY a.id DESC LIMIT 10
+    `);
+
+    const [dailyTasks] = await db.execute(`
+      SELECT 'task' as type, u.full_name, l.date_start as date, l.task_category, l.description, l.status, l.id as record_id
       FROM daily_logs l
       JOIN users u ON l.user_id = u.id
-      ORDER BY l.date DESC LIMIT 10
+      WHERE u.role = 'intern'
+      ORDER BY l.id DESC LIMIT 15
     `);
 
-    res.json({
-      totalProgramHours: totalHoursRes[0].total_program_hours || 0,
-      roster,
-      overview,
-      recentLogs
+    // Combine and sort by date/ID if needed, but for now we'll send them separately for specialized UI components
+    res.json({ 
+      totalProgramHours: totalHoursRes[0].total_program_hours || 0, 
+      roster, 
+      recentAttendance: attendanceLogs,
+      recentTasks: dailyTasks
     });
+  } catch (error) {
+    console.error('Manager dashboard error:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+app.get('/api/manager/calendar-data', requireAdmin, async (req, res) => {
+  try {
+    const [users] = await db.execute("SELECT id, full_name, username FROM users WHERE role = 'intern'");
+    const [attendance] = await db.execute(`
+      SELECT a.*, u.full_name, u.username
+      FROM attendance a
+      JOIN users u ON a.user_id = u.id
+      WHERE u.role = 'intern'
+      ORDER BY a.date ASC, a.clock_in_time ASC
+    `);
+    const [logs] = await db.execute(`
+      SELECT dl.*, u.full_name, u.username
+      FROM daily_logs dl
+      JOIN users u ON dl.user_id = u.id
+      WHERE u.role = 'intern'
+      ORDER BY dl.date_start ASC, dl.id ASC
+    `);
+    res.json({ users, attendance, logs });
+  } catch (error) {
+    console.error('Manager calendar data error:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+app.get('/api/logs/all', requireAdmin, async (req, res) => {
+  try {
+    const [logs] = await db.execute(`
+      SELECT dl.*, u.full_name, u.username FROM daily_logs dl
+      JOIN users u ON dl.user_id = u.id
+      ORDER BY dl.date DESC, dl.id DESC
+    `);
+    res.json({ logs });
   } catch (error) {
     res.status(500).json({ error: 'Internal server error' });
   }
 });
 
-// Start the server
+app.post('/api/logs/:id/approve', requireAdmin, async (req, res) => {
+  try {
+    await db.execute('UPDATE daily_logs SET status = ? WHERE id = ?', ['approved', req.params.id]);
+    res.json({ message: 'Log approved successfully' });
+  } catch (error) {
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+app.post('/api/logs/:id/reject', requireAdmin, async (req, res) => {
+  try {
+    await db.execute('UPDATE daily_logs SET status = ? WHERE id = ?', ['rejected', req.params.id]);
+    res.json({ message: 'Log rejected successfully' });
+  } catch (error) {
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// Health check
+app.get('/health', async (req, res) => {
+  try {
+    await db.execute('SELECT 1');
+    res.json({ status: 'ok', timestamp: new Date().toISOString() });
+  } catch (error) {
+    res.status(503).json({ status: 'error', message: 'Database unavailable' });
+  }
+});
+
+// Final Handlers
+app.use((req, res) => res.status(404).json({ error: 'Not found' }));
+
 app.listen(PORT, () => {
-  console.log(`Server is running on port \${PORT}`);
+  console.log(`Server is running on port ${PORT}`);
 });

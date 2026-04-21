@@ -1,0 +1,515 @@
+<!doctype html>
+
+<html class="light" lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+  <title>Manager Logs - Internship Manager</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;family=Inter:wght@400;500;600&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+    rel="stylesheet" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+    rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "on-secondary": "#f7f9ff",
+            outline: "#747c80",
+            "primary-fixed-dim": "#2d68f0",
+            "surface-bright": "#f7f9fb",
+            "on-tertiary-fixed": "#422d53",
+            "tertiary-fixed-dim": "#d8bceb",
+            tertiary: "#6d567f",
+            "error-container": "#fa746f",
+            "outline-variant": "#acb3b7",
+            "secondary-container": "#d3e4fe",
+            "on-primary-fixed-variant": "#f9f7ff",
+            "error-dim": "#67040d",
+            "secondary-fixed": "#d3e4fe",
+            primary: "#0053dc",
+            "surface-container-low": "#f0f4f7",
+            "surface-container-high": "#e3e9ed",
+            "surface-container-highest": "#dce4e8",
+            "on-error-container": "#6e0a12",
+            "primary-fixed": "#3e76fe",
+            error: "#a83836",
+            "on-tertiary": "#fff6fe",
+            "secondary-dim": "#44546a",
+            "on-primary": "#faf8ff",
+            "on-secondary-container": "#435368",
+            "surface-dim": "#d4dbdf",
+            "on-error": "#fff7f6",
+            "surface-container": "#eaeff2",
+            "on-background": "#2c3437",
+            "inverse-on-surface": "#9a9d9f",
+            "tertiary-fixed": "#e6cafa",
+            "surface-container-lowest": "#ffffff",
+            "primary-dim": "#0049c2",
+            "tertiary-container": "#e6cafa",
+            "on-surface-variant": "#596064",
+            "on-secondary-fixed": "#314055",
+            "inverse-surface": "#0b0f10",
+            "on-primary-fixed": "#ffffff",
+            "primary-container": "#3e76fe",
+            background: "#f7f9fb",
+            "on-tertiary-fixed-variant": "#604a71",
+            "on-surface": "#2c3437",
+            "on-primary-container": "#000000",
+            secondary: "#506076",
+            "on-secondary-fixed-variant": "#4d5d73",
+            surface: "#f7f9fb",
+            "surface-tint": "#0053dc",
+            "inverse-primary": "#618bff",
+            "surface-variant": "#dce4e8",
+            "on-tertiary-container": "#564067",
+            "secondary-fixed-dim": "#c5d6f0",
+            "tertiary-dim": "#604a72",
+          },
+          borderRadius: {
+            DEFAULT: "0.125rem",
+            lg: "0.25rem",
+            xl: "0.5rem",
+            full: "0.75rem",
+          },
+          fontFamily: {
+            headline: ["Manrope"],
+            body: ["Inter"],
+            label: ["Inter"],
+          },
+        },
+      },
+    };
+  </script>
+  <style>
+    .material-symbols-outlined {
+      font-variation-settings:
+        "FILL" 0,
+        "wght" 400,
+        "GRAD" 0,
+        "opsz" 24;
+    }
+
+    body {
+      font-family: "Inter", sans-serif;
+    }
+
+    h1,
+    h2,
+    h3,
+    h4,
+    .font-headline {
+      font-family: "Manrope", sans-serif;
+    }
+
+    .glass-effect {
+      backdrop-filter: blur(12px);
+      background: rgba(255, 255, 255, 0.8);
+    }
+  </style>
+</head>
+
+<body class="bg-background text-on-background min-h-screen flex flex-col md:flex-row">
+  <!-- TopNavBar (Web & Mobile, hidden on md if SideNav is present, but using as top bar per instruction if needed. Actually, instructed to use SideNav for Web. Let's use SideNavBar for md:flex and TopNavBar for md:hidden) -->
+  <!-- Mobile Top Navigation -->
+  <nav
+    class="md:hidden glass-panel docked full-width top-0 sticky z-40 flex justify-between items-center w-full px-8 py-3 mx-auto shadow-[0_8px_32px_rgba(44,52,55,0.06)] no-border tonal-shift-bg bg-white/80 dark:bg-slate-900/80 backdrop-blur-md">
+    <div class="text-xl font-extrabold tracking-tight text-slate-900 dark:text-white font-headline">
+      Architect Portal
+    </div>
+    <div class="flex items-center space-x-4 text-blue-600 dark:text-blue-400">
+      <span
+        class="material-symbols-outlined cursor-pointer hover:text-blue-700 dark:hover:text-blue-300 transition-colors scale-95 active:scale-90 duration-200">notifications</span>
+      <span
+        class="material-symbols-outlined cursor-pointer hover:text-blue-700 dark:hover:text-blue-300 transition-colors scale-95 active:scale-90 duration-200">help_outline</span>
+      <img alt="User profile photo" class="w-8 h-8 rounded-full ml-2"
+        data-alt="Small circular user profile picture placeholder with gray background"
+        src="https://lh3.googleusercontent.com/aida-public/AB6AXuC2ursSRIxoOm7petVp8EOqpFiWBYTKWLxJwCEnuartaYPlOktm5hPZfaRLq_fOx7AO5QBl1fddJJ7bG5Wr4sd_dyqDE6xIgyHK3CyCJwhxq6rHf6_83TUy-NV5f3Xb1QdwuLFH35MB6n2B1kokmqtV8JaYivhC8nB1kSnugEIYT7c2nrr7ns3X5DUGY9EhMpn59vDI0u6W7btVKspONUyX7ejnikePJ1htlvHbPOQOII6r4TVnlZqsvJt3jtgkbV0c5VmMxW7jE4s" />
+    </div>
+  </nav>
+  <!-- SideNavBar (Web) -->
+  <aside
+    class="hidden md:flex bg-slate-50 dark:bg-slate-950 docked left-0 h-screen w-64 bg-surface-container-low tonal-contrast flat no-shadows fixed left-0 top-0 flex flex-col h-full p-6 space-y-8 overflow-y-auto z-50">
+    <div class="flex items-center space-x-3">
+      <div
+        class="w-10 h-10 rounded-lg bg-primary flex items-center justify-center text-on-primary font-headline font-bold">
+        IM
+      </div>
+      <div>
+        <h1 class="text-lg font-bold text-slate-900 dark:text-white font-headline leading-tight">
+          Internship Manager
+        </h1>
+        <p class="text-xs text-on-surface-variant font-label">
+          Institutional Authority
+        </p>
+      </div>
+    </div>
+    <nav class="flex-1 space-y-2 mt-8">
+      <a class="flex items-center space-x-3 px-4 py-3 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/50 rounded-lg font-label text-sm hover:translate-x-1 transition-all duration-300"
+        href="manager-dashboard.html">
+        <span class="material-symbols-outlined" style="font-variation-settings: &quot;FILL&quot; 1">grid_view</span>
+        <span>Dashboard</span>
+      </a>
+      <a class="flex items-center space-x-3 px-4 py-3 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/50 rounded-lg font-label text-sm hover:translate-x-1 transition-all duration-300"
+        href="manager-attendance.html">
+        <span class="material-symbols-outlined">event_available</span>
+        <span>Attendance</span>
+      </a>
+      <a class="flex items-center space-x-3 px-4 py-3 text-blue-700 dark:text-blue-300 font-semibold bg-blue-50 dark:bg-blue-900/20 rounded-lg font-label text-sm hover:translate-x-1 transition-all duration-300"
+        href="#">
+        <span class="material-symbols-outlined">history_edu</span>
+        <span>Logs</span>
+      </a>
+    </nav>
+    <div class="mt-auto pt-6 border-t border-outline-variant/10">
+      <button id="logout-btn" class="w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-red-500 hover:bg-red-50 transition-all font-semibold group">
+        <span class="material-symbols-outlined group-hover:rotate-12 transition-transform">logout</span>
+        <span class="text-sm">Sign Out</span>
+      </button>
+    </div>
+  </aside>
+  <!-- Main Content Area -->
+  <main class="flex-1 md:ml-64 p-6 md:p-12 max-w-7xl mx-auto w-full">
+    <!-- Header Section -->
+    <header class="mb-12 flex flex-col md:flex-row md:items-end justify-between gap-4">
+      <div>
+        <p class="text-on-surface-variant font-label text-sm mb-1 uppercase tracking-wider">
+          Log Management
+        </p>
+        <h2 class="text-4xl font-headline font-extrabold text-on-surface">
+          Review Daily Logs
+        </h2>
+      </div>
+    </header>
+    <!-- Bento Grid Layout -->
+    <div class="grid grid-cols-1 md:grid-cols-12 gap-8">
+      <!-- Stats Cards -->
+      <div class="md:col-span-3 bg-surface-container-lowest rounded-xl p-6 ambient-shadow">
+        <h3 class="font-headline text-lg font-bold text-on-surface mb-4">
+          Plan
+        </h3>
+        <div class="text-3xl font-extrabold gradient-text" id="countPlan">0</div>
+        <p class="text-sm text-on-surface-variant mt-2">Tasks in planning phase</p>
+      </div>
+      <div class="md:col-span-3 bg-surface-container-lowest rounded-xl p-6 ambient-shadow">
+        <h3 class="font-headline text-lg font-bold text-on-surface mb-4">
+          To Do
+        </h3>
+        <div class="text-3xl font-extrabold text-emerald-600" id="countToDo">0</div>
+        <p class="text-sm text-on-surface-variant mt-2">Tasks to be started</p>
+      </div>
+      <div class="md:col-span-3 bg-surface-container-lowest rounded-xl p-6 ambient-shadow">
+        <h3 class="font-headline text-lg font-bold text-on-surface mb-4">
+          In Progress
+        </h3>
+        <div class="text-3xl font-extrabold text-primary" id="countInProgress">0</div>
+        <p class="text-sm text-on-surface-variant mt-2">Tasks currently active</p>
+      </div>
+      <div class="md:col-span-3 bg-surface-container-lowest rounded-xl p-6 ambient-shadow">
+        <h3 class="font-headline text-lg font-bold text-on-surface mb-4">
+          Done
+        </h3>
+        <div class="text-3xl font-extrabold text-secondary" id="countDone">0</div>
+        <p class="text-sm text-on-surface-variant mt-2">Completed tasks</p>
+      </div>
+
+      <!-- Filters Section -->
+      <div class="md:col-span-12 bg-surface-container-low rounded-xl p-6">
+        <h3 class="font-headline text-xl font-bold text-on-surface mb-6">
+          Filter Logs
+        </h3>
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <div>
+            <label class="block text-sm font-medium text-on-surface-variant mb-2">Date Range</label>
+            <select
+              class="w-full px-3 py-2 border border-outline rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+              id="dateFilter">
+              <option value="all">All Time</option>
+              <option value="today">Today</option>
+              <option value="week">This Week</option>
+              <option value="month" selected>This Month</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-on-surface-variant mb-2">Intern</label>
+            <select
+              class="w-full px-3 py-2 border border-outline rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+              id="internFilter">
+              <option value="all">All Interns</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-on-surface-variant mb-2">Status</label>
+            <select
+              class="w-full px-3 py-2 border border-outline rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+              id="statusFilter">
+              <option value="all">All Status</option>
+              <option value="Plan">Plan</option>
+              <option value="To Do">To Do</option>
+              <option value="In Progress">In Progress</option>
+              <option value="Done">Done</option>
+            </select>
+          </div>
+          <div class="flex items-end">
+            <button
+              class="w-full bg-primary text-on-primary px-4 py-2 rounded-lg font-medium hover:bg-primary-dim transition-colors"
+              onclick="applyFilters()">
+              Apply Filters
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Logs List -->
+      <div class="md:col-span-12 bg-surface-container-lowest rounded-xl pt-8 pb-4 ambient-shadow overflow-hidden">
+        <div class="px-8 mb-6 flex justify-between items-end">
+          <h3 class="font-headline text-xl font-bold text-on-surface">
+            Daily Logs Review
+          </h3>
+          <button class="text-sm font-label font-medium text-primary hover:text-primary-dim transition-colors">
+            Export Report
+          </button>
+        </div>
+        <div class="space-y-4" id="logsContainer">
+          <!-- Logs will be populated by JavaScript -->
+        </div>
+      </div>
+    </div>
+  </main>
+  <!-- Background Decoration -->
+  <div class="fixed top-0 right-0 -z-10 w-1/2 h-full opacity-30 pointer-events-none">
+    <div class="absolute top-20 right-20 w-96 h-96 bg-primary-container rounded-full blur-[120px]"></div>
+    <div class="absolute bottom-20 right-40 w-64 h-64 bg-tertiary-container rounded-full blur-[100px]"></div>
+  </div>
+  <script>
+    let allLogs = [];
+    let filteredLogs = [];
+
+    // Fetch and populate logs management
+    async function loadLogsManagement() {
+      try {
+        const response = await fetch('/api/manager/dashboard');
+        if (!response.ok) {
+          window.location.href = 'index.html';
+          return;
+        }
+        const data = await response.json();
+
+        // Get all logs (we'll need to fetch all logs, not just recent ones)
+        const logsResponse = await fetch('/api/logs/all');
+        if (logsResponse.ok) {
+          const logsData = await logsResponse.json();
+          allLogs = logsData.logs || [];
+        } else {
+          // Fallback to recent logs from dashboard
+          allLogs = data.recentLogs || [];
+        }
+
+        filteredLogs = [...allLogs];
+
+        // Update stats
+        updateStats();
+
+        // Populate intern filter
+        populateInternFilter(data.roster || []);
+
+        // Display logs
+        displayLogs();
+
+      } catch (error) {
+        console.error('Error loading logs management:', error);
+      }
+    }
+
+    function updateStats() {
+      const plan = allLogs.filter(log => log.status === 'Plan' || log.task_category === 'Plan').length;
+      const todo = allLogs.filter(log => log.status === 'To Do' || log.task_category === 'To Do').length;
+      const inprogress = allLogs.filter(log => log.status === 'In Progress' || log.task_category === 'In Progress').length;
+      const done = allLogs.filter(log => log.status === 'Done' || log.task_category === 'Done').length;
+
+      document.getElementById('countPlan').textContent = plan;
+      document.getElementById('countToDo').textContent = todo;
+      document.getElementById('countInProgress').textContent = inprogress;
+      document.getElementById('countDone').textContent = done;
+    }
+
+    function populateInternFilter(roster) {
+      const internFilter = document.getElementById('internFilter');
+      roster.forEach(intern => {
+        const option = document.createElement('option');
+        option.value = intern.id;
+        option.textContent = intern.full_name;
+        internFilter.appendChild(option);
+      });
+    }
+
+    function applyFilters() {
+      const dateFilter = document.getElementById('dateFilter').value;
+      const internFilter = document.getElementById('internFilter').value;
+      const statusFilter = document.getElementById('statusFilter').value;
+
+      filteredLogs = allLogs.filter(log => {
+        // Date filter
+        if (dateFilter !== 'all') {
+          const logDate = new Date(log.date);
+          const now = new Date();
+
+          switch (dateFilter) {
+            case 'today':
+              if (logDate.toDateString() !== now.toDateString()) return false;
+              break;
+            case 'week':
+              const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+              if (logDate < weekAgo) return false;
+              break;
+            case 'month':
+              if (logDate.getMonth() !== now.getMonth() || logDate.getFullYear() !== now.getFullYear()) return false;
+              break;
+          }
+        }
+
+        // Intern filter
+        if (internFilter !== 'all' && log.user_id != internFilter) return false;
+
+        // Status filter
+        if (statusFilter !== 'all' && log.status !== statusFilter) return false;
+
+        return true;
+      });
+
+      displayLogs();
+    }
+
+    function computeDuration(start, finish) {
+      if (!start || !finish) return '—';
+      const s = new Date(start), f = new Date(finish);
+      const diffDays = Math.round((f - s) / (1000 * 60 * 60 * 24));
+      if (diffDays < 0) return '—';
+      if (diffDays === 0) return '1 day';
+      return `${diffDays + 1} days`;
+    }
+
+    function displayLogs() {
+      const logsContainer = document.getElementById('logsContainer');
+      logsContainer.innerHTML = filteredLogs.map(log => {
+        const duration = computeDuration(log.date_start, log.date_finish);
+        return `
+            <div class="bg-surface-container-lowest p-6 rounded-xl ambient-shadow">
+              <div class="flex justify-between items-start mb-4">
+                <div class="flex items-center space-x-3">
+                  <div class="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center text-xs font-bold text-primary">
+                    ${log.full_name.split(' ').map(n => n[0]).join('').substring(0, 2)}
+                  </div>
+                  <div>
+                    <p class="font-label text-sm font-semibold text-on-surface">${log.full_name}</p>
+                    <p class="font-label text-xs text-on-surface-variant">${new Date(log.date_start || log.date).toLocaleDateString()}</p>
+                  </div>
+                </div>
+                <span class="px-3 py-1 rounded-full text-xs font-label font-medium ${
+                  log.status === 'Plan' ? 'bg-surface-container-highest text-on-surface' :
+                  log.status === 'To Do' ? 'bg-tertiary-container text-on-tertiary-container' :
+                  log.status === 'In Progress' ? 'bg-primary text-on-primary' :
+                  log.status === 'Done' ? 'bg-secondary-fixed text-on-secondary-container' :
+                  'bg-outline text-on-surface'
+                }">
+                  ${log.status}
+                </span>
+              </div>
+              <h4 class="font-headline font-semibold text-on-surface mb-2">${log.task_category}</h4>
+              <p class="text-sm font-label text-on-surface-variant line-clamp-2 mb-4">${log.description}</p>
+              <div class="flex items-center justify-between pt-4 border-t border-outline-variant/15">
+                <span class="text-sm font-label font-medium text-on-surface">${duration}</span>
+                <div class="flex space-x-2">
+                  <button class="px-3 py-1 text-xs font-medium text-primary hover:bg-primary/10 rounded-lg transition-colors" onclick="viewLogDetails(${log.id})">
+                    View Details
+                  </button>
+                </div>
+              </div>
+            </div>
+          `;
+      }).join('');
+    }
+
+    async function approveLog(logId) {
+      try {
+        const response = await fetch(`/api/logs/${logId}/approve`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' }
+        });
+
+        if (response.ok) {
+          // Update local data
+          const log = allLogs.find(l => l.id == logId);
+          if (log) log.status = 'approved';
+          applyFilters();
+          updateStats();
+        }
+      } catch (error) {
+        console.error('Error approving log:', error);
+      }
+    }
+
+    async function rejectLog(logId) {
+      try {
+        const response = await fetch(`/api/logs/${logId}/reject`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' }
+        });
+
+        if (response.ok) {
+          // Update local data
+          const log = allLogs.find(l => l.id == logId);
+          if (log) log.status = 'rejected';
+          applyFilters();
+          updateStats();
+        }
+      } catch (error) {
+        console.error('Error rejecting log:', error);
+      }
+    }
+
+    function viewLogDetails(logId) {
+      const log = allLogs.find(l => l.id == logId);
+      if (log) {
+        const duration = computeDuration(log.date_start, log.date_finish);
+        alert(`Log Details:\n\nIntern: ${log.full_name}\nStart Date: ${new Date(log.date_start).toLocaleDateString()}\nFinish Date: ${new Date(log.date_finish).toLocaleDateString()}\nTask: ${log.task_category}\nDescription: ${log.description}\nDuration: ${duration}\nStatus: ${log.status}`);
+      }
+    }
+
+    // Check session and load logs management
+    async function checkSession() {
+      try {
+        const response = await fetch('/api/session');
+        const data = await response.json();
+        if (data.user && data.user.role === 'admin') {
+          loadLogsManagement();
+        } else {
+          window.location.href = 'index.html';
+        }
+      } catch (error) {
+        window.location.href = 'index.html';
+      }
+    }
+
+    // Load on page load
+    checkSession();
+
+    document.getElementById('logout-btn').addEventListener('click', async () => {
+      try {
+        const response = await fetch('/api/logout', { method: 'POST' });
+        if (response.ok) {
+          window.location.href = 'index.html';
+        }
+      } catch (error) {
+        console.error('Logout error:', error);
+      }
+    });
+  </script>
+</body>
+
+</html>

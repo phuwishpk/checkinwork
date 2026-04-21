@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Attendance History - The Architect</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;700;800&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-tertiary": "#fff6fe",
+                        "inverse-on-surface": "#9a9d9f",
+                        "surface-container-low": "#f0f4f7",
+                        "surface-container-highest": "#dce4e8",
+                        "secondary-dim": "#44546a",
+                        "tertiary-fixed": "#e6cafa",
+                        "secondary-fixed": "#d3e4fe",
+                        "secondary-fixed-dim": "#c5d6f0",
+                        "on-primary-fixed-variant": "#f9f7ff",
+                        "tertiary-dim": "#604a72",
+                        "on-surface-variant": "#596064",
+                        "error-container": "#fa746f",
+                        "on-surface": "#2c3437",
+                        "error-dim": "#67040d",
+                        "on-error": "#fff7f6",
+                        "surface-variant": "#dce4e8",
+                        "secondary": "#506076",
+                        "surface-container-high": "#e3e9ed",
+                        "on-tertiary-fixed-variant": "#604a71",
+                        "tertiary": "#6d567f",
+                        "primary-container": "#3e76fe",
+                        "primary-fixed": "#3e76fe",
+                        "on-tertiary-fixed": "#422d53",
+                        "on-error-container": "#6e0a12",
+                        "on-secondary-fixed-variant": "#4d5d73",
+                        "on-background": "#2c3437",
+                        "on-secondary-fixed": "#314055",
+                        "error": "#a83836",
+                        "secondary-container": "#d3e4fe",
+                        "tertiary-container": "#e6cafa",
+                        "on-primary-fixed": "#ffffff",
+                        "on-secondary-container": "#435368",
+                        "primary": "#0053dc",
+                        "background": "#f7f9fb",
+                        "on-primary": "#faf8ff",
+                        "inverse-surface": "#0b0f10",
+                        "surface-container-lowest": "#ffffff",
+                        "inverse-primary": "#618bff",
+                        "on-primary-container": "#000000",
+                        "primary-fixed-dim": "#2d68f0",
+                        "outline-variant": "#acb3b7",
+                        "surface": "#f7f9fb",
+                        "surface-dim": "#d4dbdf",
+                        "surface-container": "#eaeff2",
+                        "primary-dim": "#0049c2",
+                        "surface-tint": "#0053dc",
+                        "tertiary-fixed-dim": "#d8bceb",
+                        "surface-bright": "#f7f9fb",
+                        "outline": "#747c80",
+                        "on-tertiary-container": "#564067",
+                        "on-secondary": "#f7f9ff"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "fontFamily": {
+                        "headline": ["Manrope"],
+                        "body": ["Inter"],
+                        "label": ["Inter"]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body { font-family: 'Inter', sans-serif; }
+        h1, h2, h3 { font-family: 'Manrope', sans-serif; }
+    </style>
+</head>
+<body class="bg-background text-on-surface antialiased min-h-screen flex flex-col md:flex-row relative">
+<!-- SideNavBar -->
+<nav class="hidden md:flex bg-slate-50 dark:bg-slate-950 text-blue-600 dark:text-blue-400 font-headline docked left-0 h-screen w-64 bg-surface-container-low tonal-contrast flat no-shadows fixed left-0 top-0 flex flex-col h-full p-6 space-y-8 overflow-y-auto z-50">
+<div class="flex items-center space-x-3 mb-8">
+<div class="w-10 h-10 rounded-full bg-primary flex items-center justify-center text-on-primary font-bold text-lg">
+<span class="material-symbols-outlined">domain</span>
+</div>
+<div>
+<h1 class="text-lg font-bold text-slate-900 dark:text-white leading-tight">Internship System</h1>
+<p class="text-xs text-on-surface-variant font-body">Portal</p>
+</div>
+</div>
+<nav class="flex-1 space-y-2 mt-8">
+<a class="flex items-center space-x-3 px-4 py-3 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/50 hover:translate-x-1 transition-all duration-300" href="manager-dashboard.html">
+<span class="material-symbols-outlined">grid_view</span>
+<span class="font-body text-sm">Dashboard</span>
+</a>
+<a class="flex items-center space-x-3 px-4 py-3 rounded-lg text-blue-700 dark:text-blue-300 font-semibold bg-blue-50 dark:bg-blue-900/20 active:scale-95 transition-all duration-300" href="manager-attendance.html">
+<span class="material-symbols-outlined">event_available</span>
+<span class="font-body text-sm">Attendance</span>
+</a>
+<a class="flex items-center space-x-3 px-4 py-3 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/50 hover:translate-x-1 transition-all duration-300" href="manager-loge.html">
+<span class="material-symbols-outlined">history_edu</span>
+<span class="font-body text-sm">Logs</span>
+</a>
+</nav>
+<div class="mt-auto pt-6 border-t border-outline-variant/10">
+    <button id="logout-btn" class="w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-red-500 hover:bg-red-50 transition-all font-semibold group">
+        <span class="material-symbols-outlined group-hover:rotate-12 transition-transform">logout</span>
+        <span class="text-sm">Sign Out</span>
+    </button>
+</div>
+</nav>
+
+<!-- Main Content Area -->
+<main class="flex-1 md:ml-64 flex flex-col min-h-screen relative z-10">
+<header class="bg-white/80 dark:bg-slate-900/80 backdrop-blur-md text-blue-600 dark:text-blue-400 docked full-width top-0 sticky z-40 no-border tonal-shift-bg shadow-[0_8px_32px_rgba(44,52,55,0.06)] flex justify-between items-center w-full px-8 py-3 mx-auto">
+<div class="flex items-center space-x-4">
+<span class="text-xl font-extrabold tracking-tight text-slate-900 dark:text-white font-headline">Attendance Calendar</span>
+</div>
+<div class="flex items-center space-x-4">
+<div class="text-right hidden sm:block">
+    <div id="user-name" class="text-sm font-bold text-slate-900 dark:text-white">Loading...</div>
+    <div id="user-role" class="text-xs text-slate-500 capitalize">Role</div>
+</div>
+<div class="w-8 h-8 rounded-full bg-primary text-on-primary flex items-center justify-center font-bold">
+    <span class="material-symbols-outlined text-sm">person</span>
+</div>
+</div>
+</header>
+
+<div class="p-8 max-w-7xl mx-auto w-full flex-1">
+    <div class="flex justify-between items-center mb-6">
+        <h2 class="text-2xl font-bold font-headline text-on-surface" id="calendar-month-year">Loading...</h2>
+        <div class="flex items-center gap-4">
+            <select id="view-mode" class="min-w-[160px] bg-surface-container-low border-none rounded-xl px-4 py-2 text-sm font-bold focus:ring-2 focus:ring-primary/40">
+                <option value="all">All Info</option>
+                <option value="tasks">Tasks Only</option>
+                <option value="attendance">Attendance Only</option>
+            </select>
+            <select id="intern-filter" class="min-w-[200px] bg-surface-container-low border-none rounded-xl px-4 py-2 text-sm font-bold focus:ring-2 focus:ring-primary/40">
+                <option value="all">All Interns</option>
+                <!-- Interns will be populated here -->
+            </select>
+            <div class="flex bg-surface-container rounded-lg p-1">
+                <button id="prev-month" class="p-1.5 rounded-md hover:bg-white transition-colors"><span class="material-symbols-outlined">chevron_left</span></button>
+                <button id="next-month" class="p-1.5 rounded-md hover:bg-white transition-colors"><span class="material-symbols-outlined">chevron_right</span></button>
+            </div>
+        </div>
+    </div>
+
+    <div class="bg-white rounded-2xl shadow-sm border border-outline-variant/20 overflow-hidden">
+        <div class="grid grid-cols-7 bg-surface-container-low text-on-surface-variant font-bold text-[10px] uppercase tracking-widest py-3 text-center border-b border-outline-variant/10">
+            <div>Sun</div><div>Mon</div><div>Tue</div><div>Wed</div><div>Thu</div><div>Fri</div><div>Sat</div>
+        </div>
+        <div id="calendar-grid" class="calendar-grid"></div>
+    </div>
+  </div>
+</main>
+
+<style>
+    .calendar-grid { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); background-color: #e3e9ed; border-left: 1px solid #e3e9ed; border-top: 1px solid #e3e9ed; }
+    .calendar-cell { background-color: white; min-height: 160px; padding: 0.5rem; display: flex; flex-direction: column; position: relative; border-right: 1px solid #e3e9ed; border-bottom: 1px solid #e3e9ed; overflow: hidden; }
+    .log-bar { 
+        height: 22px; 
+        margin-bottom: 2px; 
+        padding: 0 6px; 
+        font-size: 9px; 
+        font-weight: 700; 
+        display: flex; 
+        align-items: center; 
+        border-radius: 4px;
+        color: white;
+        white-space: nowrap;
+        overflow: hidden;
+        cursor: pointer;
+    }
+    .span-start { border-top-right-radius: 0; border-bottom-right-radius: 0; margin-right: -0.51rem; width: calc(100% + 0.51rem); }
+    .span-mid { border-radius: 0; margin-left: -0.51rem; margin-right: -0.51rem; width: calc(100% + 1.02rem); }
+    .span-end { border-top-left-radius: 0; border-bottom-left-radius: 0; margin-left: -0.51rem; width: calc(100% + 0.51rem); }
+    
+    .user-box {
+        border-radius: 6px;
+        padding: 4px;
+        margin-bottom: 4px;
+        border-left: 3px solid;
+    }
+</style>
+
+<script src="/js/app.js"></script>
+</body></html>

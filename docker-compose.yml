@@ -1,20 +1,18 @@
-version: '3.8'
-
 services:
-  mariadb:
-    image: mariadb:latest
-    container_name: internship_mariadb
-    restart: always
-    environment:
-      MARIADB_ROOT_PASSWORD: your_database_password
-      MARIADB_DATABASE: internship_db
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: checkinwork_app
+    restart: unless-stopped
     ports:
-      - "3306:3306"
+      - "3000:3000"
     volumes:
-      # Mount the initialization script so it runs automatically on the first startup
-      - ./init_db.sql:/docker-entrypoint-initdb.d/init_db.sql
-      # Persist data so it's not lost when the container stops
-      - mariadb_data:/var/lib/mysql
-
-volumes:
-  mariadb_data:
+      # Mount the database file to persist data between container restarts.
+      # Note: If the file doesn't exist on the host, Docker might create a directory instead.
+      # Since it exists locally, this will work fine.
+      - ./database.sqlite:/app/database.sqlite
+    environment:
+      - NODE_ENV=development
+      - PORT=3000
+      - TZ=Asia/Bangkok
