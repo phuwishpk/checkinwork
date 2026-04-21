@@ -120,6 +120,19 @@
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
       }
+      .custom-scrollbar::-webkit-scrollbar {
+        width: 4px;
+      }
+      .custom-scrollbar::-webkit-scrollbar-track {
+        background: transparent;
+      }
+      .custom-scrollbar::-webkit-scrollbar-thumb {
+        background: #eaeff2;
+        border-radius: 10px;
+      }
+      .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+        background: #dce4e8;
+      }
     </style>
   </head>
   <body
@@ -220,52 +233,34 @@
             Overview
           </p>
           <h2 class="text-4xl font-headline font-extrabold text-on-surface">
-            Good morning, Admin
+            <span id="dynamic-greeting">Good morning</span>, Admin
           </h2>
-        </div>
-        <div
-          class="flex items-center space-x-4 bg-surface-container-lowest px-4 py-2 rounded-xl ambient-shadow"
-        >
-          <span class="text-sm font-label text-on-surface-variant"
-            >Current Term:</span
-          >
-          <span class="text-sm font-label font-semibold text-primary"
-            >Fall 2024</span
-          >
         </div>
       </header>
       <!-- Bento Grid Layout -->
       <div class="grid grid-cols-1 md:grid-cols-12 gap-8">
-        <!-- Hero Metric: Progress Glass (Col Span 8) -->
-        <div
-          class="md:col-span-8 bg-surface-container-lowest rounded-xl p-8 ambient-shadow relative overflow-hidden flex flex-col justify-between"
-        >
-          <div
-            class="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-primary to-primary-container"
-          ></div>
-          <div class="flex justify-between items-start mb-8">
+        <!-- Activity Feed Box (Col Span 8) -->
+        <div class="md:col-span-8 bg-white rounded-3xl p-8 shadow-sm border border-outline-variant/10 relative overflow-hidden flex flex-col">
+          <div class="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-primary to-primary-container"></div>
+          
+          <div class="flex justify-between items-center mb-8">
             <div>
-              <h3 class="font-headline text-xl font-bold text-on-surface mb-1">
-                Total Program Hours
+              <h3 class="font-headline text-xl font-bold text-on-surface mb-1 flex items-center gap-2">
+                <span class="material-symbols-outlined text-primary">history</span>
+                Activity Stream
               </h3>
-              <p class="text-sm text-on-surface-variant font-label">
-                Across 3 active interns this month
-              </p>
+              <p class="text-xs text-on-surface-variant font-label">Real-time internship updates</p>
             </div>
-            <span
-              class="material-symbols-outlined text-primary bg-primary-container/10 p-2 rounded-full"
-              >schedule</span
-            >
+            <div class="text-right">
+              <div class="flex items-baseline gap-1 justify-end">
+                <span id="totalProgramHours" class="text-3xl font-extrabold text-primary font-headline">0.0</span>
+                <span class="text-[10px] font-bold text-on-surface-variant uppercase">hrs total</span>
+              </div>
+            </div>
           </div>
-          <div class="flex items-end space-x-4">
-            <span
-              class="font-headline text-6xl font-extrabold gradient-text tracking-tighter"
-              id="totalProgramHours"
-              >0</span
-            >
-            <span class="text-on-surface-variant font-label text-lg mb-2"
-              >hrs logged</span
-            >
+
+          <div id="activityStreamContainer" class="space-y-4 max-h-[600px] overflow-y-auto pr-2 custom-scrollbar">
+            <!-- Activities will be populated by JavaScript -->
           </div>
         </div>
         <!-- Real-time Status (Col Span 4) -->
@@ -289,50 +284,6 @@
             <!-- Intern entries will be populated by JavaScript -->
           </div>
         </div>
-        <!-- Attendance Summary Table (Col Span 12) -->
-        <div
-          class="md:col-span-12 bg-surface-container-lowest rounded-xl pt-8 pb-4 ambient-shadow overflow-hidden"
-        >
-          <div class="px-8 mb-6 flex justify-between items-end">
-            <h3 class="font-headline text-xl font-bold text-on-surface">
-              Monthly Overview
-            </h3>
-            <button
-              class="text-sm font-label font-medium text-primary hover:text-primary-dim transition-colors"
-            >
-              Export Report
-            </button>
-          </div>
-          <div class="overflow-x-auto">
-            <table class="w-full text-left border-collapse">
-              <thead>
-                <tr
-                  class="bg-surface text-on-surface-variant font-label text-xs uppercase tracking-wider"
-                >
-                  <th class="py-4 px-8 font-medium">Intern</th>
-                  <th class="py-4 px-8 font-medium">Role</th>
-                  <th class="py-4 px-8 font-medium">Total Hours</th>
-                  <th class="py-4 px-8 font-medium">Days Present</th>
-                  <th class="py-4 px-8 font-medium">Status</th>
-                </tr>
-              </thead>
-              <tbody
-                class="text-sm font-label text-on-surface divide-y divide-surface-container-low"
-                id="overviewTableBody"
-              >
-              </tbody>
-            </table>
-          </div>
-        </div>
-        <!-- Recent Logs List (Col Span 12) -->
-        <div class="md:col-span-12 mt-4">
-          <h3 class="font-headline text-xl font-bold text-on-surface mb-6 px-2">
-            Recent Daily Logs
-          </h3>
-          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="recentLogsContainer">
-            <!-- Log cards will be populated by JavaScript -->
-          </div>
-        </div>
       </div>
     </main>
     <script>
@@ -347,7 +298,7 @@
           const data = await response.json();
           
           // Update total program hours
-          document.getElementById('totalProgramHours').textContent = Math.round(data.totalProgramHours);
+          document.getElementById('totalProgramHours').textContent = parseFloat(data.totalProgramHours).toFixed(1);
           
           // Update roster
           const rosterContainer = document.getElementById('rosterContainer');
@@ -377,55 +328,61 @@
             </div>
           `).join('');
           
-          // Update overview table
-          const overviewBody = document.getElementById('overviewTableBody');
-          overviewBody.innerHTML = data.overview.map((intern, index) => `
-            <tr class="hover:bg-surface-bright transition-colors group">
-              <td class="py-5 px-8 font-medium flex items-center space-x-3">
-                <img src="https://ui-avatars.com/api/?name=${encodeURIComponent(intern.full_name)}&background=random&color=fff" 
-                     class="w-9 h-9 rounded-full border border-white shadow-sm" />
-                <span class="font-bold text-on-surface">${intern.full_name}</span>
-              </td>
-              <td class="py-5 px-8 text-on-surface-variant">${intern.role}</td>
-              <td class="py-5 px-8 font-semibold">${parseFloat(intern.total_hours).toFixed(1)}</td>
-              <td class="py-5 px-8">${intern.days_present} days</td>
-              <td class="py-5 px-8">
-                <span class="px-3 py-1 rounded-full text-xs font-medium ${
-                  parseFloat(intern.total_hours) > 100 
-                    ? 'bg-secondary-fixed text-on-secondary-container' 
-                    : 'bg-tertiary-container text-on-tertiary-container'
-                }">
-                  ${parseFloat(intern.total_hours) > 100 ? 'On Track' : 'Needs Review'}
-                </span>
-              </td>
-            </tr>
-          `).join('');
+          // Update Activity Stream (Combine Attendance and Tasks)
+          const activityStreamContainer = document.getElementById('activityStreamContainer');
           
-          // Update recent logs
-          const logsContainer = document.getElementById('recentLogsContainer');
-          logsContainer.innerHTML = data.recentLogs.map(log => `
-            <div class="bg-surface-container-lowest rounded-xl p-6 ambient-shadow cursor-pointer hover:-translate-y-1 transition-transform duration-300">
-              <div class="flex justify-between items-start mb-4">
-                <div class="flex items-center space-x-2">
-                  <span class="material-symbols-outlined text-outline-variant text-sm">calendar_today</span>
-                  <span class="text-xs font-label text-on-surface-variant">${new Date(log.date).toLocaleDateString()}</span>
-                </div>
-                <span class="px-2 py-1 rounded-full text-[10px] font-label font-bold uppercase tracking-wide ${
-                  log.status === 'pending' 
-                    ? 'bg-tertiary-container text-on-tertiary-container' 
-                    : 'bg-secondary-fixed text-on-secondary-container'
-                }">
-                  ${log.status}
-                </span>
+          const attendanceActivity = data.recentAttendance.map(log => ({
+            ...log,
+            displayType: 'Attendance',
+            title: log.time_out ? 'Clocked Out' : 'Clocked In',
+            detail: log.time_out ? `Worked ${log.total_hours} hrs ${log.ot_hours > 0 ? `(+${log.ot_hours} OT)` : ''}` : `Started at ${log.time_in}`,
+            icon: log.time_out ? 'logout' : 'login',
+            color: log.time_out ? 'text-orange-600' : 'text-green-600',
+            bgColor: log.time_out ? 'bg-orange-50' : 'bg-green-50',
+            timestamp: new Date(`${log.date}T${log.time_in || '00:00:00'}`)
+          }));
+
+          const taskActivity = data.recentTasks.map(task => ({
+            ...task,
+            displayType: 'Task',
+            title: task.task_category,
+            detail: task.description,
+            icon: 'task_alt',
+            color: 'text-primary',
+            bgColor: 'bg-primary/5',
+            timestamp: new Date(task.date)
+          }));
+
+          const combinedActivity = [...attendanceActivity, ...taskActivity].sort((a, b) => b.timestamp - a.timestamp);
+
+          activityStreamContainer.innerHTML = combinedActivity.map(act => `
+            <div class="bg-white rounded-2xl p-6 shadow-sm border border-outline-variant/10 hover:-translate-y-1 transition-all duration-300 relative overflow-hidden group">
+              <div class="absolute top-0 right-0 p-2 opacity-10 group-hover:opacity-20 transition-opacity">
+                <span class="material-symbols-outlined text-4xl">${act.icon}</span>
               </div>
-              <h4 class="font-headline font-semibold text-on-surface mb-2">${log.task_category}</h4>
-              <p class="text-sm font-label text-on-surface-variant line-clamp-2 mb-4">${log.description}</p>
-              <div class="flex items-center justify-between pt-4 border-t border-outline-variant/15">
-                <span class="text-sm font-label font-medium text-on-surface">${log.full_name}</span>
-                <span class="text-sm font-label font-bold text-primary">${parseFloat(log.hours_spent).toFixed(1)} hrs</span>
+              <div class="flex items-center gap-3 mb-4">
+                <div class="w-8 h-8 rounded-full ${act.bgColor} ${act.color} flex items-center justify-center">
+                  <span class="material-symbols-outlined text-sm font-bold">${act.icon}</span>
+                </div>
+                <div>
+                  <span class="text-[10px] font-black uppercase tracking-widest ${act.color}">${act.displayType}</span>
+                  <p class="text-xs text-on-surface-variant font-bold">${new Date(act.date).toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' })}</p>
+                </div>
+              </div>
+              <h4 class="font-headline font-bold text-on-surface mb-2">${act.title}</h4>
+              <p class="text-sm font-label text-on-surface-variant line-clamp-2 mb-4">${act.detail}</p>
+              <div class="flex items-center justify-between pt-4 border-t border-outline-variant/10">
+                <div class="flex items-center gap-2">
+                  <div class="w-6 h-6 rounded-full bg-slate-100 flex items-center justify-center text-[8px] font-bold">
+                    ${act.full_name.split(' ').map(n => n[0]).join('')}
+                  </div>
+                  <span class="text-xs font-bold text-on-surface">${act.full_name}</span>
+                </div>
+                ${act.status ? `<span class="text-[10px] font-bold uppercase py-1 px-2 rounded bg-slate-100 text-slate-600">${act.status}</span>` : ''}
               </div>
             </div>
           `).join('');
+
         } catch (error) {
           console.error('Error loading dashboard:', error);
         }
@@ -437,6 +394,7 @@
           const response = await fetch('/api/session');
           const data = await response.json();
           if (data.user && data.user.role === 'admin') {
+            updateGreeting();
             loadDashboard();
           } else {
             window.location.href = 'index.html';
@@ -444,6 +402,14 @@
         } catch (error) {
           window.location.href = 'index.html';
         }
+      }
+
+      function updateGreeting() {
+        const hour = new Date().getHours();
+        const greetingEl = document.getElementById('dynamic-greeting');
+        if (hour < 12) greetingEl.textContent = "Good morning";
+        else if (hour < 18) greetingEl.textContent = "Good afternoon";
+        else greetingEl.textContent = "Good evening";
       }
 
       // Load on page load

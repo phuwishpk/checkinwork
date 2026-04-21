@@ -212,29 +212,46 @@ app.get('/api/intern/calendar', requireAuth, async (req, res) => {
 // Manager Endpoints
 app.get('/api/manager/dashboard', requireAdmin, async (req, res) => {
   try {
+    // 1. Total Program Hours (Sum of all attendance total_hours)
     const [totalHoursRes] = await db.execute('SELECT SUM(total_hours) as total_program_hours FROM attendance');
-    const today = new Date().toISOString().slice(0, 10);
+    
+    // 2. Roster for specific interns (Krittinai, Nawapon, Phuwish)
     const [roster] = await db.execute(`
       SELECT u.id, u.full_name, u.username,
-        CASE WHEN a.clock_in_time IS NOT NULL AND a.clock_out_time IS NULL THEN 'online' ELSE 'offline' END as status
+        (SELECT CASE WHEN COUNT(*) > 0 THEN 'online' ELSE 'offline' END 
+         FROM attendance a 
+         WHERE a.user_id = u.id AND a.clock_out_time IS NULL) as status
       FROM users u
-      LEFT JOIN attendance a ON u.id = a.user_id AND a.date = ?
-      WHERE u.role = 'intern'
-    `, [today]);
-    const [overview] = await db.execute(`
-      SELECT u.full_name, u.role, IFNULL(SUM(a.total_hours), 0) as total_hours, COUNT(a.id) as days_present
-      FROM users u
-      LEFT JOIN attendance a ON u.id = a.user_id
-      WHERE u.role = 'intern'
-      GROUP BY u.id
+      WHERE u.username IN ('krittinai', 'nawapon', 'phuwish')
     `);
-    const [recentLogs] = await db.execute(`
-      SELECT l.*, u.full_name FROM daily_logs l
+
+    // 3. Activity Feed (Unified view of Clock-ins, Clock-outs, and Tasks)
+    const [attendanceLogs] = await db.execute(`
+      SELECT 'attendance' as type, u.full_name, a.date, a.clock_in_time as time_in, a.clock_out_time as time_out, 
+             a.total_hours, a.ot_hours, a.id as record_id
+      FROM attendance a
+      JOIN users u ON a.user_id = u.id
+      WHERE u.username IN ('krittinai', 'nawapon', 'phuwish')
+      ORDER BY a.id DESC LIMIT 10
+    `);
+
+    const [dailyTasks] = await db.execute(`
+      SELECT 'task' as type, u.full_name, l.date_start as date, l.task_category, l.description, l.status, l.id as record_id
+      FROM daily_logs l
       JOIN users u ON l.user_id = u.id
-      ORDER BY l.date_start DESC, l.id DESC
+      WHERE u.username IN ('krittinai', 'nawapon', 'phuwish')
+      ORDER BY l.id DESC LIMIT 15
     `);
-    res.json({ totalProgramHours: totalHoursRes[0].total_program_hours || 0, roster, overview, recentLogs });
+
+    // Combine and sort by date/ID if needed, but for now we'll send them separately for specialized UI components
+    res.json({ 
+      totalProgramHours: totalHoursRes[0].total_program_hours || 0, 
+      roster, 
+      recentAttendance: attendanceLogs,
+      recentTasks: dailyTasks
+    });
   } catch (error) {
+    console.error('Manager dashboard error:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
 });
