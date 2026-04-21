@@ -1,11 +1,12 @@
+const path = require('path');
+require('dotenv').config({ path: path.join(__dirname, '.env') });
+
 const express = require('express');
 const session = require('express-session');
 const MySQLStore = require('express-mysql-session')(session);
 const cors = require('cors');
-const path = require('path');
 const bcrypt = require('bcryptjs');
 const db = require('./src/config/database');
-require('dotenv').config();
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -23,29 +24,32 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, 'public')));
 
 // Session store — MySQL so sessions survive across multiple Passenger workers
-const sessionStore = new MySQLStore({
-  host:     process.env.DB_HOST || 'localhost',
-  port:     parseInt(process.env.DB_PORT) || 3306,
-  user:     process.env.DB_USER,
-  password: process.env.DB_PASSWORD,
-  database: process.env.DB_NAME,
-  createDatabaseTable: true,
-  endConnectionOnClose: false,
-  schema: {
-    tableName: 'sessions',
-    columnNames: { session_id: 'session_id', expires: 'expires', data: 'data' }
-  }
-});
+let sessionStore;
+try {
+  sessionStore = new MySQLStore({
+    host:     process.env.DB_HOST || 'localhost',
+    port:     parseInt(process.env.DB_PORT) || 3306,
+    user:     process.env.DB_USER,
+    password: process.env.DB_PASSWORD,
+    database: process.env.DB_NAME,
+    createDatabaseTable: true,
+    schema: {
+      tableName: 'sessions',
+      columnNames: { session_id: 'session_id', expires: 'expires', data: 'data' }
+    }
+  });
+  sessionStore.on('error', (err) => {
+    console.error('Session store error:', err.message);
+  });
+  console.log('MySQL session store initialized');
+} catch (err) {
+  console.error('Failed to create MySQL session store, using memory store:', err.message);
+  sessionStore = undefined; // express-session will use MemoryStore
+}
 
-sessionStore.on('error', (err) => {
-  console.error('Session store error:', err.message);
-});
-
-// Session configuration
-const sessionSecret = process.env.SESSION_SECRET;
-if (!sessionSecret) {
-  console.error('FATAL: SESSION_SECRET environment variable is not set');
-  process.exit(1);
+const sessionSecret = process.env.SESSION_SECRET || 'fallback-change-in-production';
+if (!process.env.SESSION_SECRET) {
+  console.warn('WARNING: SESSION_SECRET not set — using insecure fallback');
 }
 
 app.use(session({

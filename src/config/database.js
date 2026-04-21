@@ -17,12 +17,14 @@ const pool = mysql.createPool({
 
 pool.getConnection()
   .then(conn => {
-    console.log(`MySQL connected to ${process.env.DB_HOST}:${process.env.DB_PORT || 3306} / ${process.env.DB_NAME}`);
+    console.log(`MySQL connected to ${process.env.DB_HOST || 'localhost'}:${process.env.DB_PORT || 3306} / ${process.env.DB_NAME}`);
     conn.release();
   })
   .catch(err => {
-    console.error('FATAL: Cannot connect to MySQL database:', err.message);
-    process.exit(1);
+    console.error('DB connection failed:', err.message);
+    console.error('DB_HOST:', process.env.DB_HOST || '(not set)');
+    console.error('DB_USER:', process.env.DB_USER || '(not set)');
+    console.error('DB_NAME:', process.env.DB_NAME || '(not set)');
   });
 
 module.exports = {
