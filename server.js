@@ -74,7 +74,7 @@ app.post('/api/login', async (req, res) => {
   }
 });
 
-<<<<<<<<< Temporary merge branch 1
+
 // Get Session
 app.get('/api/session', (req, res) => {
   if (req.session.user) {
@@ -198,11 +198,12 @@ app.get('/api/manager/dashboard', requireAdmin, async (req, res) => {
   } catch (error) {
     res.status(500).json({ error: 'Internal server error' });
   }
-=========
+});
+
 // 404 handler
 app.use((req, res) => {
   res.status(404).json({ error: 'Not found' });
->>>>>>>>> Temporary merge branch 2
+
 });
 
 // Start the server
