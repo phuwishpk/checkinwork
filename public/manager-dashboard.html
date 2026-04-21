@@ -389,6 +389,15 @@
             </tr>
           `).join('');
           
+          function computeDuration(start, finish) {
+            if (!start || !finish) return '—';
+            const s = new Date(start), f = new Date(finish);
+            const diffDays = Math.round((f - s) / (1000*60*60*24));
+            if (diffDays < 0) return '—';
+            if (diffDays === 0) return '1 day';
+            return `${diffDays + 1} days`;
+          }
+
           // Update recent logs
           const logsContainer = document.getElementById('recentLogsContainer');
           logsContainer.innerHTML = data.recentLogs.map(log => `
@@ -396,12 +405,14 @@
               <div class="flex justify-between items-start mb-4">
                 <div class="flex items-center space-x-2">
                   <span class="material-symbols-outlined text-outline-variant text-sm">calendar_today</span>
-                  <span class="text-xs font-label text-on-surface-variant">${new Date(log.date).toLocaleDateString()}</span>
+                  <span class="text-xs font-label text-on-surface-variant">${new Date(log.date_start || log.date).toLocaleDateString()}</span>
                 </div>
                 <span class="px-2 py-1 rounded-full text-[10px] font-label font-bold uppercase tracking-wide ${
-                  log.status === 'pending' 
-                    ? 'bg-tertiary-container text-on-tertiary-container' 
-                    : 'bg-secondary-fixed text-on-secondary-container'
+                  log.status === 'Plan' ? 'bg-surface-container-highest text-on-surface' :
+                  log.status === 'To Do' ? 'bg-tertiary-container text-on-tertiary-container' :
+                  log.status === 'In Progress' ? 'bg-primary text-on-primary' :
+                  log.status === 'Done' ? 'bg-secondary-fixed text-on-secondary-container' :
+                  'bg-outline text-on-surface'
                 }">
                   ${log.status}
                 </span>
@@ -410,7 +421,7 @@
               <p class="text-sm font-label text-on-surface-variant line-clamp-2 mb-4">${log.description}</p>
               <div class="flex items-center justify-between pt-4 border-t border-outline-variant/15">
                 <span class="text-sm font-label font-medium text-on-surface">${log.full_name}</span>
-                <span class="text-sm font-label font-bold text-primary">${parseFloat(log.hours_spent).toFixed(1)} hrs</span>
+                <span class="text-sm font-label font-bold text-primary">${computeDuration(log.date_start, log.date_finish)}</span>
               </div>
             </div>
           `).join('');

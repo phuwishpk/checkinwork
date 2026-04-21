@@ -147,12 +147,44 @@ app.get('/api/intern/logs', requireAuth, async (req, res) => {
 // Create Daily Log
 app.post('/api/intern/log', requireAuth, async (req, res) => {
   const userId = req.session.user.id;
-  const { date, hours_spent, task_category, description } = req.body;
+  const { date_start, date_finish, task_category, description, status } = req.body;
+  const date = date_start || new Date().toISOString().slice(0, 10);
   try {
-    await db.execute('INSERT INTO daily_logs (user_id, date, hours_spent, task_category, description, status) VALUES (?, ?, ?, ?, ?, ?)',
-      [userId, date, hours_spent, task_category, description, 'pending']);
+    await db.execute('INSERT INTO daily_logs (user_id, date, date_start, date_finish, task_category, description, status) VALUES (?, ?, ?, ?, ?, ?, ?)',
+      [userId, date, date_start, date_finish, task_category, description, status || 'pending']);
     res.json({ message: 'Log submitted successfully' });
   } catch (error) {
+    console.error('Create log error:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// Update Daily Log
+app.put('/api/intern/log/:id', requireAuth, async (req, res) => {
+  const userId = req.session.user.id;
+  const logId = req.params.id;
+  const { date_start, date_finish, task_category, description, status } = req.body;
+  try {
+    await db.execute(
+      'UPDATE daily_logs SET date_start = ?, date_finish = ?, task_category = ?, description = ?, status = ? WHERE id = ? AND user_id = ?',
+      [date_start, date_finish, task_category, description, status, logId, userId]
+    );
+    res.json({ message: 'Log updated successfully' });
+  } catch (error) {
+    console.error('Update log error:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// Delete Daily Log
+app.delete('/api/intern/log/:id', requireAuth, async (req, res) => {
+  const userId = req.session.user.id;
+  const logId = req.params.id;
+  try {
+    await db.execute('DELETE FROM daily_logs WHERE id = ? AND user_id = ?', [logId, userId]);
+    res.json({ message: 'Log deleted successfully' });
+  } catch (error) {
+    console.error('Delete log error:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
 });
@@ -163,7 +195,7 @@ app.get('/api/intern/dashboard', requireAuth, async (req, res) => {
   const userId = req.session.user.id;
   try {
     const [attendance] = await db.execute('SELECT * FROM attendance WHERE user_id = ? ORDER BY date DESC, id DESC LIMIT 20', [userId]);
-    const [logs] = await db.execute('SELECT * FROM daily_logs WHERE user_id = ? ORDER BY date DESC LIMIT 5', [userId]);
+    const [logs] = await db.execute('SELECT * FROM daily_logs WHERE user_id = ? ORDER BY date_start DESC LIMIT 5', [userId]);
     const [totalHoursRes] = await db.execute('SELECT SUM(total_hours) as total_hours, SUM(ot_hours) as total_ot_hours FROM attendance WHERE user_id = ?', [userId]);
     res.json({
       attendance,
@@ -205,6 +237,22 @@ app.get('/api/manager/dashboard', requireAdmin, async (req, res) => {
     `);
     res.json({ totalProgramHours: totalHoursRes[0].total_program_hours || 0, roster, overview, recentLogs });
   } catch (error) {
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// Get all attendance for manager
+app.get('/api/manager/attendance', requireAdmin, async (req, res) => {
+  try {
+    const [attendance] = await db.execute(`
+      SELECT a.*, u.full_name, u.username
+      FROM attendance a
+      JOIN users u ON a.user_id = u.id
+      ORDER BY a.date DESC, a.clock_in_time DESC
+    `);
+    res.json({ attendance });
+  } catch (error) {
+    console.error('Error fetching attendance:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
 });
