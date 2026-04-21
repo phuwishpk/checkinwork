@@ -73,6 +73,14 @@ app.post('/api/login', async (req, res) => {
   }
 });
 
+// Logout
+app.post('/api/logout', (req, res) => {
+  req.session.destroy((err) => {
+    if (err) return res.status(500).json({ error: 'Could not log out' });
+    res.clearCookie('connect.sid');
+    res.json({ message: 'Logout successful' });
+  });
+});
 
 // Get Session
 app.get('/api/session', (req, res) => {
@@ -83,57 +91,50 @@ app.get('/api/session', (req, res) => {
   }
 });
 
-// Clock In - allowed anytime, OT tracked on clock-out
+// Clock In
 app.post('/api/clock-in', requireAuth, async (req, res) => {
   const userId = req.session.user.id;
   const today = new Date().toISOString().slice(0, 10);
   const nowTime = new Date().toTimeString().slice(0, 8);
-
   try {
-    const [existing] = await db.execute('SELECT * FROM attendance WHERE user_id = ? AND date = ?', [userId, today]);
-    
-    if (existing.length > 0) {
-      return res.status(400).json({ error: 'Already clocked in for today' });
-    }
-
+    const [active] = await db.execute('SELECT * FROM attendance WHERE user_id = ? AND clock_out_time IS NULL', [userId]);
+    if (active.length > 0) return res.status(400).json({ error: 'You are already clocked in' });
     await db.execute('INSERT INTO attendance (user_id, date, clock_in_time) VALUES (?, ?, ?)', [userId, today, nowTime]);
     res.json({ message: 'Clocked in successfully', time: nowTime });
   } catch (error) {
-    console.error('Clock-in error:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
 });
 
-// Clock Out - calculate total_hours and ot_hours
+// Clock Out
 app.post('/api/clock-out', requireAuth, async (req, res) => {
   const userId = req.session.user.id;
   const today = new Date().toISOString().slice(0, 10);
   const nowTime = new Date().toTimeString().slice(0, 8);
-
   try {
-    const [existing] = await db.execute('SELECT * FROM attendance WHERE user_id = ? AND date = ?', [userId, today]);
+    const [active] = await db.execute('SELECT * FROM attendance WHERE user_id = ? AND clock_out_time IS NULL ORDER BY id DESC LIMIT 1', [userId]);
+    if (active.length === 0) return res.status(400).json({ error: 'No active clock-in record found' });
     
-    if (existing.length === 0) {
-      return res.status(400).json({ error: 'No clock-in record found for today' });
-    }
-
-    if (existing[0].clock_out_time) {
-      return res.status(400).json({ error: 'Already clocked out for today' });
-    }
-    const clockIn = existing[0].clock_in_time;
+    const clockIn = active[0].clock_in_time;
     const timeIn = new Date(`1970-01-01T${clockIn}Z`);
     const timeOut = new Date(`1970-01-01T${nowTime}Z`);
     let diff = (timeOut - timeIn) / (1000 * 60 * 60);
     if (diff < 0) diff = 0;
-    await db.execute('UPDATE attendance SET clock_out_time = ?, total_hours = ? WHERE id = ?', [nowTime, diff.toFixed(2), existing[0].id]);
-    res.json({ message: 'Clocked out successfully', time: nowTime, hours: diff.toFixed(2) });
+
+    const normalHours = Math.min(diff, 8);
+    const otHours = Math.max(0, diff - 8);
+
+    await db.execute(
+      'UPDATE attendance SET clock_out_time = ?, total_hours = ?, ot_hours = ? WHERE id = ?',
+      [nowTime, normalHours.toFixed(2), otHours.toFixed(2), active[0].id]
+    );
+    res.json({ message: 'Clocked out successfully', time: nowTime, hours: normalHours.toFixed(2), ot: otHours.toFixed(2) });
   } catch (error) {
-    console.error('Clock-out error:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
 });
 
-// Get all logs for intern
+// Intern Logs CRUD
 app.get('/api/intern/logs', requireAuth, async (req, res) => {
   const userId = req.session.user.id;
   try {
@@ -144,15 +145,24 @@ app.get('/api/intern/logs', requireAuth, async (req, res) => {
   }
 });
 
-// Create Daily Log
 app.post('/api/intern/log', requireAuth, async (req, res) => {
   const userId = req.session.user.id;
+<<<<<<< HEAD
   const { date_start, date_finish, task_category, description, status } = req.body;
   const date = date_start || new Date().toISOString().slice(0, 10);
   try {
     await db.execute('INSERT INTO daily_logs (user_id, date, date_start, date_finish, task_category, description, status) VALUES (?, ?, ?, ?, ?, ?, ?)',
       [userId, date, date_start, date_finish, task_category, description, status || 'pending']);
     res.json({ message: 'Log submitted successfully' });
+=======
+  const { date_start, date_finish, task_category, description, status, color } = req.body;
+  try {
+    await db.execute(
+      'INSERT INTO daily_logs (user_id, date, date_start, date_finish, task_category, description, status, color) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
+      [userId, date_start || new Date().toISOString().slice(0,10), date_start, date_finish, task_category, description, status || 'Plan', color || '#3e76fe']
+    );
+    res.json({ message: 'Log created successfully' });
+>>>>>>> 9eeee0fed4d960af1fbaa4fb65a7d4925c283e24
   } catch (error) {
     console.error('Create log error:', error);
     res.status(500).json({ error: 'Internal server error' });
@@ -189,58 +199,109 @@ app.delete('/api/intern/log/:id', requireAuth, async (req, res) => {
   }
 });
 
+app.put('/api/intern/log/:id', requireAuth, async (req, res) => {
+  const userId = req.session.user.id;
+  const { id } = req.params;
+  const { date_start, date_finish, task_category, description, status, color } = req.body;
+  try {
+    await db.execute(
+      'UPDATE daily_logs SET date=?, date_start=?, date_finish=?, task_category=?, description=?, status=?, color=? WHERE id=? AND user_id=?',
+      [date_start || new Date().toISOString().slice(0,10), date_start, date_finish, task_category, description, status, color, id, userId]
+    );
+    res.json({ message: 'Log updated successfully' });
+  } catch (error) {
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
 
-// Get Intern Dashboard Data
+app.delete('/api/intern/log/:id', requireAuth, async (req, res) => {
+  const userId = req.session.user.id;
+  const { id } = req.params;
+  try {
+    await db.execute('DELETE FROM daily_logs WHERE id=? AND user_id=?', [id, userId]);
+    res.json({ message: 'Log deleted successfully' });
+  } catch (error) {
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// Intern Dash & Calendar
 app.get('/api/intern/dashboard', requireAuth, async (req, res) => {
   const userId = req.session.user.id;
   try {
+<<<<<<< HEAD
     const [attendance] = await db.execute('SELECT * FROM attendance WHERE user_id = ? ORDER BY date DESC, id DESC LIMIT 20', [userId]);
     const [logs] = await db.execute('SELECT * FROM daily_logs WHERE user_id = ? ORDER BY date_start DESC LIMIT 5', [userId]);
+=======
+    const [attendance] = await db.execute('SELECT * FROM attendance WHERE user_id = ? ORDER BY date DESC, id DESC', [userId]);
+    const [logs] = await db.execute('SELECT * FROM daily_logs WHERE user_id = ? ORDER BY date DESC', [userId]);
+>>>>>>> 9eeee0fed4d960af1fbaa4fb65a7d4925c283e24
     const [totalHoursRes] = await db.execute('SELECT SUM(total_hours) as total_hours, SUM(ot_hours) as total_ot_hours FROM attendance WHERE user_id = ?', [userId]);
-    res.json({
-      attendance,
-      logs,
-      totalHours: totalHoursRes[0].total_hours || 0,
-      totalOtHours: totalHoursRes[0].total_ot_hours || 0
-    });
+    res.json({ attendance, logs, totalHours: totalHoursRes[0].total_hours || 0, totalOtHours: totalHoursRes[0].total_ot_hours || 0 });
   } catch (error) {
     res.status(500).json({ error: 'Internal server error' });
   }
 });
 
-// Get Manager Dashboard Data
+app.get('/api/intern/calendar', requireAuth, async (req, res) => {
+  const userId = req.session.user.id;
+  try {
+    const [attendance] = await db.execute('SELECT * FROM attendance WHERE user_id = ? ORDER BY date ASC', [userId]);
+    const [logs] = await db.execute('SELECT * FROM daily_logs WHERE user_id = ? ORDER BY date_start ASC', [userId]);
+    res.json({ attendance, logs });
+  } catch (error) {
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// Manager Endpoints
 app.get('/api/manager/dashboard', requireAdmin, async (req, res) => {
   try {
+    // 1. Total Program Hours (Sum of all attendance total_hours)
     const [totalHoursRes] = await db.execute('SELECT SUM(total_hours) as total_program_hours FROM attendance');
-    const today = new Date().toISOString().slice(0, 10);
+    
+    // 2. Roster for specific interns (Krittinai, Nawapon, Phuwish)
     const [roster] = await db.execute(`
       SELECT u.id, u.full_name, u.username,
-        CASE WHEN a.clock_in_time IS NOT NULL AND a.clock_out_time IS NULL THEN 'online' ELSE 'offline' END as status
+        (SELECT CASE WHEN COUNT(*) > 0 THEN 'online' ELSE 'offline' END 
+         FROM attendance a 
+         WHERE a.user_id = u.id AND a.clock_out_time IS NULL) as status
       FROM users u
-      LEFT JOIN attendance a ON u.id = a.user_id AND a.date = ?
-      WHERE u.role = 'intern'
-    `, [today]);
-    const [overview] = await db.execute(`
-      SELECT u.full_name, u.role,
-             IFNULL(SUM(a.total_hours), 0) as total_hours,
-             COUNT(a.id) as days_present
-      FROM users u
-      LEFT JOIN attendance a ON u.id = a.user_id
-      WHERE u.role = 'intern'
-      GROUP BY u.id
+      WHERE u.username IN ('krittinai', 'nawapon', 'phuwish')
     `);
-    const [recentLogs] = await db.execute(`
-      SELECT l.*, u.full_name
+
+    // 3. Activity Feed (Unified view of Clock-ins, Clock-outs, and Tasks)
+    const [attendanceLogs] = await db.execute(`
+      SELECT 'attendance' as type, u.full_name, a.date, a.clock_in_time as time_in, a.clock_out_time as time_out, 
+             a.total_hours, a.ot_hours, a.id as record_id
+      FROM attendance a
+      JOIN users u ON a.user_id = u.id
+      WHERE u.username IN ('krittinai', 'nawapon', 'phuwish')
+      ORDER BY a.id DESC LIMIT 10
+    `);
+
+    const [dailyTasks] = await db.execute(`
+      SELECT 'task' as type, u.full_name, l.date_start as date, l.task_category, l.description, l.status, l.id as record_id
       FROM daily_logs l
       JOIN users u ON l.user_id = u.id
-      ORDER BY l.date DESC LIMIT 10
+      WHERE u.username IN ('krittinai', 'nawapon', 'phuwish')
+      ORDER BY l.id DESC LIMIT 15
     `);
-    res.json({ totalProgramHours: totalHoursRes[0].total_program_hours || 0, roster, overview, recentLogs });
+
+    // Combine and sort by date/ID if needed, but for now we'll send them separately for specialized UI components
+    res.json({ 
+      totalProgramHours: totalHoursRes[0].total_program_hours || 0, 
+      roster, 
+      recentAttendance: attendanceLogs,
+      recentTasks: dailyTasks
+    });
   } catch (error) {
+    console.error('Manager dashboard error:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
 });
 
+<<<<<<< HEAD
 // Get all attendance for manager
 app.get('/api/manager/attendance', requireAdmin, async (req, res) => {
   try {
@@ -260,61 +321,42 @@ app.get('/api/manager/attendance', requireAdmin, async (req, res) => {
 // --- Logs Management Routes ---
 
 // Get all logs for manager review
+=======
+>>>>>>> 9eeee0fed4d960af1fbaa4fb65a7d4925c283e24
 app.get('/api/logs/all', requireAdmin, async (req, res) => {
   try {
     const [logs] = await db.execute(`
-      SELECT dl.*, u.full_name, u.username
-      FROM daily_logs dl
+      SELECT dl.*, u.full_name, u.username FROM daily_logs dl
       JOIN users u ON dl.user_id = u.id
-      ORDER BY dl.date DESC, dl.created_at DESC
+      ORDER BY dl.date DESC, dl.id DESC
     `);
     res.json({ logs });
   } catch (error) {
-    console.error('Error fetching logs:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
 });
 
-// Approve a log
 app.post('/api/logs/:id/approve', requireAdmin, async (req, res) => {
-  const logId = req.params.id;
-
   try {
-    await db.execute(
-      'UPDATE daily_logs SET status = ? WHERE id = ?',
-      ['approved', logId]
-    );
+    await db.execute('UPDATE daily_logs SET status = ? WHERE id = ?', ['approved', req.params.id]);
     res.json({ message: 'Log approved successfully' });
   } catch (error) {
-    console.error('Error approving log:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
 });
 
-// Reject a log
 app.post('/api/logs/:id/reject', requireAdmin, async (req, res) => {
-  const logId = req.params.id;
-
   try {
-    await db.execute(
-      'UPDATE daily_logs SET status = ? WHERE id = ?',
-      ['rejected', logId]
-    );
+    await db.execute('UPDATE daily_logs SET status = ? WHERE id = ?', ['rejected', req.params.id]);
     res.json({ message: 'Log rejected successfully' });
   } catch (error) {
-    console.error('Error rejecting log:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
 });
 
-// 404 handler
-app.use((req, res) => {
-  res.status(404).json({ error: 'Not found' });
+// Final Handlers
+app.use((req, res) => res.status(404).json({ error: 'Not found' }));
 
-});
-
-// Start the server
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
-  console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
 });
