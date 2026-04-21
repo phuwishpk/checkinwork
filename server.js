@@ -2,6 +2,7 @@ const express = require('express');
 const session = require('express-session');
 const cors = require('cors');
 const path = require('path');
+const bcrypt = require('bcryptjs');
 const db = require('./src/config/database');
 require('dotenv').config();
 
@@ -19,7 +20,10 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 // Session configuration
 app.use(session({
-  secret: process.env.SESSION_SECRET || 'secret_key',
+  secret: (() => {
+    if (!process.env.SESSION_SECRET) throw new Error('SESSION_SECRET environment variable is required');
+    return process.env.SESSION_SECRET;
+  })(),
   resave: false,
   saveUninitialized: false,
   cookie: {
@@ -49,24 +53,20 @@ const requireAdmin = (req, res, next) => {
 // Login
 app.post('/api/login', async (req, res) => {
   const { username, password } = req.body;
+  if (!username || !password) {
+    return res.status(400).json({ error: 'Username and password are required' });
+  }
   try {
-    // Hardcoded auth users mapping
-    const hardcodedUsers = {
-      'admin': { id: 1, username: 'admin', password: 'password', role: 'admin', full_name: 'Admin Manager' },
-      'intern': { id: 2, username: 'intern', password: 'password', role: 'intern', full_name: 'Intern User' },
-      'krittinai': { id: 4, username: 'krittinai', password: 'password', role: 'intern', full_name: 'Krittinai' },
-      'nawapon': { id: 5, username: 'nawapon', password: 'password', role: 'intern', full_name: 'Nawapon' },
-      'phuwish': { id: 6, username: 'phuwish', password: 'password', role: 'intern', full_name: 'Phuwish' }
-    };
-    
-    const user = hardcodedUsers[username];
-    
-    if (user && user.password === password) {
-      req.session.user = { id: user.id, username: user.username, role: user.role, full_name: user.full_name };
-      res.json({ message: 'Login successful', user: req.session.user });
-    } else {
-      res.status(401).json({ error: 'Invalid username or password' });
+    const [rows] = await db.execute(
+      'SELECT id, username, password, role, full_name FROM users WHERE username = ?',
+      [username]
+    );
+    const user = rows[0];
+    if (!user || !(await bcrypt.compare(password, user.password))) {
+      return res.status(401).json({ error: 'Invalid username or password' });
     }
+    req.session.user = { id: user.id, username: user.username, role: user.role, full_name: user.full_name };
+    res.json({ message: 'Login successful', user: req.session.user });
   } catch (error) {
     console.error('Login error:', error);
     res.status(500).json({ error: 'Internal server error' });
@@ -242,7 +242,7 @@ app.get('/api/intern/dashboard', requireAuth, async (req, res) => {
 
 app.get('/api/intern/calendar', requireAuth, async (req, res) => {
   try {
-    const [users] = await db.execute(`SELECT id, full_name, username FROM users WHERE username IN ('krittinai', 'nawapon', 'phuwish')`);
+    const [users] = await db.execute(`SELECT id, full_name, username FROM users WHERE role = 'intern'`);
     const userIds = users.map(u => u.id);
     
     if (userIds.length === 0) return res.json({ attendance: [], logs: [], users: [] });
@@ -264,23 +264,21 @@ app.get('/api/manager/dashboard', requireAdmin, async (req, res) => {
     // 1. Total Program Hours (Sum of all attendance total_hours)
     const [totalHoursRes] = await db.execute('SELECT SUM(total_hours) as total_program_hours FROM attendance');
     
-    // 2. Roster for specific interns (Krittinai, Nawapon, Phuwish)
     const [roster] = await db.execute(`
       SELECT u.id, u.full_name, u.username,
-        (SELECT CASE WHEN COUNT(*) > 0 THEN 'online' ELSE 'offline' END 
-         FROM attendance a 
+        (SELECT CASE WHEN COUNT(*) > 0 THEN 'online' ELSE 'offline' END
+         FROM attendance a
          WHERE a.user_id = u.id AND a.clock_out_time IS NULL) as status
       FROM users u
-      WHERE u.username IN ('krittinai', 'nawapon', 'phuwish')
+      WHERE u.role = 'intern'
     `);
 
-    // 3. Activity Feed (Unified view of Clock-ins, Clock-outs, and Tasks)
     const [attendanceLogs] = await db.execute(`
-      SELECT 'attendance' as type, u.full_name, a.date, a.clock_in_time as time_in, a.clock_out_time as time_out, 
+      SELECT 'attendance' as type, u.full_name, a.date, a.clock_in_time as time_in, a.clock_out_time as time_out,
              a.total_hours, a.ot_hours, a.id as record_id
       FROM attendance a
       JOIN users u ON a.user_id = u.id
-      WHERE u.username IN ('krittinai', 'nawapon', 'phuwish')
+      WHERE u.role = 'intern'
       ORDER BY a.id DESC LIMIT 10
     `);
 
@@ -288,7 +286,7 @@ app.get('/api/manager/dashboard', requireAdmin, async (req, res) => {
       SELECT 'task' as type, u.full_name, l.date_start as date, l.task_category, l.description, l.status, l.id as record_id
       FROM daily_logs l
       JOIN users u ON l.user_id = u.id
-      WHERE u.username IN ('krittinai', 'nawapon', 'phuwish')
+      WHERE u.role = 'intern'
       ORDER BY l.id DESC LIMIT 15
     `);
 
@@ -307,19 +305,19 @@ app.get('/api/manager/dashboard', requireAdmin, async (req, res) => {
 
 app.get('/api/manager/calendar-data', requireAdmin, async (req, res) => {
   try {
-    const [users] = await db.execute("SELECT id, full_name, username FROM users WHERE role = 'intern' AND username NOT IN ('intern', 'sarah')");
+    const [users] = await db.execute("SELECT id, full_name, username FROM users WHERE role = 'intern'");
     const [attendance] = await db.execute(`
-      SELECT a.*, u.full_name, u.username 
-      FROM attendance a 
-      JOIN users u ON a.user_id = u.id 
-      WHERE u.role = 'intern' AND u.username NOT IN ('intern', 'sarah')
+      SELECT a.*, u.full_name, u.username
+      FROM attendance a
+      JOIN users u ON a.user_id = u.id
+      WHERE u.role = 'intern'
       ORDER BY a.date ASC, a.clock_in_time ASC
     `);
     const [logs] = await db.execute(`
-      SELECT dl.*, u.full_name, u.username 
-      FROM daily_logs dl 
-      JOIN users u ON dl.user_id = u.id 
-      WHERE u.role = 'intern' AND u.username NOT IN ('intern', 'sarah')
+      SELECT dl.*, u.full_name, u.username
+      FROM daily_logs dl
+      JOIN users u ON dl.user_id = u.id
+      WHERE u.role = 'intern'
       ORDER BY dl.date_start ASC, dl.id ASC
     `);
     res.json({ users, attendance, logs });
@@ -357,6 +355,16 @@ app.post('/api/logs/:id/reject', requireAdmin, async (req, res) => {
     res.json({ message: 'Log rejected successfully' });
   } catch (error) {
     res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// Health check
+app.get('/health', async (req, res) => {
+  try {
+    await db.execute('SELECT 1');
+    res.json({ status: 'ok', timestamp: new Date().toISOString() });
+  } catch (error) {
+    res.status(503).json({ status: 'error', message: 'Database unavailable' });
   }
 });
 
