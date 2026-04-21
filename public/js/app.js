@@ -121,6 +121,12 @@ document.addEventListener('DOMContentLoaded', async () => {
                 const pctEl = document.getElementById('progress-pct');
                 if (pctEl) pctEl.textContent = `${pct.toFixed(2)}% complete`;
 
+                const hoursLeftEl = document.getElementById('hours-left');
+                if (hoursLeftEl) {
+                    const remaining = 400 - parseFloat(totalHrs);
+                    hoursLeftEl.textContent = Math.max(0, remaining).toFixed(1);
+                }
+
                 // OT Card - just show accumulated hours, no bar or %
                 const totalOtHrs = parseFloat(data.totalOtHours || 0).toFixed(2);
                 const otTotalEl = document.getElementById('ot-total-hours');
@@ -166,56 +172,70 @@ document.addEventListener('DOMContentLoaded', async () => {
 
                     // Standard Attendance Entry
                     attList.innerHTML += `
-                    <div class="flex items-center justify-between p-4 ${isToday ? 'bg-primary-container/10' : 'bg-surface'} rounded-lg border border-outline-variant/10">
-                        <div class="flex items-center space-x-4 w-1/4">
-                            <div class="w-10 h-10 rounded-full ${isToday ? 'bg-primary text-on-primary' : 'bg-surface-container-high text-on-surface'} flex items-center justify-center font-bold text-sm">${dayName}</div>
-                            <span class="font-medium text-sm ${isToday ? 'text-primary' : 'text-on-surface'}">${isToday ? 'Today' : dateObj.toLocaleDateString()}</span>
-                        </div>
-                        <div class="flex-1 flex justify-center space-x-8 text-sm">
-                            <div class="flex flex-col items-center">
-                                <span class="text-on-surface-variant text-[10px] uppercase font-bold mb-1">In</span>
-                                <span class="font-bold text-on-surface">${att.clock_in_time || '--'}</span>
+                    <div class="group flex items-center justify-between p-4 ${isToday ? 'bg-primary/5 border-primary/20' : 'bg-white border-outline-variant/5'} rounded-2xl border hover:shadow-sm transition-all duration-300">
+                        <div class="flex items-center gap-4 w-1/3">
+                            <div class="w-10 h-10 rounded-xl ${isToday ? 'bg-primary text-white shadow-lg shadow-primary/20' : 'bg-surface-container-low text-on-surface-variant'} flex flex-col items-center justify-center transition-transform group-hover:scale-105">
+                                <span class="text-[8px] uppercase font-black leading-none mb-0.5">${dayName}</span>
+                                <span class="text-base font-black leading-none">${dateObj.getDate()}</span>
                             </div>
-                            <div class="flex flex-col items-center">
-                                <span class="text-on-surface-variant text-[10px] uppercase font-bold mb-1">Out</span>
-                                <span class="font-bold ${!att.clock_out_time && isToday ? 'text-primary animate-pulse' : 'text-on-surface'}">${att.clock_out_time || (isToday ? 'Active' : '--')}</span>
+                            <div>
+                                <p class="font-bold text-xs ${isToday ? 'text-primary' : 'text-on-surface'}">${isToday ? 'Today' : dateObj.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</p>
+                                <div class="flex items-center gap-1.5 mt-0.5">
+                                    <span class="w-1 h-1 rounded-full ${!att.clock_out_time && isToday ? 'bg-green-500 animate-pulse' : 'bg-outline-variant'}"></span>
+                                    <span class="text-[9px] font-bold text-on-surface-variant/60 uppercase tracking-widest">${!att.clock_out_time && isToday ? 'Active' : 'Ended'}</span>
+                                </div>
                             </div>
                         </div>
-                        <div class="w-1/4 flex justify-end items-center gap-2">
-                            ${normalHours > 0 ? `
-                                <span class="text-[10px] px-2 py-1 bg-blue-50 text-blue-700 rounded-full font-bold">
-                                    ${normalHours.toFixed(2)}h
-                                </span>
-                            ` : ''}
-                            ${otHours > 0 ? `
-                                <span class="text-[10px] px-2 py-1 bg-orange-50 text-orange-600 rounded-full font-bold">
-                                    OT ${otHours.toFixed(2)}h
-                                </span>
-                            ` : ''}
-                            ${!att.clock_out_time && isToday ? `
-                                <span class="text-[10px] px-2 py-1 bg-green-50 text-green-700 rounded-full font-bold flex items-center gap-1">
-                                    <span class="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></span>Active
-                                </span>
-                            ` : ''}
+                        
+                        <div class="flex-1 flex items-center justify-around px-2">
+                            <div class="text-center">
+                                <p class="text-[8px] font-bold text-on-surface-variant/40 uppercase tracking-widest mb-0.5">In</p>
+                                <p class="text-xs font-black text-on-surface">${att.clock_in_time || '--:--'}</p>
+                            </div>
+                            <div class="h-6 w-px bg-outline-variant/10"></div>
+                            <div class="text-center">
+                                <p class="text-[8px] font-bold text-on-surface-variant/40 uppercase tracking-widest mb-0.5">Out</p>
+                                <p class="text-xs font-black ${!att.clock_out_time && isToday ? 'text-primary animate-pulse' : 'text-on-surface'}">${att.clock_out_time || (isToday ? 'Active' : '--:--')}</p>
+                            </div>
+                        </div>
+
+                        <div class="w-1/4 flex flex-col items-end gap-1.5">
+                            <div class="flex items-center gap-1.5">
+                                ${normalHours > 0 ? `
+                                    <div class="px-2 py-0.5 bg-primary/10 text-primary rounded-lg flex items-center gap-1 border border-primary/5">
+                                        <span class="material-symbols-outlined text-[12px] font-bold">timer</span>
+                                        <span class="text-[10px] font-black">${normalHours.toFixed(1)}h</span>
+                                    </div>
+                                ` : ''}
+                                ${otHours > 0 ? `
+                                    <div class="px-2 py-0.5 bg-orange-500 text-white rounded-lg flex items-center gap-1 shadow-sm shadow-orange-200">
+                                        <span class="material-symbols-outlined text-[12px] font-bold">bolt</span>
+                                        <span class="text-[10px] font-black">${otHours.toFixed(1)}h</span>
+                                    </div>
+                                ` : ''}
+                            </div>
                         </div>
                     </div>`;
 
                     // If has OT, add to OT history table/list
                     if (otHours > 0 && otHistoryList) {
                         otHistoryList.innerHTML += `
-                        <div class="flex items-center justify-between p-3 bg-orange-50/50 rounded-xl border border-orange-100 hover:bg-orange-50 transition-colors">
+                        <div class="flex items-center justify-between p-3.5 bg-orange-50/30 rounded-2xl border border-orange-100/50 hover:bg-orange-50 transition-all duration-300 group">
                             <div class="flex items-center gap-3">
-                                <div class="w-8 h-8 rounded-lg bg-orange-100 text-orange-600 flex items-center justify-center">
-                                    <span class="material-symbols-outlined text-sm">timer</span>
+                                <div class="w-9 h-9 rounded-xl bg-orange-100 text-orange-600 flex items-center justify-center transition-transform group-hover:rotate-6">
+                                    <span class="material-symbols-outlined text-[18px] font-bold">bolt</span>
                                 </div>
                                 <div>
-                                    <p class="text-xs font-bold text-on-surface">${dateObj.toLocaleDateString()}</p>
-                                    <p class="text-[10px] text-orange-700 font-medium">After-hours session</p>
+                                    <p class="text-xs font-black text-on-surface">${dateObj.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</p>
+                                    <p class="text-[9px] text-orange-700/60 font-bold uppercase tracking-wider">After-hours Work</p>
                                 </div>
                             </div>
                             <div class="text-right">
-                                <p class="text-sm font-black text-orange-600">+${otHours.toFixed(2)}</p>
-                                <p class="text-[9px] text-on-surface-variant font-bold uppercase">Hours</p>
+                                <p class="text-sm font-black text-orange-600">+${otHours.toFixed(1)}<span class="text-[10px] ml-0.5">h</span></p>
+                                <div class="flex items-center gap-1 justify-end mt-0.5">
+                                    <span class="w-1 h-1 rounded-full bg-orange-400"></span>
+                                    <span class="text-[8px] text-on-surface-variant/40 font-black uppercase tracking-widest">Recorded</span>
+                                </div>
                             </div>
                         </div>`;
                     }
@@ -265,23 +285,37 @@ document.addEventListener('DOMContentLoaded', async () => {
             const btn = document.getElementById('clock-btn');
             const icon = document.getElementById('clock-icon');
             const text = document.getElementById('clock-text');
+            const subtext = document.getElementById('clock-subtext');
             const timer = document.getElementById('session-timer');
             const info = document.getElementById('clock-in-info');
             const timeSpan = document.getElementById('clock-in-time');
             const otContainer = document.getElementById('ot-container');
             const otTimer = document.getElementById('ot-timer');
+            const statusDot = document.getElementById('status-dot');
+            const statusText = document.getElementById('status-text');
+            const dateEl = document.getElementById('current-date');
+            const dayEl = document.getElementById('current-day');
+
+            if (dateEl && dayEl) {
+                const now = new Date();
+                dateEl.textContent = now.toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' });
+                dayEl.textContent = now.toLocaleDateString('en-US', { weekday: 'long' });
+            }
 
             if (!btn || !timer) return;
 
             if (isClockedIn) {
-                btn.className = "w-32 h-32 rounded-full bg-red-500 text-white flex flex-col items-center justify-center clock-btn-ring hover:scale-105 active:scale-95 transition-all shadow-xl shadow-red-200";
-                icon.textContent = "stop_circle";
+                btn.className = "w-full flex items-center justify-center gap-3 py-4 rounded-2xl bg-red-500 text-white shadow-xl shadow-red-200 hover:scale-[1.02] active:scale-[0.98] transition-all group/btn overflow-hidden relative";
+                icon.textContent = "stop";
                 text.textContent = "Clock Out";
                 info?.classList.remove('hidden');
                 
+                if (statusDot) statusDot.className = "w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse";
+                if (statusText) statusText.textContent = "Currently Active";
+                
                 const hrs = clockInTime.getHours().toString().padStart(2, '0');
                 const mins = clockInTime.getMinutes().toString().padStart(2, '0');
-                if (timeSpan) timeSpan.textContent = `Clocked in at ${hrs}:${mins}`;
+                if (timeSpan) timeSpan.textContent = `${hrs}:${mins}`;
 
                 if (timerInterval) clearInterval(timerInterval);
                 timerInterval = setInterval(() => {
@@ -296,18 +330,22 @@ document.addEventListener('DOMContentLoaded', async () => {
                     if (now > limit17) {
                         otContainer?.classList.remove('hidden');
                         const otMs = now.getTime() - Math.max(clockInTime.getTime(), limit17.getTime());
-                        if (otTimer) otTimer.textContent = `OT Active: ${formatMs(otMs)}`;
+                        if (otTimer) otTimer.textContent = formatMs(otMs);
                     } else {
                         otContainer?.classList.add('hidden');
                     }
                 }, 1000);
             } else {
-                btn.className = "w-32 h-32 rounded-full bg-primary text-white flex flex-col items-center justify-center clock-btn-ring hover:scale-105 active:scale-95 transition-all shadow-xl shadow-primary/20";
-                icon.textContent = "play_circle";
+                btn.className = "w-full flex items-center justify-center gap-3 py-4 rounded-2xl bg-primary text-white shadow-xl shadow-primary/20 hover:scale-[1.02] active:scale-[0.98] transition-all group/btn overflow-hidden relative";
+                icon.textContent = "play_arrow";
                 text.textContent = "Clock In";
                 info?.classList.add('hidden');
                 otContainer?.classList.add('hidden');
                 timer.textContent = "00:00:00";
+                
+                if (statusDot) statusDot.className = "w-1.5 h-1.5 rounded-full bg-outline-variant";
+                if (statusText) statusText.textContent = "Not Clocked In";
+                
                 if (timerInterval) clearInterval(timerInterval);
             }
         };
