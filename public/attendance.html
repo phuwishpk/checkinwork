@@ -98,10 +98,6 @@
     </a>
   </div>
   <div class="mt-auto space-y-4">
-    <button id="open-new-task-btn" class="w-full py-3.5 bg-[#0053dc] text-white rounded-xl font-bold shadow-xl shadow-primary/30 flex items-center justify-center gap-2 hover:bg-blue-700 transition-all active:scale-95">
-      <span class="material-symbols-outlined text-base">add_circle</span>
-      Add New Task
-    </button>
     <button id="logout-btn" class="flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-red-500 hover:bg-red-50 w-full transition-colors font-medium">
       <span class="material-symbols-outlined text-[20px]">logout</span>
       <span class="text-sm">Sign Out</span>
@@ -110,12 +106,19 @@
 </nav>
 
 <main class="flex-1 md:ml-64 flex flex-col min-h-screen bg-background">
-  <header class="sticky top-0 z-40 bg-white/80 backdrop-blur-md border-b border-outline-variant/20 shadow-sm flex items-center justify-between px-8 py-3.5">
-    <span class="text-base font-bold text-on-surface font-headline">Attendance Calendar</span>
-    <div class="flex items-center space-x-3">
-      <div id="user-name" class="text-sm font-bold">Loading...</div>
-      <div class="w-9 h-9 rounded-full bg-primary flex items-center justify-center shadow text-white">
-        <span class="material-symbols-outlined text-sm">person</span>
+  <header class="sticky top-0 z-40 bg-white/80 backdrop-blur-md border-b border-outline-variant/10 shadow-sm flex items-center justify-between px-8 py-3.5">
+    <div class="flex items-center gap-4">
+      <span class="text-base font-black text-on-surface font-headline tracking-tight">Attendance</span>
+      <div class="h-4 w-px bg-outline-variant/20 hidden sm:block"></div>
+      <span id="greeting-name" class="text-xs font-bold text-on-surface-variant hidden sm:block">Welcome back</span>
+    </div>
+    <div class="flex items-center space-x-4">
+      <div class="text-right hidden xs:block">
+        <div id="user-name" class="text-xs font-black">Loading...</div>
+        <div class="text-[9px] text-primary font-black uppercase tracking-[0.15em]">Active Intern</div>
+      </div>
+      <div class="w-9 h-9 rounded-full bg-primary flex items-center justify-center shadow-md text-white group cursor-pointer hover:opacity-90 transition-all">
+        <span class="material-symbols-outlined text-[20px]">person</span>
       </div>
     </div>
   </header>
@@ -124,6 +127,14 @@
     <div class="flex justify-between items-center mb-6">
         <h2 class="text-2xl font-bold font-headline text-on-surface" id="calendar-month-year">Loading...</h2>
         <div class="flex items-center gap-4">
+            <select id="intern-filter" class="min-w-[180px] bg-surface-container-low border-none rounded-xl px-4 py-2 text-xs font-bold focus:ring-2 focus:ring-primary/40">
+                <option value="all">All Interns</option>
+            </select>
+            <div class="flex bg-surface-container rounded-lg p-1 mr-2">
+                <button data-view-filter="all" class="view-filter-btn px-3 py-1.5 rounded-md text-xs font-bold bg-white shadow-sm text-primary transition-all">All</button>
+                <button data-view-filter="tasks" class="view-filter-btn px-3 py-1.5 rounded-md text-xs font-bold text-on-surface-variant hover:bg-white/50 transition-all">Tasks</button>
+                <button data-view-filter="time" class="view-filter-btn px-3 py-1.5 rounded-md text-xs font-bold text-on-surface-variant hover:bg-white/50 transition-all">Time</button>
+            </div>
             <div class="flex bg-surface-container rounded-lg p-1">
                 <button id="prev-month" class="p-1.5 rounded-md hover:bg-white transition-colors"><span class="material-symbols-outlined">chevron_left</span></button>
                 <button id="next-month" class="p-1.5 rounded-md hover:bg-white transition-colors"><span class="material-symbols-outlined">chevron_right</span></button>
@@ -132,11 +143,35 @@
         </div>
     </div>
 
-    <div class="bg-white rounded-2xl shadow-sm border border-outline-variant/20 overflow-hidden">
+    <div class="bg-white rounded-2xl shadow-sm border border-outline-variant/20 overflow-hidden mb-8">
         <div class="grid grid-cols-7 bg-surface-container-low text-on-surface-variant font-bold text-[10px] uppercase tracking-widest py-3 text-center border-b border-outline-variant/10">
             <div>Sun</div><div>Mon</div><div>Tue</div><div>Wed</div><div>Thu</div><div>Fri</div><div>Sat</div>
         </div>
         <div id="calendar-grid" class="calendar-grid"></div>
+    </div>
+
+    <!-- Monthly Summary Table -->
+    <div class="bg-white rounded-2xl shadow-sm border border-outline-variant/10 overflow-hidden">
+        <div class="flex items-center justify-between px-6 py-4 border-b border-outline-variant/10 bg-surface-container-low/30">
+            <h3 class="text-base font-bold font-headline text-on-surface">Monthly Summary</h3>
+            <span class="text-[10px] font-black uppercase tracking-widest text-on-surface-variant/60" id="summary-month-name">--</span>
+        </div>
+        <div class="overflow-x-auto">
+            <table class="w-full text-sm text-left">
+                <thead>
+                    <tr class="text-[10px] font-black uppercase tracking-widest text-on-surface-variant/60 border-b border-outline-variant/10">
+                        <th class="px-6 py-4">Date</th>
+                        <th class="px-6 py-4">Clock In</th>
+                        <th class="px-6 py-4">Clock Out</th>
+                        <th class="px-6 py-4">Total Hours</th>
+                        <th class="px-6 py-4">Tasks</th>
+                    </tr>
+                </thead>
+                <tbody id="summary-table-body" class="divide-y divide-outline-variant/10">
+                    <!-- Rows populated by JS -->
+                </tbody>
+            </table>
+        </div>
     </div>
   </div>
 </main>
@@ -195,6 +230,6 @@
   </div>
 </div>
 
-<script src="/js/app.js"></script>
+<script src="/js/app.js?v=1.0.2"></script>
 </body>
 </html>

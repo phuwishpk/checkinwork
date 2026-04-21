@@ -49,7 +49,9 @@ async function protectRoute() {
                 document.getElementById('user-role').textContent = user.role;
             }
             if (document.getElementById('greeting-name')) {
-                document.getElementById('greeting-name').textContent = `Good morning, ${user.full_name || user.username} 👋`;
+                const hour = new Date().getHours();
+                const greeting = (hour >= 5 && hour < 12) ? 'Good morning' : 'Good evening';
+                document.getElementById('greeting-name').textContent = `${greeting}, ${user.full_name || user.username} 👋`;
             }
             if (document.getElementById('profile-card-name')) {
                 document.getElementById('profile-card-name').textContent = user.full_name || user.username;
@@ -775,12 +777,50 @@ document.addEventListener('DOMContentLoaded', async () => {
         let isDragging = false;
         let dragStart = null;
         let dragEnd = null;
+        let viewFilter = 'all';
+        let selectedUserId = 'all';
+        let allUsers = [];
+        const colors = ['#0053dc', '#10b981', '#f59e0b', '#8b5cf6', '#ec4899', '#06b6d4', '#f43f5e'];
+
+        // Intern Filter
+        const internFilter = document.getElementById('intern-filter');
+        if (internFilter) {
+            internFilter.addEventListener('change', (e) => {
+                selectedUserId = e.target.value;
+                renderCalendar();
+            });
+        }
+
+        // Filter Buttons
+        document.querySelectorAll('.view-filter-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                viewFilter = btn.dataset.viewFilter;
+                document.querySelectorAll('.view-filter-btn').forEach(b => {
+                    b.classList.remove('bg-white', 'shadow-sm', 'text-primary');
+                    b.classList.add('text-on-surface-variant', 'hover:bg-white/50');
+                });
+                btn.classList.add('bg-white', 'shadow-sm', 'text-primary');
+                btn.classList.remove('text-on-surface-variant', 'hover:bg-white/50');
+                renderCalendar();
+            });
+        });
 
         const loadCalendarData = async () => {
             try {
                 const data = await apiCall('/api/intern/calendar');
                 allAttendance = data.attendance;
                 allLogs = data.logs;
+                allUsers = data.users;
+
+                if (internFilter) {
+                    const currentVal = internFilter.value;
+                    internFilter.innerHTML = '<option value="all">All Interns</option>';
+                    allUsers.forEach((u, i) => {
+                        internFilter.innerHTML += `<option value="${u.id}">${u.full_name}</option>`;
+                    });
+                    internFilter.value = currentVal;
+                }
+
                 renderCalendar();
             } catch (err) { console.error(err); }
         };
@@ -799,105 +839,102 @@ document.addEventListener('DOMContentLoaded', async () => {
 
             for (let i = 0; i < firstDay; i++) grid.innerHTML += `<div class="calendar-cell bg-surface-container-low opacity-50"></div>`;
 
-            const sortedLogs = [...allLogs].sort((a,b) => a.id - b.id);
+            const filteredUsers = selectedUserId === 'all' ? allUsers : allUsers.filter(u => u.id == selectedUserId);
 
             for (let day = 1; day <= daysInMonth; day++) {
                 const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-                
-                const dayAtts = allAttendance.filter(a => a.date.startsWith(dateStr));
-                let attHtml = '';
-                if (dayAtts.length > 0) {
-                    const count = dayAtts.length;
-                    attHtml = `
-                        <div class="mb-1">
-                            <div class="flex items-center justify-between text-[8px] font-black uppercase text-primary/60 mb-0.5">
-                                <span>Attendance</span>
-                                <span>${count} session${count > 1 ? 's' : ''}</span>
-                            </div>
-                            <div class="space-y-0.5">
-                                ${dayAtts.map(att => `
-                                    <div class="flex items-center gap-1 text-[9px] font-bold text-primary bg-primary/5 px-1 rounded">
-                                        <span class="material-symbols-outlined text-[10px]">login</span> ${att.clock_in_time?.slice(0,5)}
-                                        <span class="material-symbols-outlined text-[10px]">logout</span> ${att.clock_out_time ? att.clock_out_time.slice(0,5) : '...'}
-                                    </div>
-                                `).join('')}
-                            </div>
-                        </div>`;
-                }
+                let contentHtml = '';
 
-                let logsHtml = '';
-                // Calculate slots for all logs in this month view to keep vertical alignment
-                if (day === 1) {
-                    sortedLogs.forEach(l => delete l.slot);
-                    const slots = [];
-                    sortedLogs.forEach(log => {
-                        let assigned = false;
-                        const lStart = log.date_start;
-                        const lEnd = log.date_finish || log.date_start;
-                        
-                        for (let i = 0; i < slots.length; i++) {
-                            const hasOverlap = slots[i].some(s => {
-                                const sStart = s.date_start;
-                                const sEnd = s.date_finish || s.date_start;
-                                return (lStart <= sEnd && lEnd >= sStart);
-                            });
-                            if (!hasOverlap) {
-                                slots[i].push(log);
-                                log.slot = i;
-                                assigned = true;
-                                break;
+                filteredUsers.forEach((u, idx) => {
+                    const userColor = colors[idx % colors.length];
+                    const uAtts = allAttendance.filter(a => a.user_id === u.id && a.date.startsWith(dateStr));
+                    const uLogs = allLogs.filter(l => l.user_id === u.id && dateStr >= l.date_start && dateStr <= (l.date_finish || l.date_start));
+
+                    // Calculate slots for this user logs to avoid overlap
+                    if (day === 1) {
+                        const userAllLogs = allLogs.filter(l => l.user_id === u.id);
+                        userAllLogs.forEach(l => delete l.slot);
+                        const slots = [];
+                        userAllLogs.forEach(log => {
+                            let assigned = false;
+                            for (let i = 0; i < slots.length; i++) {
+                                const hasOverlap = slots[i].some(s => {
+                                    return (log.date_start <= (s.date_finish || s.date_start) && (log.date_finish || log.date_start) >= s.date_start);
+                                });
+                                if (!hasOverlap) {
+                                    slots[i].push(log);
+                                    log.slot = i;
+                                    assigned = true;
+                                    break;
+                                }
+                            }
+                            if (!assigned) {
+                                log.slot = slots.length;
+                                slots.push([log]);
+                            }
+                        });
+                    }
+
+                    if ((viewFilter === 'all' || viewFilter === 'tasks' || viewFilter === 'time') && (uAtts.length > 0 || uLogs.length > 0)) {
+                        let logsMarkup = '';
+                        if (viewFilter !== 'time' && uLogs.length > 0) {
+                            const maxSlot = Math.max(...uLogs.map(l => l.slot));
+                            for (let s = 0; s <= maxSlot; s++) {
+                                const l = uLogs.find(log => log.slot === s);
+                                if (l) {
+                                    const isStart = dateStr === l.date_start;
+                                    const isEnd = dateStr === (l.date_finish || l.date_start);
+                                    const isOwn = l.user_id === user.id;
+                                    const safeLog = encodeURIComponent(JSON.stringify(l));
+                                    let spanClass = '';
+                                    if (isStart && !isEnd) spanClass = 'span-start';
+                                    else if (!isStart && !isEnd) spanClass = 'span-mid';
+                                    else if (!isStart && isEnd) spanClass = 'span-end';
+
+                                    logsMarkup += `
+                                        <div class="log-bar ${spanClass}" style="background-color: ${l.color || userColor}; height: 16px; font-size: 8px; margin-bottom: 1px;" 
+                                             ${isOwn ? `onclick="event.stopPropagation(); editLog('${safeLog}')"` : ''}>
+                                            ${isStart ? `<span class="truncate">${l.task_category}</span>` : '&nbsp;'}
+                                        </div>`;
+                                } else {
+                                    logsMarkup += `<div class="h-[16px] mb-[1px]"></div>`;
+                                }
                             }
                         }
-                        if (!assigned) {
-                            log.slot = slots.length;
-                            slots.push([log]);
+
+                        let attMarkup = '';
+                        if (viewFilter !== 'tasks' && uAtts.length > 0) {
+                            attMarkup = uAtts.map(a => `
+                                <div class="flex items-center gap-0.5 text-[8px] font-bold" style="color: ${userColor}">
+                                    <span class="material-symbols-outlined text-[9px]">login</span> ${a.clock_in_time?.slice(0,5)}
+                                </div>
+                            `).join('');
                         }
-                    });
-                }
 
-                const dayLogs = sortedLogs.filter(l => {
-                    const start = l.date_start;
-                    const finish = l.date_finish || l.date_start;
-                    return (dateStr >= start && dateStr <= finish);
-                });
-
-                if (dayLogs.length > 0) {
-                    const maxSlot = Math.max(...dayLogs.map(l => l.slot));
-                    for (let s = 0; s <= maxSlot; s++) {
-                        const l = dayLogs.find(log => log.slot === s);
-                        if (l) {
-                            const isStart = dateStr === l.date_start;
-                            const isEnd = dateStr === (l.date_finish || l.date_start);
-                            const safeLog = encodeURIComponent(JSON.stringify(l));
-                            
-                            let spanClass = '';
-                            if (isStart && !isEnd) spanClass = 'span-start';
-                            else if (!isStart && !isEnd) spanClass = 'span-mid';
-                            else if (!isStart && isEnd) spanClass = 'span-end';
-
-                            logsHtml += `
-                            <div class="log-bar ${spanClass}" style="background-color: ${l.color || '#3e76fe'}" onclick="event.stopPropagation(); editLog('${safeLog}')">
-                                ${isStart ? `<span class="truncate">${l.task_category}: ${l.description}</span>` : ''}
-                            </div>`;
-                        } else {
-                            // Spacer to maintain vertical alignment
-                            logsHtml += `<div class="h-[24px] mb-[3px]"></div>`;
+                        if (logsMarkup || attMarkup) {
+                            contentHtml += `
+                                <div class="mb-2 p-1 rounded border-l-2" style="border-left-color: ${userColor}; background: ${userColor}08">
+                                    <div class="flex items-center justify-between mb-0.5">
+                                        <span class="text-[7px] font-black uppercase" style="color: ${userColor}">${u.full_name}</span>
+                                    </div>
+                                    ${logsMarkup}
+                                    ${attMarkup}
+                                </div>`;
                         }
                     }
-                }
+                });
 
                 const cell = document.createElement('div');
-                cell.className = 'calendar-cell';
+                cell.className = 'calendar-cell custom-scrollbar overflow-y-auto';
                 cell.dataset.date = dateStr;
                 cell.innerHTML = `
-                    <span class="text-[11px] font-bold text-on-surface-variant/40 mb-1">${day}</span>
-                    <div class="flex-1 overflow-hidden">
-                        ${logsHtml}
-                        ${attHtml}
+                    <span class="text-[10px] font-bold text-on-surface-variant/30 mb-1">${day}</span>
+                    <div class="flex-1">
+                        ${contentHtml}
                     </div>
                 `;
 
-                // Drag Selection Events
+                // Drag selection only for current user
                 cell.addEventListener('mousedown', () => {
                     isDragging = true;
                     dragStart = dateStr;
@@ -913,6 +950,58 @@ document.addEventListener('DOMContentLoaded', async () => {
                 });
 
                 grid.appendChild(cell);
+            }
+            renderSummaryTable();
+        };
+
+        const renderSummaryTable = () => {
+            const tableBody = document.getElementById('summary-table-body');
+            const summaryMonth = document.getElementById('summary-month-name');
+            const header = document.getElementById('calendar-month-year');
+            if (!tableBody) return;
+
+            if (summaryMonth && header) summaryMonth.textContent = header.textContent;
+            tableBody.innerHTML = '';
+
+            const year = currentDate.getFullYear();
+            const month = currentDate.getMonth();
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+            const filteredUsers = selectedUserId === 'all' ? allUsers : allUsers.filter(u => u.id == selectedUserId);
+
+            for (let day = 1; day <= daysInMonth; day++) {
+                const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+                
+                filteredUsers.forEach((u, idx) => {
+                    const userColor = colors[idx % colors.length];
+                    const dayAtts = allAttendance.filter(a => a.user_id === u.id && a.date.startsWith(dateStr));
+                    const dayLogs = allLogs.filter(l => l.user_id === u.id && dateStr >= l.date_start && dateStr <= (l.date_finish || l.date_start));
+
+                    if (dayAtts.length === 0 && dayLogs.length === 0) return;
+
+                    const dateDisplay = new Date(dateStr).toLocaleDateString('en-GB', { day: '2-digit', month: 'short' });
+                    const clockIn = dayAtts.map(a => a.clock_in_time?.slice(0,5)).join(', ') || '--';
+                    const clockOut = dayAtts.map(a => a.clock_out_time?.slice(0,5)).join(', ') || '--';
+                    const totalHrs = dayAtts.reduce((acc, a) => acc + parseFloat(a.total_hours || 0), 0).toFixed(2);
+                    const tasks = dayLogs.map(l => `<span class="inline-block px-2 py-0.5 rounded text-[9px] font-bold text-white mr-1 mb-1" style="background-color: ${l.color || userColor}">${l.task_category}</span>`).join('');
+
+                    tableBody.innerHTML += `
+                        <tr class="hover:bg-surface-container-low transition-colors">
+                            <td class="px-6 py-3 font-bold text-on-surface text-xs">
+                                <div>${dateDisplay}</div>
+                                <div class="text-[8px] font-black uppercase" style="color: ${userColor}">${u.full_name}</div>
+                            </td>
+                            <td class="px-6 py-3 text-on-surface-variant font-medium text-xs">${clockIn}</td>
+                            <td class="px-6 py-3 text-on-surface-variant font-medium text-xs">${clockOut}</td>
+                            <td class="px-6 py-3 font-black text-primary text-xs">${totalHrs}h</td>
+                            <td class="px-6 py-3">${tasks}</td>
+                        </tr>
+                    `;
+                });
+            }
+
+            if (tableBody.innerHTML === '') {
+                tableBody.innerHTML = `<tr><td colspan="5" class="px-6 py-10 text-center text-on-surface-variant/40 italic">No records for this month</td></tr>`;
             }
         };
 
