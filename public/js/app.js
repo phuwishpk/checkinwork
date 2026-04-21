@@ -151,38 +151,79 @@ document.addEventListener('DOMContentLoaded', async () => {
                     clockInTime = null;
                 }
                 const attList = document.getElementById('weekly-attendance-list');
+                const otHistoryList = document.getElementById('ot-history-list');
                 attList.innerHTML = '';
+                if (otHistoryList) otHistoryList.innerHTML = '';
                 
                 data.attendance.forEach(att => {
                     const isToday = att.date.startsWith(today);
-
-                    const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
                     const dateObj = new Date(att.date);
+                    const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
                     const dayName = days[dateObj.getDay()];
                     
+                    const otHours = parseFloat(att.ot_hours || 0);
+                    const normalHours = parseFloat(att.total_hours || 0);
+
+                    // Standard Attendance Entry
                     attList.innerHTML += `
-                    <div class="flex items-center justify-between p-4 ${isToday ? 'bg-primary-container/10' : 'bg-surface'} rounded-lg">
+                    <div class="flex items-center justify-between p-4 ${isToday ? 'bg-primary-container/10' : 'bg-surface'} rounded-lg border border-outline-variant/10">
                         <div class="flex items-center space-x-4 w-1/4">
                             <div class="w-10 h-10 rounded-full ${isToday ? 'bg-primary text-on-primary' : 'bg-surface-container-high text-on-surface'} flex items-center justify-center font-bold text-sm">${dayName}</div>
                             <span class="font-medium text-sm ${isToday ? 'text-primary' : 'text-on-surface'}">${isToday ? 'Today' : dateObj.toLocaleDateString()}</span>
                         </div>
                         <div class="flex-1 flex justify-center space-x-8 text-sm">
                             <div class="flex flex-col items-center">
-                                <span class="text-on-surface-variant text-xs mb-1">Arrival</span>
-                                <span class="font-medium">${att.clock_in_time || '--'}</span>
+                                <span class="text-on-surface-variant text-[10px] uppercase font-bold mb-1">In</span>
+                                <span class="font-bold text-on-surface">${att.clock_in_time || '--'}</span>
                             </div>
                             <div class="flex flex-col items-center">
-                                <span class="text-on-surface-variant text-xs mb-1">Departure</span>
-                                <span class="font-medium ${!att.clock_out_time && isToday ? 'text-on-surface-variant italic' : ''}">${att.clock_out_time || (isToday ? 'In Progress' : '--')}</span>
+                                <span class="text-on-surface-variant text-[10px] uppercase font-bold mb-1">Out</span>
+                                <span class="font-bold ${!att.clock_out_time && isToday ? 'text-primary animate-pulse' : 'text-on-surface'}">${att.clock_out_time || (isToday ? 'Active' : '--')}</span>
                             </div>
                         </div>
-                        <div class="w-1/4 flex justify-end items-center space-x-3">
-                            <span class="text-xs px-2 py-1 ${!att.clock_out_time && isToday ? 'bg-secondary-fixed text-on-secondary-fixed flex items-center space-x-1' : 'bg-tertiary-container text-on-tertiary-container'} rounded-full font-medium">
-                                ${!att.clock_out_time && isToday ? '<span class="w-1.5 h-1.5 rounded-full bg-primary inline-block"></span><span>Active</span>' : (att.total_hours + ' hrs')}
-                            </span>
+                        <div class="w-1/4 flex justify-end items-center gap-2">
+                            ${normalHours > 0 ? `
+                                <span class="text-[10px] px-2 py-1 bg-blue-50 text-blue-700 rounded-full font-bold">
+                                    ${normalHours.toFixed(2)}h
+                                </span>
+                            ` : ''}
+                            ${otHours > 0 ? `
+                                <span class="text-[10px] px-2 py-1 bg-orange-50 text-orange-600 rounded-full font-bold">
+                                    OT ${otHours.toFixed(2)}h
+                                </span>
+                            ` : ''}
+                            ${!att.clock_out_time && isToday ? `
+                                <span class="text-[10px] px-2 py-1 bg-green-50 text-green-700 rounded-full font-bold flex items-center gap-1">
+                                    <span class="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></span>Active
+                                </span>
+                            ` : ''}
                         </div>
                     </div>`;
+
+                    // If has OT, add to OT history table/list
+                    if (otHours > 0 && otHistoryList) {
+                        otHistoryList.innerHTML += `
+                        <div class="flex items-center justify-between p-3 bg-orange-50/50 rounded-xl border border-orange-100 hover:bg-orange-50 transition-colors">
+                            <div class="flex items-center gap-3">
+                                <div class="w-8 h-8 rounded-lg bg-orange-100 text-orange-600 flex items-center justify-center">
+                                    <span class="material-symbols-outlined text-sm">timer</span>
+                                </div>
+                                <div>
+                                    <p class="text-xs font-bold text-on-surface">${dateObj.toLocaleDateString()}</p>
+                                    <p class="text-[10px] text-orange-700 font-medium">After-hours session</p>
+                                </div>
+                            </div>
+                            <div class="text-right">
+                                <p class="text-sm font-black text-orange-600">+${otHours.toFixed(2)}</p>
+                                <p class="text-[9px] text-on-surface-variant font-bold uppercase">Hours</p>
+                            </div>
+                        </div>`;
+                    }
                 });
+                
+                if (otHistoryList && otHistoryList.innerHTML === '') {
+                    otHistoryList.innerHTML = '<p class="text-center py-8 text-on-surface-variant text-xs font-medium bg-surface-container-low rounded-xl border border-dashed border-outline-variant/30">No overtime recorded yet.</p>';
+                }
 
                 // Set recent logs
                 const logList = document.getElementById('recent-logs-list');
