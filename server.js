@@ -30,18 +30,26 @@ const sessionStore = new MySQLStore({
   password: process.env.DB_PASSWORD,
   database: process.env.DB_NAME,
   createDatabaseTable: true,
+  endConnectionOnClose: false,
   schema: {
     tableName: 'sessions',
     columnNames: { session_id: 'session_id', expires: 'expires', data: 'data' }
   }
 });
 
+sessionStore.on('error', (err) => {
+  console.error('Session store error:', err.message);
+});
+
 // Session configuration
+const sessionSecret = process.env.SESSION_SECRET;
+if (!sessionSecret) {
+  console.error('FATAL: SESSION_SECRET environment variable is not set');
+  process.exit(1);
+}
+
 app.use(session({
-  secret: (() => {
-    if (!process.env.SESSION_SECRET) throw new Error('SESSION_SECRET environment variable is required');
-    return process.env.SESSION_SECRET;
-  })(),
+  secret: sessionSecret,
   store: sessionStore,
   resave: false,
   saveUninitialized: false,
@@ -392,14 +400,30 @@ app.get('/manager',             (req, res) => res.sendFile(path.join(__dirname, 
 app.get('/manager/logs',        (req, res) => res.sendFile(path.join(__dirname, 'public/manager-loge.html')));
 app.get('/manager/attendance',  (req, res) => res.sendFile(path.join(__dirname, 'public/manager-attendance.html')));
 
-// Health check
+// Health check — also shows env config (no secrets)
 app.get('/health', async (req, res) => {
+  let dbOk = false;
+  let dbError = null;
   try {
     await db.execute('SELECT 1');
-    res.json({ status: 'ok', timestamp: new Date().toISOString() });
+    dbOk = true;
   } catch (error) {
-    res.status(503).json({ status: 'error', message: 'Database unavailable' });
+    dbError = error.message;
   }
+  res.status(dbOk ? 200 : 503).json({
+    status: dbOk ? 'ok' : 'error',
+    timestamp: new Date().toISOString(),
+    db: dbOk ? 'connected' : dbError,
+    env: {
+      DB_HOST: process.env.DB_HOST || '(not set)',
+      DB_PORT: process.env.DB_PORT || '(not set)',
+      DB_USER: process.env.DB_USER ? '(set)' : '(NOT SET)',
+      DB_PASSWORD: process.env.DB_PASSWORD ? '(set)' : '(NOT SET)',
+      DB_NAME: process.env.DB_NAME || '(not set)',
+      SESSION_SECRET: process.env.SESSION_SECRET ? '(set)' : '(NOT SET)',
+      NODE_ENV: process.env.NODE_ENV || '(not set)',
+    }
+  });
 });
 
 // Final Handlers
