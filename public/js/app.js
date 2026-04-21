@@ -108,11 +108,16 @@ document.addEventListener('DOMContentLoaded', async () => {
                 // Set progress
                 const totalHrs = parseFloat(data.totalHours || 0).toFixed(2);
                 document.getElementById('progress-hours').textContent = totalHrs;
-                const pct = Math.min((parseFloat(totalHrs) / 400) * 100, 100);
-                document.getElementById('progress-bar').style.width = `${pct}%`;
+                const pct = (parseFloat(totalHrs) / 400) * 100;
+                document.getElementById('progress-bar').style.width = `${Math.min(pct, 100)}%`;
                 
                 const pctEl = document.getElementById('progress-pct');
                 if (pctEl) pctEl.textContent = `${pct.toFixed(2)}% complete`;
+
+                // OT Card - just show accumulated hours, no bar or %
+                const totalOtHrs = parseFloat(data.totalOtHours || 0).toFixed(2);
+                const otTotalEl = document.getElementById('ot-total-hours');
+                if (otTotalEl) otTotalEl.textContent = totalOtHrs;
 
                 // Update Profile Card stats
                 if (document.getElementById('profile-hours')) {
@@ -127,15 +132,22 @@ document.addEventListener('DOMContentLoaded', async () => {
 
                 // Set attendance
                 const today = new Date().toISOString().slice(0, 10);
+                let activeAttendance = data.attendance.find(a => !a.clock_out_time && new Date(a.date).toDateString() === new Date().toDateString());
+                if (activeAttendance) {
+                    isClockedIn = true;
+                    // Parse clock in time accurately in local time
+                    const timeParts = activeAttendance.clock_in_time.split(':');
+                    clockInTime = new Date();
+                    clockInTime.setHours(parseInt(timeParts[0], 10), parseInt(timeParts[1], 10), parseInt(timeParts[2], 10), 0);
+                } else {
+                    isClockedIn = false;
+                    clockInTime = null;
+                }
                 const attList = document.getElementById('weekly-attendance-list');
                 attList.innerHTML = '';
                 
                 data.attendance.forEach(att => {
                     const isToday = att.date.startsWith(today);
-                    if (isToday && !att.clock_out_time) {
-                        isClockedIn = true;
-                        clockInTime = new Date(`1970-01-01T${att.clock_in_time}Z`);
-                    }
 
                     const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
                     const dateObj = new Date(att.date);
@@ -197,36 +209,88 @@ document.addEventListener('DOMContentLoaded', async () => {
             const timer = document.getElementById('session-timer');
             const info = document.getElementById('clock-in-info');
             const timeSpan = document.getElementById('clock-in-time');
+            const otContainer = document.getElementById('ot-container');
+            const otTimer = document.getElementById('ot-timer');
+            const dailyBarContainer = document.getElementById('daily-bar-container');
+            const dailyBar = document.getElementById('daily-progress-bar');
+            const dailyLabel = document.getElementById('daily-bar-label');
 
             if (isClockedIn) {
-                btn.className = "w-32 h-32 rounded-full bg-gradient-to-br from-red-200 to-red-500 text-white flex flex-col items-center justify-center shadow-lg hover:opacity-90 transition-all transform hover:scale-105 active:scale-95";
+                btn.className = "relative z-10 w-32 h-32 rounded-full bg-gradient-to-br from-red-200 to-red-500 text-white flex flex-col items-center justify-center shadow-lg hover:opacity-90 transition-all transform hover:scale-105 active:scale-95 group-hover:-translate-y-1";
                 icon.textContent = "stop_circle";
                 text.textContent = "Clock Out";
                 info.classList.remove('hidden');
+                if (dailyBarContainer) dailyBarContainer.classList.remove('hidden');
                 
-                // Assuming clockInTime is GMT, just format logic for demo
-                const hrs = clockInTime.getUTCHours().toString().padStart(2, '0');
-                const mins = clockInTime.getUTCMinutes().toString().padStart(2, '0');
+                const hrs = clockInTime.getHours().toString().padStart(2, '0');
+                const mins = clockInTime.getMinutes().toString().padStart(2, '0');
                 timeSpan.textContent = `Clocked in at ${hrs}:${mins}`;
 
-                // start timer
                 if (timerInterval) clearInterval(timerInterval);
                 timerInterval = setInterval(() => {
                     const now = new Date();
-                    // calculate difference in ms
-                    const nowMs = now.getTime() - (now.getTimezoneOffset() * 60000); // local to utc approx
-                    // For UI demo, just run a dummy timer based on now time
-                    const h = String(now.getHours()).padStart(2, '0');
-                    const m = String(now.getMinutes()).padStart(2, '0');
-                    const s = String(now.getSeconds()).padStart(2, '0');
-                    timer.textContent = `${h}:${m}:${s}`;
+                    const diffMs = now.getTime() - clockInTime.getTime();
+                    
+                    // 17:00 limit for regular hours
+                    const limit17 = new Date();
+                    limit17.setHours(17, 0, 0, 0);
+                    const maxRegularMs = Math.max(0, limit17.getTime() - clockInTime.getTime());
+                    
+                    let regularMs = diffMs;
+                    let otMs = 0;
+                    
+                    if (now.getTime() > limit17.getTime()) {
+                        regularMs = maxRegularMs;
+                        otMs = now.getTime() - limit17.getTime();
+                    }
+
+                    // Avoid negative times if clock in is somehow after 17
+                    if (regularMs < 0) regularMs = 0;
+
+                    const formatMs = (ms) => {
+                        const totalSecs = Math.floor(ms / 1000);
+                        const h = String(Math.floor(totalSecs / 3600)).padStart(2, '0');
+                        const m = String(Math.floor((totalSecs % 3600) / 60)).padStart(2, '0');
+                        const s = String(totalSecs % 60).padStart(2, '0');
+                        return `${h}:${m}:${s}`;
+                    };
+
+                    if (timer) timer.textContent = formatMs(regularMs);
+
+                    if (otMs > 0 && otContainer && otTimer) {
+                        otContainer.classList.remove('hidden');
+                        otContainer.classList.add('flex');
+                        otTimer.textContent = formatMs(otMs);
+                    } else if (otContainer) {
+                        otContainer.classList.add('hidden');
+                        otContainer.classList.remove('flex');
+                    }
+
+                    // Daily Time Bar (09:00 - 17:00)
+                    const start9 = new Date();
+                    start9.setHours(9, 0, 0, 0);
+                    const totalDailyMs = limit17.getTime() - start9.getTime();
+                    let passedDailyMs = now.getTime() - start9.getTime();
+                    if (passedDailyMs < 0) passedDailyMs = 0;
+                    if (passedDailyMs > totalDailyMs) passedDailyMs = totalDailyMs;
+                    
+                    const dailyPct = (passedDailyMs / totalDailyMs) * 100;
+                    if (dailyBar && dailyLabel) {
+                        dailyBar.style.width = `${dailyPct}%`;
+                        dailyLabel.textContent = `${dailyPct.toFixed(0)}%`;
+                    }
                 }, 1000);
             } else {
-                btn.className = "w-32 h-32 rounded-full bg-gradient-to-br from-primary to-primary-container text-on-primary flex flex-col items-center justify-center shadow-lg hover:opacity-90 transition-all transform hover:scale-105 active:scale-95";
+                btn.className = "relative z-10 w-32 h-32 rounded-full bg-gradient-to-br from-primary to-primary-container text-on-primary flex flex-col items-center justify-center shadow-[0_12px_24px_rgba(0,83,220,0.25)] hover:shadow-[0_16px_32px_rgba(0,83,220,0.35)] transition-all transform hover:scale-105 active:scale-95 group-hover:-translate-y-1";
                 icon.textContent = "play_circle";
                 text.textContent = "Clock In";
                 info.classList.add('hidden');
-                timer.textContent = "00:00:00";
+                if (timer) timer.textContent = "00:00:00";
+                if (otContainer) {
+                    otContainer.classList.add('hidden');
+                    otContainer.classList.remove('flex');
+                }
+                if (dailyBarContainer) dailyBarContainer.classList.add('hidden');
                 if (timerInterval) clearInterval(timerInterval);
             }
         };
@@ -250,74 +314,209 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     if (path.includes('daily-log')) {
-        const logForm = document.getElementById('log-form');
-        const msgEl = document.getElementById('log-message');
-        const saveDraftBtn = document.getElementById('btn-save-draft');
-        let isDraft = false;
+        const STATUS_STYLE = {
+            'Plan':        'status-plan',
+            'To Do':       'status-todo',
+            'In Progress': 'status-inprogress',
+            'Done':        'status-done',
+        };
 
-        if (saveDraftBtn) {
-            saveDraftBtn.addEventListener('click', () => {
-                isDraft = true;
-                logForm.dispatchEvent(new Event('submit'));
-            });
-        }
+        let allLogs = [];
+        let currentFilter = 'all';
 
-        if (logForm) {
-            // Set today's date
-            document.getElementById('log-date').valueAsDate = new Date();
+        // --- Modal helpers ---
+        const modal = document.getElementById('log-modal');
+        const openModal = (log = null) => {
+            const form = document.getElementById('log-form');
+            const msgEl = document.getElementById('log-message');
+            const editingId = document.getElementById('editing-log-id');
+            const title = document.getElementById('modal-title');
+            const submitText = document.getElementById('modal-submit-text');
+            form.reset();
+            msgEl.classList.add('hidden');
+            if (log) {
+                title.textContent = 'Edit Log';
+                submitText.textContent = 'Update Log';
+                editingId.value = log.id;
+                document.getElementById('log-description').value = log.description || '';
+                document.getElementById('log-category').value = log.task_category || 'Plan';
+                document.getElementById('log-status').value = log.status || 'Plan';
+                document.getElementById('log-date-start').value = log.date_start || '';
+                document.getElementById('log-date-finish').value = log.date_finish || '';
+            } else {
+                title.textContent = 'New Log Entry';
+                submitText.textContent = 'Save Log';
+                editingId.value = '';
+                document.getElementById('log-date-start').value = new Date().toISOString().slice(0, 10);
+            }
+            modal.classList.remove('opacity-0', 'pointer-events-none');
+        };
+        const closeModal = () => modal.classList.add('opacity-0', 'pointer-events-none');
 
-            logForm.addEventListener('submit', async (e) => {
-                e.preventDefault();
-                const payload = {
-                    date: logForm.date.value,
-                    hours_spent: logForm.hours_spent.value,
-                    task_category: logForm.task_category.value,
-                    description: logForm.description.value,
-                    is_draft: isDraft
-                };
+        ['open-log-modal-btn', 'open-log-modal-btn2'].forEach(id => {
+            const el = document.getElementById(id);
+            if (el) el.addEventListener('click', () => openModal());
+        });
+        document.getElementById('close-modal-btn').addEventListener('click', closeModal);
+        document.getElementById('cancel-modal-btn').addEventListener('click', closeModal);
+        modal.addEventListener('click', (e) => { if (e.target === modal) closeModal(); });
 
-                try {
-                    await apiCall('/api/intern/log', 'POST', payload);
-                    msgEl.textContent = 'Log saved successfully!';
-                    msgEl.className = 'text-sm font-medium text-green-600';
-                    msgEl.classList.remove('hidden');
-                    logForm.reset();
-                    document.getElementById('log-date').valueAsDate = new Date();
-                    loadRecentLogs(); // Reload sidebar logs
-                } catch (err) {
-                    msgEl.textContent = err.message;
-                    msgEl.className = 'text-sm font-medium text-red-600';
-                    msgEl.classList.remove('hidden');
-                }
-                isDraft = false;
-            });
-        }
-
-        const loadRecentLogs = async () => {
+        // --- Form Submit (Create / Update) ---
+        document.getElementById('log-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const msgEl = document.getElementById('log-message');
+            const editingId = document.getElementById('editing-log-id').value;
+            const payload = {
+                date_start:    document.getElementById('log-date-start').value,
+                date_finish:   document.getElementById('log-date-finish').value,
+                task_category: document.getElementById('log-category').value,
+                description:   document.getElementById('log-description').value,
+                status:        document.getElementById('log-status').value,
+            };
             try {
-                const data = await apiCall('/api/intern/dashboard');
-                const logList = document.getElementById('recent-logs-list');
-                if (logList) {
-                    logList.innerHTML = '';
-                    data.logs.forEach(log => {
-                        logList.innerHTML += `
-                        <div class="bg-surface-container-lowest p-4 rounded-xl ambient-shadow">
-                            <div class="flex justify-between items-start mb-2">
-                                <span class="text-sm font-label font-medium text-on-surface">${new Date(log.date).toLocaleDateString()}</span>
-                                <span class="${log.status === 'pending' ? 'bg-tertiary-container text-on-tertiary-container' : 'bg-surface-container text-on-surface-variant'} text-xs font-label px-2 py-1 rounded-full capitalize">${log.status}</span>
-                            </div>
-                            <h4 class="font-headline font-bold text-on-surface text-base mb-1">${log.task_category}</h4>
-                            <p class="text-sm text-on-surface-variant font-body line-clamp-2 mb-3">${log.description}</p>
-                            <div class="flex items-center text-xs text-secondary font-label">
-                                <span class="material-symbols-outlined text-sm mr-1">schedule</span>
-                                <span>${log.hours_spent} Hours</span>
-                            </div>
-                        </div>`;
-                    });
+                if (editingId) {
+                    await apiCall(`/api/intern/log/${editingId}`, 'PUT', payload);
+                } else {
+                    await apiCall('/api/intern/log', 'POST', payload);
                 }
+                closeModal();
+                loadLogs();
+            } catch (err) {
+                msgEl.textContent = err.message;
+                msgEl.className = 'text-sm font-medium text-red-600';
+                msgEl.classList.remove('hidden');
+            }
+        });
+
+        // --- Filter Buttons ---
+        document.querySelectorAll('.filter-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                currentFilter = btn.dataset.filter;
+                document.querySelectorAll('.filter-btn').forEach(b => {
+                    b.className = 'filter-btn px-3 py-1 rounded-full text-xs font-semibold bg-slate-100 text-slate-600';
+                });
+                btn.className = 'filter-btn px-3 py-1 rounded-full text-xs font-semibold bg-primary text-white';
+                renderTable();
+            });
+        });
+
+        // --- Render Table ---
+        const renderTable = () => {
+            const body = document.getElementById('logs-table-body');
+            const filtered = currentFilter === 'all' ? allLogs : allLogs.filter(l => l.status === currentFilter || l.task_category === currentFilter);
+            if (filtered.length === 0) {
+                body.innerHTML = `<tr><td colspan="6" class="py-12 text-center text-on-surface-variant text-sm">No logs found.</td></tr>`;
+                return;
+            }
+            body.innerHTML = filtered.map(log => {
+                const cls = STATUS_STYLE[log.status] || STATUS_STYLE['Plan'];
+                const catCls = STATUS_STYLE[log.task_category] || STATUS_STYLE['Plan'];
+                const dur = computeDuration(log.date_start, log.date_finish);
+                return `
+                <tr class="hover:bg-surface-container-low transition-colors group">
+                    <td class="px-5 py-3.5 max-w-[200px]">
+                        <p class="font-medium text-on-surface text-sm truncate">${log.description || '—'}</p>
+                        <span class="text-[10px] px-2 py-0.5 rounded-full font-semibold ${catCls}">${log.task_category}</span>
+                    </td>
+                    <td class="px-5 py-3.5">
+                        <span class="px-2.5 py-1 rounded-full text-xs font-semibold ${cls}">${log.status}</span>
+                    </td>
+                    <td class="px-5 py-3.5 text-on-surface-variant text-xs">${formatDate(log.date_start)}</td>
+                    <td class="px-5 py-3.5 text-on-surface-variant text-xs">${formatDate(log.date_finish)}</td>
+                    <td class="px-5 py-3.5 text-on-surface-variant text-xs">${dur}</td>
+                    <td class="px-5 py-3.5 text-right">
+                        <div class="flex justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                            <button onclick="editLog(${log.id})" class="p-1.5 rounded-lg hover:bg-blue-50 text-primary transition-colors" title="Edit">
+                                <span class="material-symbols-outlined text-base">edit</span>
+                            </button>
+                            <button onclick="deleteLog(${log.id})" class="p-1.5 rounded-lg hover:bg-red-50 text-red-500 transition-colors" title="Delete">
+                                <span class="material-symbols-outlined text-base">delete</span>
+                            </button>
+                        </div>
+                    </td>
+                </tr>`;
+            }).join('');
+        };
+
+        // --- Load Logs ---
+        const loadLogs = async () => {
+            try {
+                const data = await apiCall('/api/intern/logs');
+                allLogs = data.logs;
+                renderTable();
             } catch(e) {}
         };
-        loadRecentLogs();
+
+        // --- Load Attendance Panel ---
+        const loadAttendance = async () => {
+            try {
+                const data = await apiCall('/api/intern/dashboard');
+                const panel = document.getElementById('attendance-panel');
+                if (!panel) return;
+                if (!data.attendance || data.attendance.length === 0) {
+                    panel.innerHTML = `<p class="text-center text-on-surface-variant text-sm py-8">No attendance records yet.</p>`;
+                    return;
+                }
+                panel.innerHTML = data.attendance.map(att => {
+                    const dateObj = new Date(att.date);
+                    const days = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+                    const day = days[dateObj.getDay()];
+                    const isToday = att.date.startsWith(new Date().toISOString().slice(0,10));
+                    const otBadge = parseFloat(att.ot_hours) > 0 ? `<span class="ml-1 text-[10px] bg-red-100 text-red-600 px-1.5 py-0.5 rounded-full font-semibold">OT ${parseFloat(att.ot_hours).toFixed(2)}h</span>` : '';
+                    return `
+                    <div class="flex items-center gap-3 p-3 rounded-xl ${isToday ? 'bg-primary/5 border border-primary/20' : 'hover:bg-surface-container'} transition-colors">
+                        <div class="w-10 h-10 rounded-full flex-shrink-0 ${isToday ? 'bg-primary text-white' : 'bg-surface-container-high text-on-surface-variant'} flex flex-col items-center justify-center text-center">
+                            <span class="text-[10px] font-bold leading-none">${day}</span>
+                            <span class="text-xs font-bold leading-none">${dateObj.getDate()}</span>
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <div class="flex items-center gap-1 flex-wrap">
+                                <span class="text-xs text-on-surface-variant">In: <span class="font-semibold text-on-surface">${att.clock_in_time || '--'}</span></span>
+                                <span class="text-on-surface-variant">·</span>
+                                <span class="text-xs text-on-surface-variant">Out: <span class="font-semibold ${!att.clock_out_time && isToday ? 'text-primary' : 'text-on-surface'}">${att.clock_out_time || (isToday ? 'Active' : '--')}</span></span>
+                            </div>
+                            <div class="flex items-center gap-1 mt-0.5">
+                                ${att.total_hours ? `<span class="text-[11px] bg-blue-50 text-blue-700 px-1.5 py-0.5 rounded-full font-semibold">${parseFloat(att.total_hours).toFixed(2)}h</span>` : ''}
+                                ${otBadge}
+                            </div>
+                        </div>
+                    </div>`;
+                }).join('');
+            } catch(e) {}
+        };
+
+        // --- Global helpers for inline buttons ---
+        window.editLog = (id) => {
+            const log = allLogs.find(l => l.id === id);
+            if (log) openModal(log);
+        };
+        window.deleteLog = async (id) => {
+            if (!confirm('Delete this log entry?')) return;
+            try {
+                await apiCall(`/api/intern/log/${id}`, 'DELETE');
+                loadLogs();
+            } catch(e) { alert(e.message); }
+        };
+
+        // --- Util: format date ---
+        const formatDate = (d) => {
+            if (!d) return '—';
+            try { return new Date(d).toLocaleDateString('en-GB', { day:'2-digit', month:'short', year:'numeric' }); }
+            catch(e) { return d; }
+        };
+
+        // --- Util: compute duration ---
+        const computeDuration = (start, finish) => {
+            if (!start || !finish) return '—';
+            const s = new Date(start), f = new Date(finish);
+            const diffDays = Math.round((f - s) / (1000*60*60*24));
+            if (diffDays < 0) return '—';
+            if (diffDays === 0) return '1 day';
+            return `${diffDays + 1} days`;
+        };
+
+        loadLogs();
+        loadAttendance();
     }
 
     if (path.includes('manager-dashboard')) {

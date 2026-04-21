@@ -89,7 +89,7 @@ app.get('/api/session', (req, res) => {
   }
 });
 
-// Clock In
+// Clock In - allowed anytime, OT tracked on clock-out
 app.post('/api/clock-in', requireAuth, async (req, res) => {
   const userId = req.session.user.id;
   const today = new Date().toISOString().slice(0, 10);
@@ -110,7 +110,7 @@ app.post('/api/clock-in', requireAuth, async (req, res) => {
   }
 });
 
-// Clock Out
+// Clock Out - calculate total_hours and ot_hours
 app.post('/api/clock-out', requireAuth, async (req, res) => {
   const userId = req.session.user.id;
   const today = new Date().toISOString().slice(0, 10);
@@ -123,32 +123,91 @@ app.post('/api/clock-out', requireAuth, async (req, res) => {
     if (existing[0].clock_out_time) {
       return res.status(400).json({ error: 'Already clocked out' });
     }
+
     const clockIn = existing[0].clock_in_time;
-    const timeIn = new Date(`1970-01-01T${clockIn}Z`);
-    const timeOut = new Date(`1970-01-01T${nowTime}Z`);
-    let diff = (timeOut - timeIn) / (1000 * 60 * 60);
-    if (diff < 0) diff = 0;
-    await db.execute('UPDATE attendance SET clock_out_time = ?, total_hours = ? WHERE id = ?', [nowTime, diff.toFixed(2), existing[0].id]);
-    res.json({ message: 'Clocked out successfully', time: nowTime, hours: diff.toFixed(2) });
+    const [inH, inM, inS] = clockIn.split(':').map(Number);
+    const [outH, outM, outS] = nowTime.split(':').map(Number);
+    const inTotal = inH * 3600 + inM * 60 + (inS || 0);
+    const outTotal = outH * 3600 + outM * 60 + (outS || 0);
+    let diffSec = outTotal - inTotal;
+    if (diffSec < 0) diffSec = 0;
+    const totalHours = diffSec / 3600;
+
+    // OT: time worked past 17:00
+    const limit17Sec = 17 * 3600;
+    let otSec = 0;
+    if (outTotal > limit17Sec) {
+      const effectiveStart = Math.max(inTotal, limit17Sec);
+      otSec = outTotal - effectiveStart;
+    }
+    const otHours = otSec / 3600;
+
+    await db.execute(
+      'UPDATE attendance SET clock_out_time = ?, total_hours = ?, ot_hours = ? WHERE id = ?',
+      [nowTime, totalHours.toFixed(2), otHours.toFixed(2), existing[0].id]
+    );
+    res.json({ message: 'Clocked out successfully', time: nowTime, hours: totalHours.toFixed(2), ot_hours: otHours.toFixed(2) });
   } catch (error) {
     console.error('Clock-out error:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
 });
 
-// Submit Daily Log
-app.post('/api/intern/log', requireAuth, async (req, res) => {
+// Get all logs for intern
+app.get('/api/intern/logs', requireAuth, async (req, res) => {
   const userId = req.session.user.id;
-  const { date, hours_spent, task_category, description } = req.body;
   try {
-    await db.execute('INSERT INTO daily_logs (user_id, date, hours_spent, task_category, description, status) VALUES (?, ?, ?, ?, ?, ?)',
-      [userId, date, hours_spent, task_category, description, 'pending']);
-    res.json({ message: 'Log submitted successfully' });
+    const [logs] = await db.execute('SELECT * FROM daily_logs WHERE user_id = ? ORDER BY date_start DESC, id DESC', [userId]);
+    res.json({ logs });
   } catch (error) {
-    console.error('Log submission error:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
 });
+
+// Create Daily Log
+app.post('/api/intern/log', requireAuth, async (req, res) => {
+  const userId = req.session.user.id;
+  const { date_start, date_finish, task_category, description, status } = req.body;
+  try {
+    await db.execute(
+      'INSERT INTO daily_logs (user_id, date, date_start, date_finish, task_category, description, status) VALUES (?, ?, ?, ?, ?, ?, ?)',
+      [userId, date_start || new Date().toISOString().slice(0,10), date_start, date_finish, task_category, description, status || 'Plan']
+    );
+    res.json({ message: 'Log created successfully' });
+  } catch (error) {
+    console.error('Log creation error:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// Update Daily Log
+app.put('/api/intern/log/:id', requireAuth, async (req, res) => {
+  const userId = req.session.user.id;
+  const { id } = req.params;
+  const { date_start, date_finish, task_category, description, status } = req.body;
+  try {
+    await db.execute(
+      'UPDATE daily_logs SET date=?, date_start=?, date_finish=?, task_category=?, description=?, status=? WHERE id=? AND user_id=?',
+      [date_start || new Date().toISOString().slice(0,10), date_start, date_finish, task_category, description, status, id, userId]
+    );
+    res.json({ message: 'Log updated successfully' });
+  } catch (error) {
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// Delete Daily Log
+app.delete('/api/intern/log/:id', requireAuth, async (req, res) => {
+  const userId = req.session.user.id;
+  const { id } = req.params;
+  try {
+    await db.execute('DELETE FROM daily_logs WHERE id=? AND user_id=?', [id, userId]);
+    res.json({ message: 'Log deleted successfully' });
+  } catch (error) {
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
 
 // Get Intern Dashboard Data
 app.get('/api/intern/dashboard', requireAuth, async (req, res) => {
@@ -156,8 +215,13 @@ app.get('/api/intern/dashboard', requireAuth, async (req, res) => {
   try {
     const [attendance] = await db.execute('SELECT * FROM attendance WHERE user_id = ? ORDER BY date DESC, id DESC LIMIT 20', [userId]);
     const [logs] = await db.execute('SELECT * FROM daily_logs WHERE user_id = ? ORDER BY date DESC LIMIT 5', [userId]);
-    const [totalHoursRes] = await db.execute('SELECT SUM(total_hours) as total_hours FROM attendance WHERE user_id = ?', [userId]);
-    res.json({ attendance, logs, totalHours: totalHoursRes[0].total_hours || 0 });
+    const [totalHoursRes] = await db.execute('SELECT SUM(total_hours) as total_hours, SUM(ot_hours) as total_ot_hours FROM attendance WHERE user_id = ?', [userId]);
+    res.json({
+      attendance,
+      logs,
+      totalHours: totalHoursRes[0].total_hours || 0,
+      totalOtHours: totalHoursRes[0].total_ot_hours || 0
+    });
   } catch (error) {
     res.status(500).json({ error: 'Internal server error' });
   }

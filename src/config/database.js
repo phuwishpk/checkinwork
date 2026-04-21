@@ -31,17 +31,19 @@ async function initDb() {
         date TEXT,
         clock_in_time TEXT,
         clock_out_time TEXT,
-        total_hours REAL
+        total_hours REAL,
+        ot_hours REAL DEFAULT 0
       );
 
       CREATE TABLE IF NOT EXISTS daily_logs (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         user_id INTEGER,
         date TEXT,
-        hours_spent REAL,
+        date_start TEXT,
+        date_finish TEXT,
         task_category TEXT,
         description TEXT,
-        status TEXT DEFAULT 'pending'
+        status TEXT DEFAULT 'Plan'
       );
     `);
 
@@ -58,6 +60,17 @@ async function initDb() {
       (5, 'nawapon', 'password', 'intern', 'Nawapon')`);
     await dbInstance.run(`INSERT OR IGNORE INTO users (id, username, password, role, full_name) VALUES 
       (6, 'phuwish', 'password', 'intern', 'Phuwish')`);
+
+    // Migration: add ot_hours column if it doesn't exist (safe for existing DBs)
+    try {
+      await dbInstance.run('ALTER TABLE attendance ADD COLUMN ot_hours REAL DEFAULT 0');
+      console.log('Migration: added ot_hours column to attendance');
+    } catch (e) { /* Column already exists */ }
+
+    // Migration: add new daily_logs columns
+    try { await dbInstance.run('ALTER TABLE daily_logs ADD COLUMN date_start TEXT'); } catch(e) {}
+    try { await dbInstance.run('ALTER TABLE daily_logs ADD COLUMN date_finish TEXT'); } catch(e) {}
+    // Remove hours_spent dependency — keep column but don't require it
 
   } catch (err) {
     console.error('SQLite connection/initialization failed:', err);
