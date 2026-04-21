@@ -95,9 +95,12 @@ app.post('/api/clock-in', requireAuth, async (req, res) => {
   const today = new Date().toISOString().slice(0, 10);
   const nowTime = new Date().toTimeString().slice(0, 8);
   try {
-    const [existing] = await db.execute('SELECT * FROM attendance WHERE user_id = ? AND date = ?', [userId, today]);
-    if (existing.length > 0) {
-      return res.status(400).json({ error: 'Already clocked in for today' });
+    const [existing] = await db.execute('SELECT * FROM attendance WHERE user_id = ? AND date = ? ORDER BY id DESC', [userId, today]);
+    if (existing.length >= 5) {
+      return res.status(400).json({ error: 'Maximum 5 check-ins per day reached' });
+    }
+    if (existing.length > 0 && !existing[0].clock_out_time) {
+      return res.status(400).json({ error: 'Already clocked in. Please clock out first.' });
     }
     await db.execute('INSERT INTO attendance (user_id, date, clock_in_time) VALUES (?, ?, ?)', [userId, today, nowTime]);
     res.json({ message: 'Clocked in successfully', time: nowTime });
@@ -113,12 +116,12 @@ app.post('/api/clock-out', requireAuth, async (req, res) => {
   const today = new Date().toISOString().slice(0, 10);
   const nowTime = new Date().toTimeString().slice(0, 8);
   try {
-    const [existing] = await db.execute('SELECT * FROM attendance WHERE user_id = ? AND date = ?', [userId, today]);
+    const [existing] = await db.execute('SELECT * FROM attendance WHERE user_id = ? AND date = ? ORDER BY id DESC LIMIT 1', [userId, today]);
     if (existing.length === 0) {
       return res.status(400).json({ error: 'No clock-in record found for today' });
     }
     if (existing[0].clock_out_time) {
-      return res.status(400).json({ error: 'Already clocked out for today' });
+      return res.status(400).json({ error: 'Already clocked out' });
     }
     const clockIn = existing[0].clock_in_time;
     const timeIn = new Date(`1970-01-01T${clockIn}Z`);
@@ -151,7 +154,7 @@ app.post('/api/intern/log', requireAuth, async (req, res) => {
 app.get('/api/intern/dashboard', requireAuth, async (req, res) => {
   const userId = req.session.user.id;
   try {
-    const [attendance] = await db.execute('SELECT * FROM attendance WHERE user_id = ? ORDER BY date DESC LIMIT 7', [userId]);
+    const [attendance] = await db.execute('SELECT * FROM attendance WHERE user_id = ? ORDER BY date DESC, id DESC LIMIT 20', [userId]);
     const [logs] = await db.execute('SELECT * FROM daily_logs WHERE user_id = ? ORDER BY date DESC LIMIT 5', [userId]);
     const [totalHoursRes] = await db.execute('SELECT SUM(total_hours) as total_hours FROM attendance WHERE user_id = ?', [userId]);
     res.json({ attendance, logs, totalHours: totalHoursRes[0].total_hours || 0 });
