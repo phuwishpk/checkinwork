@@ -115,20 +115,62 @@ app.post('/api/clock-out', requireAuth, async (req, res) => {
     const [active] = await db.execute('SELECT * FROM attendance WHERE user_id = ? AND clock_out_time IS NULL ORDER BY id DESC LIMIT 1', [userId]);
     if (active.length === 0) return res.status(400).json({ error: 'No active clock-in record found' });
     
+    // Calculate duration for this session
     const clockIn = active[0].clock_in_time;
+    const dateStr = active[0].date; // YYYY-MM-DD
     const timeIn = new Date(`1970-01-01T${clockIn}Z`);
     const timeOut = new Date(`1970-01-01T${nowTime}Z`);
     let diff = (timeOut - timeIn) / (1000 * 60 * 60);
-    if (diff < 0) diff = 0;
+    if (diff < 0) diff += 24;
 
-    const normalHours = Math.min(diff, 8);
-    const otHours = Math.max(0, diff - 8);
+    const dayOfWeek = new Date(dateStr).getDay(); // 0 = Sun, 6 = Sat
+    const isWeekend = (dayOfWeek === 0 || dayOfWeek === 6);
+
+    // Calculate how much is after 17:00
+    const limit17 = new Date(`1970-01-01T17:00:00Z`);
+    let normalDiff = diff;
+    let otDiff = 0;
+
+    if (isWeekend) {
+      // All weekend work is OT
+      normalDiff = 0;
+      otDiff = diff;
+    } else {
+      // Split based on 5 PM limit
+      if (timeIn < limit17) {
+        if (timeOut > limit17) {
+          normalDiff = (limit17 - timeIn) / (1000 * 60 * 60);
+          otDiff = (timeOut - limit17) / (1000 * 60 * 60);
+        } else {
+          normalDiff = diff;
+          otDiff = 0;
+        }
+      } else {
+        // Started after 5 PM
+        normalDiff = 0;
+        otDiff = diff;
+      }
+
+      // Also cap normal hours at 8 per day total
+      const [todayTotal] = await db.execute(
+        'SELECT SUM(total_hours) as total FROM attendance WHERE user_id = ? AND date = ? AND id != ?',
+        [userId, dateStr, active[0].id]
+      );
+      const hoursAlreadyLogged = todayTotal[0].total || 0;
+      const remainingNormalCap = Math.max(0, 8 - hoursAlreadyLogged);
+      
+      const cappedNormal = Math.min(normalDiff, remainingNormalCap);
+      const excessFromCap = normalDiff - cappedNormal;
+      
+      normalDiff = cappedNormal;
+      otDiff += excessFromCap;
+    }
 
     await db.execute(
       'UPDATE attendance SET clock_out_time = ?, total_hours = ?, ot_hours = ? WHERE id = ?',
-      [nowTime, normalHours.toFixed(2), otHours.toFixed(2), active[0].id]
+      [nowTime, normalDiff.toFixed(2), otDiff.toFixed(2), active[0].id]
     );
-    res.json({ message: 'Clocked out successfully', time: nowTime, hours: normalHours.toFixed(2), ot: otHours.toFixed(2) });
+    res.json({ message: 'Clocked out successfully', time: nowTime, hours: normalDiff.toFixed(2), ot: otDiff.toFixed(2) });
   } catch (error) {
     res.status(500).json({ error: 'Internal server error' });
   }
