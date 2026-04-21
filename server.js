@@ -23,10 +23,12 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Session store — MySQL so sessions survive across multiple Passenger workers
-let sessionStore;
+// Session store — MySQL so sessions survive across multiple Passenger workers.
+// Wrapped to swallow per-request errors: if MySQL is down, sessions just reset
+// to empty (user must re-login) instead of crashing the request with 500.
+let _rawStore;
 try {
-  sessionStore = new MySQLStore({
+  _rawStore = new MySQLStore({
     host:     process.env.DB_HOST || 'localhost',
     port:     parseInt(process.env.DB_PORT) || 3306,
     user:     process.env.DB_USER,
@@ -38,14 +40,39 @@ try {
       columnNames: { session_id: 'session_id', expires: 'expires', data: 'data' }
     }
   });
-  sessionStore.on('error', (err) => {
-    console.error('Session store error:', err.message);
-  });
   console.log('MySQL session store initialized');
 } catch (err) {
-  console.error('Failed to create MySQL session store, using memory store:', err.message);
-  sessionStore = undefined; // express-session will use MemoryStore
+  console.error('Failed to create MySQL session store:', err.message);
 }
+
+// Resilient wrapper — never passes errors to next(), so no 500s from session ops
+const sessionStore = _rawStore ? {
+  get(sid, cb) {
+    _rawStore.get(sid, (err, session) => {
+      if (err) { console.error('session.get error:', err.message); return cb(null, null); }
+      cb(null, session);
+    });
+  },
+  set(sid, session, cb) {
+    _rawStore.set(sid, session, (err) => {
+      if (err) console.error('session.set error:', err.message);
+      cb(null);
+    });
+  },
+  destroy(sid, cb) {
+    _rawStore.destroy(sid, (err) => {
+      if (err) console.error('session.destroy error:', err.message);
+      if (cb) cb(null);
+    });
+  },
+  touch(sid, session, cb) {
+    if (!_rawStore.touch) return cb && cb(null);
+    _rawStore.touch(sid, session, (err) => {
+      if (err) console.error('session.touch error:', err.message);
+      if (cb) cb(null);
+    });
+  }
+} : undefined;
 
 const sessionSecret = process.env.SESSION_SECRET || 'fallback-change-in-production';
 if (!process.env.SESSION_SECRET) {
