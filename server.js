@@ -1,12 +1,17 @@
+const path = require('path');
+require('dotenv').config({ path: path.join(__dirname, '.env') });
+
 const express = require('express');
 const session = require('express-session');
 const cors = require('cors');
-const path = require('path');
+const bcrypt = require('bcryptjs');
 const db = require('./src/config/database');
-require('dotenv').config();
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+
+// Trust Plesk/nginx reverse proxy so secure cookies work over HTTPS
+app.set('trust proxy', 1);
 
 // Middleware
 app.use(cors({
@@ -17,14 +22,16 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Session configuration
+const sessionSecret = process.env.SESSION_SECRET || 'fallback-change-in-production';
+
 app.use(session({
-  secret: process.env.SESSION_SECRET || 'secret_key',
+  secret: sessionSecret,
   resave: false,
   saveUninitialized: false,
   cookie: {
     secure: process.env.NODE_ENV === 'production',
     httpOnly: true,
+    sameSite: 'lax',
     maxAge: parseInt(process.env.SESSION_MAX_AGE) || 1000 * 60 * 60 * 24
   }
 }));
@@ -49,7 +56,11 @@ const requireAdmin = (req, res, next) => {
 // Login
 app.post('/api/login', async (req, res) => {
   const { username, password } = req.body;
+  if (!username || !password) {
+    return res.status(400).json({ error: 'Username and password are required' });
+  }
   try {
+<<<<<<< HEAD
     const hardcodedUsers = {
       'admin': { id: 1, username: 'admin', password: 'password', role: 'admin', full_name: 'Admin Manager' },
       'intern': { id: 2, username: 'intern', password: 'password', role: 'intern', full_name: 'Intern User' },
@@ -65,10 +76,27 @@ app.post('/api/login', async (req, res) => {
       res.json({ message: 'Login successful', user: req.session.user });
     } else {
       res.status(401).json({ error: 'Invalid username or password' });
+=======
+    const [rows] = await db.execute(
+      'SELECT id, username, password, role, full_name FROM users WHERE username = ?',
+      [username]
+    );
+    const user = rows[0];
+    if (!user || !(await bcrypt.compare(password, user.password))) {
+      return res.status(401).json({ error: 'Invalid username or password' });
+>>>>>>> 03011bc048918915eb0e068d538260c5f84500f1
     }
+    req.session.user = { id: user.id, username: user.username, role: user.role, full_name: user.full_name };
+    req.session.save((err) => {
+      if (err) {
+        console.error('Session save error:', err);
+        return res.status(500).json({ error: 'Internal server error' });
+      }
+      res.json({ message: 'Login successful', user: req.session.user });
+    });
   } catch (error) {
     console.error('Login error:', error);
-    res.status(500).json({ error: 'Internal server error' });
+    res.status(500).json({ error: 'Database error: ' + error.message });
   }
 });
 
@@ -234,7 +262,7 @@ app.get('/api/intern/dashboard', requireAuth, async (req, res) => {
 // Get Intern Calendar data (Unified for specific users)
 app.get('/api/intern/calendar', requireAuth, async (req, res) => {
   try {
-    const [users] = await db.execute(`SELECT id, full_name, username FROM users WHERE username IN ('krittinai', 'nawapon', 'phuwish')`);
+    const [users] = await db.execute(`SELECT id, full_name, username FROM users WHERE role = 'intern'`);
     const userIds = users.map(u => u.id);
     if (userIds.length === 0) return res.json({ attendance: [], logs: [], users: [] });
     const placeholders = userIds.map(() => '?').join(',');
@@ -250,27 +278,35 @@ app.get('/api/intern/calendar', requireAuth, async (req, res) => {
 app.get('/api/manager/dashboard', requireAdmin, async (req, res) => {
   try {
     const [totalHoursRes] = await db.execute('SELECT SUM(total_hours) as total_program_hours FROM attendance');
+<<<<<<< HEAD
+=======
+    
+>>>>>>> 03011bc048918915eb0e068d538260c5f84500f1
     const [roster] = await db.execute(`
       SELECT u.id, u.full_name, u.username,
-        (SELECT CASE WHEN COUNT(*) > 0 THEN 'online' ELSE 'offline' END 
-         FROM attendance a 
+        (SELECT CASE WHEN COUNT(*) > 0 THEN 'online' ELSE 'offline' END
+         FROM attendance a
          WHERE a.user_id = u.id AND a.clock_out_time IS NULL) as status
       FROM users u
-      WHERE u.username IN ('krittinai', 'nawapon', 'phuwish')
+      WHERE u.role = 'intern'
     `);
+<<<<<<< HEAD
+=======
+
+>>>>>>> 03011bc048918915eb0e068d538260c5f84500f1
     const [attendanceLogs] = await db.execute(`
-      SELECT 'attendance' as type, u.full_name, a.date, a.clock_in_time as time_in, a.clock_out_time as time_out, 
+      SELECT 'attendance' as type, u.full_name, a.date, a.clock_in_time as time_in, a.clock_out_time as time_out,
              a.total_hours, a.ot_hours, a.id as record_id
       FROM attendance a
       JOIN users u ON a.user_id = u.id
-      WHERE u.username IN ('krittinai', 'nawapon', 'phuwish')
+      WHERE u.role = 'intern'
       ORDER BY a.id DESC LIMIT 10
     `);
     const [dailyTasks] = await db.execute(`
       SELECT 'task' as type, u.full_name, l.date_start as date, l.task_category, l.description, l.status, l.id as record_id
       FROM daily_logs l
       JOIN users u ON l.user_id = u.id
-      WHERE u.username IN ('krittinai', 'nawapon', 'phuwish')
+      WHERE u.role = 'intern'
       ORDER BY l.id DESC LIMIT 15
     `);
     res.json({ 
@@ -286,19 +322,19 @@ app.get('/api/manager/dashboard', requireAdmin, async (req, res) => {
 
 app.get('/api/manager/calendar-data', requireAdmin, async (req, res) => {
   try {
-    const [users] = await db.execute("SELECT id, full_name, username FROM users WHERE role = 'intern' AND username NOT IN ('intern', 'sarah')");
+    const [users] = await db.execute("SELECT id, full_name, username FROM users WHERE role = 'intern'");
     const [attendance] = await db.execute(`
-      SELECT a.*, u.full_name, u.username 
-      FROM attendance a 
-      JOIN users u ON a.user_id = u.id 
-      WHERE u.role = 'intern' AND u.username NOT IN ('intern', 'sarah')
+      SELECT a.*, u.full_name, u.username
+      FROM attendance a
+      JOIN users u ON a.user_id = u.id
+      WHERE u.role = 'intern'
       ORDER BY a.date ASC, a.clock_in_time ASC
     `);
     const [logs] = await db.execute(`
-      SELECT dl.*, u.full_name, u.username 
-      FROM daily_logs dl 
-      JOIN users u ON dl.user_id = u.id 
-      WHERE u.role = 'intern' AND u.username NOT IN ('intern', 'sarah')
+      SELECT dl.*, u.full_name, u.username
+      FROM daily_logs dl
+      JOIN users u ON dl.user_id = u.id
+      WHERE u.role = 'intern'
       ORDER BY dl.date_start ASC, dl.id ASC
     `);
     res.json({ users, attendance, logs });
@@ -351,6 +387,40 @@ app.post('/api/logs/:id/reject', requireAdmin, async (req, res) => {
   } catch (error) {
     res.status(500).json({ error: 'Internal server error' });
   }
+});
+
+// Clean URL routes
+app.get('/dashboard',           (req, res) => res.sendFile(path.join(__dirname, 'public/intern-dashboard.html')));
+app.get('/daily-log',           (req, res) => res.sendFile(path.join(__dirname, 'public/daily-log.html')));
+app.get('/attendance',          (req, res) => res.sendFile(path.join(__dirname, 'public/attendance.html')));
+app.get('/manager',             (req, res) => res.sendFile(path.join(__dirname, 'public/manager-dashboard.html')));
+app.get('/manager/logs',        (req, res) => res.sendFile(path.join(__dirname, 'public/manager-loge.html')));
+app.get('/manager/attendance',  (req, res) => res.sendFile(path.join(__dirname, 'public/manager-attendance.html')));
+
+// Health check — also shows env config (no secrets)
+app.get('/health', async (req, res) => {
+  let dbOk = false;
+  let dbError = null;
+  try {
+    await db.execute('SELECT 1');
+    dbOk = true;
+  } catch (error) {
+    dbError = error.message;
+  }
+  res.status(dbOk ? 200 : 503).json({
+    status: dbOk ? 'ok' : 'error',
+    timestamp: new Date().toISOString(),
+    db: dbOk ? 'connected' : dbError,
+    env: {
+      DB_HOST: process.env.DB_HOST || '(not set)',
+      DB_PORT: process.env.DB_PORT || '(not set)',
+      DB_USER: process.env.DB_USER ? '(set)' : '(NOT SET)',
+      DB_PASSWORD: process.env.DB_PASSWORD ? '(set)' : '(NOT SET)',
+      DB_NAME: process.env.DB_NAME || '(not set)',
+      SESSION_SECRET: process.env.SESSION_SECRET ? '(set)' : '(NOT SET)',
+      NODE_ENV: process.env.NODE_ENV || '(not set)',
+    }
+  });
 });
 
 // Final Handlers
