@@ -4,7 +4,7 @@
 <head>
   <meta charset="utf-8" />
   <meta content="width=device-width, initial-scale=1.0" name="viewport" />
-  <title>Manager Attendance - Internship Manager</title>
+  <title>Manager Attendance - Internship Portal</title>
   <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
@@ -84,431 +84,96 @@
     };
   </script>
   <style>
-    body {
-      font-family: "Inter", sans-serif;
-      background-color: #f7f9fb;
-      color: #2c3437;
-    }
-
-    h1,
-    h2,
-    h3,
-    h4,
-    h5,
-    h6,
-    .font-headline {
-      font-family: "Manrope", sans-serif;
-      letter-spacing: -0.02em;
-    }
-
-    .glass-panel {
-      background: rgba(247, 249, 251, 0.8);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-    }
-
-    .ambient-shadow {
-      box-shadow: 0 8px 32px rgba(44, 52, 55, 0.06);
-    }
-
-    .gradient-text {
-      background: linear-gradient(135deg, #0053dc, #3e76fe);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-    }
+    body { font-family: "Inter", sans-serif; background-color: #f7f9fb; color: #2c3437; }
+    h1, h2, h3, h4, h5, h6, .font-headline { font-family: "Manrope", sans-serif; letter-spacing: -0.02em; }
+    .glass-panel { background: rgba(247, 249, 251, 0.8); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
+    .ambient-shadow { box-shadow: 0 8px 32px rgba(44, 52, 55, 0.06); }
+    .calendar-grid { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); background-color: #e3e9ed; border-left: 1px solid #e3e9ed; border-top: 1px solid #e3e9ed; }
+    .calendar-cell { background-color: white; min-height: 140px; padding: 0.5rem; display: flex; flex-direction: column; position: relative; border-right: 1px solid #e3e9ed; border-bottom: 1px solid #e3e9ed; overflow: hidden; }
+    .log-bar { height: 20px; margin-bottom: 2px; padding: 0 6px; font-size: 8px; font-weight: 700; display: flex; align-items: center; border-radius: 4px; color: white; white-space: nowrap; overflow: hidden; cursor: pointer; }
   </style>
 </head>
-<<<<<<< HEAD
 
-<body class="bg-background text-on-background min-h-screen flex flex-col md:flex-row">
-  <!-- Mobile Top Navigation -->
-  <nav
-    class="md:hidden glass-panel docked full-width top-0 sticky z-40 flex justify-between items-center w-full px-8 py-3 mx-auto shadow-[0_8px_32px_rgba(44,52,55,0.06)] no-border tonal-shift-bg bg-white/80 dark:bg-slate-900/80 backdrop-blur-md">
-    <div class="text-xl font-extrabold tracking-tight text-slate-900 dark:text-white font-headline">
-      Architect Portal
-    </div>
-    <div class="flex items-center space-x-4 text-blue-600 dark:text-blue-400">
-      <span
-        class="material-symbols-outlined cursor-pointer hover:text-blue-700 dark:hover:text-blue-300 transition-colors scale-95 active:scale-90 duration-200">notifications</span>
-      <span
-        class="material-symbols-outlined cursor-pointer hover:text-blue-700 dark:hover:text-blue-300 transition-colors scale-95 active:scale-90 duration-200">help_outline</span>
-      <img alt="User profile photo" class="w-8 h-8 rounded-full ml-2"
-        src="https://lh3.googleusercontent.com/aida-public/AB6AXuC2ursSRIxoOm7petVp8EOqpFiWBYTKWLxJwCEnuartaYPlOktm5hPZfaRLq_fOx7AO5QBl1fddJJ7bG5Wr4sd_dyqDE6xIgyHK3CyCJwhxq6rHf6_83TUy-NV5f3Xb1QdwuLFH35MB6n2B1kokmqtV8JaYivhC8nB1kSnugEIYT7c2nrr7ns3X5DUGY9EhMpn59vDI0u6W7btVKspONUyX7ejnikePJ1htlvHbPOQOII6r4TVnlZqsvJt3jtgkbV0c5VmMxW7jE4s" />
-    </div>
-  </nav>
-
-  <!-- SideNavBar (Web) -->
-  <aside
-    class="hidden md:flex bg-slate-50 dark:bg-slate-950 docked left-0 h-screen w-64 bg-surface-container-low tonal-contrast flat no-shadows fixed top-0 flex-col p-6 space-y-8 overflow-y-auto z-50">
-    <div class="flex items-center space-x-3">
-      <div
-        class="w-10 h-10 rounded-lg bg-primary flex items-center justify-center text-on-primary font-headline font-bold">
-        IM
+<body class="bg-background text-on-surface antialiased min-h-screen flex flex-col md:flex-row relative">
+  <!-- SideNavBar -->
+  <aside class="hidden md:flex bg-slate-50 dark:bg-slate-950 docked left-0 h-screen w-64 bg-surface-container-low tonal-contrast flat no-shadows fixed left-0 top-0 flex flex-col h-full p-6 space-y-8 overflow-y-auto z-50">
+    <div class="flex items-center space-x-3 mb-8">
+      <div class="w-10 h-10 rounded-xl bg-primary flex items-center justify-center text-on-primary font-bold text-lg shadow-lg shadow-primary/20">
+        <span class="material-symbols-outlined">domain</span>
       </div>
       <div>
-        <h1 class="text-lg font-bold text-slate-900 dark:text-white font-headline leading-tight">
-          Internship Manager
-        </h1>
-        <p class="text-xs text-on-surface-variant font-label">
-          Institutional Authority
-        </p>
+        <h1 class="text-lg font-black text-slate-900 dark:text-white leading-tight font-headline">Internship Portal</h1>
+        <p class="text-[10px] text-on-surface-variant font-bold uppercase tracking-widest">Manager Workspace</p>
       </div>
     </div>
-    <nav class="flex-1 space-y-2 mt-8">
-      <a class="flex items-center space-x-3 px-4 py-3 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/50 rounded-lg font-label text-sm hover:translate-x-1 transition-all duration-300"
-        href="manager-dashboard.html">
+    <nav class="flex-1 space-y-2">
+      <a class="flex items-center space-x-3 px-4 py-3 rounded-xl text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/50 hover:translate-x-1 transition-all duration-300" href="manager-dashboard.html">
         <span class="material-symbols-outlined">grid_view</span>
-        <span>Dashboard</span>
+        <span class="text-sm font-bold">Dashboard</span>
       </a>
-      <a class="flex items-center space-x-3 px-4 py-3 text-blue-700 dark:text-blue-300 font-semibold bg-blue-50 dark:bg-blue-900/20 rounded-lg font-label text-sm hover:translate-x-1 transition-all duration-300"
-        href="manager-attendance.html">
-        <span class="material-symbols-outlined" style="font-variation-settings: &quot;FILL&quot; 1">event_available</span>
-        <span>Attendance</span>
+      <a class="flex items-center space-x-3 px-4 py-3 rounded-xl text-blue-700 dark:text-blue-300 font-black bg-blue-50 dark:bg-blue-900/20 active:scale-95 transition-all duration-300" href="manager-attendance.html">
+        <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1">event_available</span>
+        <span class="text-sm">Attendance</span>
       </a>
-      <a class="flex items-center space-x-3 px-4 py-3 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/50 rounded-lg font-label text-sm hover:translate-x-1 transition-all duration-300"
-        href="manager-loge.html">
+      <a class="flex items-center space-x-3 px-4 py-3 rounded-xl text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/50 hover:translate-x-1 transition-all duration-300" href="manager-loge.html">
         <span class="material-symbols-outlined">history_edu</span>
-        <span>Logs</span>
+        <span class="text-sm font-bold">Daily Logs</span>
       </a>
     </nav>
-    <div class="mt-auto space-y-2 border-t border-outline-variant/15 pt-4">
-      <button id="logout-btn"
-        class="w-full flex items-center space-x-3 px-4 py-2 rounded-lg text-red-600 hover:bg-red-50 transition-colors font-medium">
-        <span class="material-symbols-outlined">logout</span>
-        <span>Sign Out</span>
+    <div class="mt-auto pt-6 border-t border-outline-variant/10">
+      <button id="logout-btn" class="w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-red-500 hover:bg-red-50 transition-all font-bold group">
+        <span class="material-symbols-outlined group-hover:rotate-12 transition-transform">logout</span>
+        <span class="text-sm">Sign Out</span>
       </button>
     </div>
   </aside>
 
-  <!-- Main Content Area -->
-  <main class="flex-1 md:ml-64 p-6 md:p-12 max-w-7xl mx-auto w-full">
-    <!-- Header Section -->
-    <header class="mb-12 flex flex-col md:flex-row md:items-end justify-between gap-4">
-      <div>
-        <p class="text-on-surface-variant font-label text-sm mb-1 uppercase tracking-wider">
-          Manager View
-        </p>
-        <h2 class="text-4xl font-headline font-extrabold text-on-surface">
-          Attendance Calendar
-        </h2>
+  <!-- Main Content -->
+  <main class="flex-1 md:ml-64 flex flex-col min-h-screen relative z-10">
+    <header class="bg-white/80 dark:bg-slate-900/80 backdrop-blur-md sticky top-0 z-40 border-b border-outline-variant/10 px-8 py-4 flex justify-between items-center">
+      <div class="flex items-center gap-4">
+        <h2 class="text-xl font-black font-headline text-on-surface tracking-tight">Attendance Calendar</h2>
       </div>
-      <div class="flex items-center space-x-4 bg-surface-container-lowest px-4 py-2 rounded-xl ambient-shadow">
-        <span class="text-sm font-label text-on-surface-variant">Current Term:</span>
-        <span class="text-sm font-label font-semibold text-primary">Fall 2024</span>
+      <div class="flex items-center gap-4">
+        <div class="text-right hidden sm:block">
+          <div id="user-name" class="text-xs font-black">Admin Manager</div>
+          <div class="text-[9px] text-primary font-black uppercase tracking-widest">Administrator</div>
+        </div>
+        <div class="w-9 h-9 rounded-full bg-primary flex items-center justify-center text-white shadow-md">
+          <span class="material-symbols-outlined text-lg">person</span>
+        </div>
       </div>
     </header>
 
-    <div class="flex justify-between items-center mb-6">
-      <h2 class="text-2xl font-bold font-headline text-on-surface" id="calendar-month-year">Loading...</h2>
-      <div class="flex space-x-2">
-        <button id="prev-month" class="p-2 rounded hover:bg-surface-container"><span
-            class="material-symbols-outlined">chevron_left</span></button>
-        <button id="next-month" class="p-2 rounded hover:bg-surface-container"><span
-            class="material-symbols-outlined">chevron_right</span></button>
-      </div>
-    </div>
-
-    <!-- Bento Grid Layout -->
-    <div class="grid grid-cols-1 md:grid-cols-12 gap-8 mb-8">
-      <!-- Days Present (Col Span 6) -->
-      <div
-        class="md:col-span-6 bg-surface-container-lowest p-8 rounded-xl relative overflow-hidden group ambient-shadow">
-        <div class="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-tertiary to-tertiary-container"></div>
-        <p class="text-on-surface-variant text-sm font-semibold mb-4 uppercase tracking-wider font-label">Days Present
-        </p>
-        <div class="flex items-baseline gap-2">
-          <span class="text-5xl font-black text-on-surface font-headline">0</span>
-          <span class="text-on-surface-variant font-medium font-label">records</span>
-        </div>
-        <div class="mt-4 flex items-center text-xs font-bold text-tertiary font-label">
-          <span class="material-symbols-outlined text-sm mr-1">check_circle</span>
-          Excellent consistency
+    <div class="p-8 max-w-7xl mx-auto w-full space-y-6">
+      <div class="flex flex-col md:flex-row justify-between items-center gap-4">
+        <h3 class="text-2xl font-black font-headline text-on-surface" id="calendar-month-year">Loading...</h3>
+        <div class="flex flex-wrap items-center gap-3">
+          <select id="view-mode" class="bg-white border border-outline-variant/20 rounded-xl px-4 py-2.5 text-xs font-bold focus:ring-2 focus:ring-primary/40 shadow-sm">
+            <option value="all">All Activities</option>
+            <option value="tasks">Tasks Only</option>
+            <option value="attendance">Attendance Only</option>
+          </select>
+          <select id="intern-filter" class="bg-white border border-outline-variant/20 rounded-xl px-4 py-2.5 text-xs font-bold focus:ring-2 focus:ring-primary/40 shadow-sm min-w-[180px]">
+            <option value="all">All Interns</option>
+          </select>
+          <div class="flex bg-surface-container rounded-xl p-1 shadow-inner">
+            <button id="prev-month" class="p-2 rounded-lg hover:bg-white hover:shadow-sm transition-all"><span class="material-symbols-outlined">chevron_left</span></button>
+            <button id="next-month" class="p-2 rounded-lg hover:bg-white hover:shadow-sm transition-all"><span class="material-symbols-outlined">chevron_right</span></button>
+          </div>
         </div>
       </div>
 
-      <!-- Average Shift (Col Span 6) -->
-      <div
-        class="md:col-span-6 bg-surface-container-lowest p-8 rounded-xl relative overflow-hidden group ambient-shadow">
-        <div class="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-secondary to-secondary-container"></div>
-        <p class="text-on-surface-variant text-sm font-semibold mb-4 uppercase tracking-wider font-label">Average Shift
-        </p>
-        <div class="flex items-baseline gap-2">
-          <span class="text-5xl font-black text-on-surface font-headline">0.0</span>
-          <span class="text-on-surface-variant font-medium font-label">hrs</span>
+      <div class="bg-white rounded-[2rem] shadow-sm border border-outline-variant/10 overflow-hidden ambient-shadow">
+        <div class="grid grid-cols-7 bg-surface-container-low text-on-surface-variant font-bold text-[10px] uppercase tracking-[0.2em] py-4 text-center border-b border-outline-variant/5">
+          <div>Sun</div><div>Mon</div><div>Tue</div><div>Wed</div><div>Thu</div><div>Fri</div><div>Sat</div>
         </div>
-        <div class="mt-4 flex items-center text-xs font-bold text-secondary font-label">
-          <span class="material-symbols-outlined text-sm mr-1">timer</span>
-          Excluding breaks
-        </div>
-      </div>
-    </div>
-
-    <!-- Attendance Summary Table (Col Span 12) -->
-    <div class="bg-surface-container-lowest rounded-xl pt-8 pb-4 ambient-shadow overflow-hidden">
-      <div class="px-8 mb-6 flex justify-between items-end">
-        <h3 class="font-headline text-xl font-bold text-on-surface" id="records-title">
-          All Records
-        </h3>
-        <div class="flex gap-2">
-          <button class="p-2 rounded-lg hover:bg-surface-container transition-colors">
-            <span class="material-symbols-outlined">filter_list</span>
-          </button>
-          <button class="p-2 rounded-lg hover:bg-surface-container transition-colors">
-            <span class="material-symbols-outlined">search</span>
-          </button>
-        </div>
-      </div>
-      <div class="overflow-x-auto">
-        <table class="w-full text-left border-collapse">
-          <thead>
-            <tr class="bg-surface text-on-surface-variant font-label text-xs uppercase tracking-wider">
-              <th class="py-4 px-8 font-medium">Date</th>
-              <th class="py-4 px-8 font-medium">Clock-in</th>
-              <th class="py-4 px-8 font-medium">Clock-out</th>
-              <th class="py-4 px-8 font-medium">Duration</th>
-              <th class="py-4 px-8 font-medium">Status</th>
-              <th class="py-4 px-8 font-medium text-right">Actions</th>
-            </tr>
-          </thead>
-          <tbody class="text-sm font-label text-on-surface divide-y divide-surface-container-low" id="attendanceTableBody">
-            <tr>
-              <td colspan="6" class="py-10 text-center text-on-surface-variant">Loading records...</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-
-      <!-- Pagination/Footer -->
-      <div class="px-8 mt-6 pb-4 flex justify-between items-center text-sm" id="footerContainer">
-        <p class="text-on-surface-variant font-label">Showing 0 records</p>
-        <div class="flex gap-2">
-          <button
-            class="px-4 py-2 rounded-lg border-0 bg-surface-container hover:bg-surface-container-high transition-colors text-on-surface font-semibold font-label">Previous</button>
-          <button class="px-4 py-2 rounded-lg border-0 bg-primary text-white font-semibold font-label">1</button>
-          <button
-            class="px-4 py-2 rounded-lg border-0 bg-surface-container hover:bg-surface-container-high transition-colors text-on-surface font-semibold font-label">Next</button>
-        </div>
+        <div id="calendar-grid" class="calendar-grid"></div>
       </div>
     </div>
   </main>
 
-  <script>
-    async function loadAttendanceData() {
-      try {
-        const response = await fetch('/api/manager/attendance');
-        if (!response.ok) {
-          if (response.status === 401 || response.status === 403) {
-            window.location.href = 'index.html';
-          }
-          return;
-        }
-        const data = await response.json();
-        const attendance = data.attendance || [];
-
-        const totalRecords = attendance.length;
-        const totalHours = attendance.reduce((sum, record) => sum + parseFloat(record.total_hours || 0), 0);
-        const avgHours = totalRecords > 0 ? (totalHours / totalRecords).toFixed(1) : '0.0';
-
-        const daysPresentEl = document.querySelector('.md\\:col-span-6:first-child .text-5xl');
-        if (daysPresentEl) daysPresentEl.textContent = totalRecords;
-
-        const avgShiftEl = document.querySelector('.md\\:col-span-6:last-child .text-5xl');
-        if (avgShiftEl) avgShiftEl.textContent = avgHours;
-
-        const headerMonth = document.getElementById('calendar-month-year');
-        if (headerMonth) {
-          const now = new Date();
-          headerMonth.textContent = now.toLocaleString('default', { month: 'long', year: 'numeric' });
-        }
-
-        const tableBody = document.getElementById('attendanceTableBody');
-        if (tableBody) {
-          if (attendance.length === 0) {
-            tableBody.innerHTML = '<tr><td colspan="6" class="py-10 text-center text-on-surface-variant">No attendance records found.</td></tr>';
-          } else {
-            tableBody.innerHTML = attendance.map(record => {
-              const date = new Date(record.date);
-              const dayName = date.toLocaleDateString('en-US', { weekday: 'long' });
-              const dateStr = date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-
-              return `
-                  <tr class="hover:bg-surface-bright transition-colors group">
-                    <td class="py-5 px-8">
-                      <div class="font-bold text-on-surface">${dateStr}</div>
-                      <div class="text-xs text-on-surface-variant">${dayName} (${record.full_name})</div>
-                    </td>
-                    <td class="py-5 px-8 font-medium text-on-surface-variant">${record.clock_in_time || '--'}</td>
-                    <td class="py-5 px-8 font-medium text-on-surface-variant">${record.clock_out_time || '--'}</td>
-                    <td class="py-5 px-8">
-                      <span class="font-bold text-on-surface">${record.total_hours ? parseFloat(record.total_hours).toFixed(1) + ' hrs' : '--'}</span>
-                    </td>
-                    <td class="py-5 px-8">
-                      <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold ${record.clock_out_time ? 'bg-secondary-fixed text-on-secondary-container' : 'bg-tertiary-container text-on-tertiary-container'
-                }">
-                        ${record.clock_out_time ? 'Complete' : 'On-going'}
-                      </span>
-                    </td>
-                    <td class="py-5 px-8 text-right">
-                      <button class="text-on-surface-variant hover:text-primary transition-colors">
-                        <span class="material-symbols-outlined">more_vert</span>
-                      </button>
-                    </td>
-                  </tr>
-                `;
-            }).join('');
-          }
-        }
-
-        const footerText = document.querySelector('#footerContainer p');
-        if (footerText) {
-          footerText.textContent = `Showing 1 to ${attendance.length} of ${attendance.length} records`;
-        }
-
-      } catch (error) {
-        console.error('Error loading attendance data:', error);
-      }
-    }
-
-    async function checkSession() {
-      try {
-        const response = await fetch('/api/session');
-        const data = await response.json();
-        if (data.user && data.user.role === 'admin') {
-          loadAttendanceData();
-        } else {
-          window.location.href = 'index.html';
-        }
-      } catch (error) {
-        window.location.href = 'index.html';
-      }
-    }
-
-    document.getElementById('logout-btn').addEventListener('click', async () => {
-      try {
-        const response = await fetch('/api/logout', { method: 'POST' });
-        if (response.ok) {
-          window.location.href = 'index.html';
-        }
-      } catch (error) {
-        console.error('Logout error:', error);
-      }
-    });
-
-    document.addEventListener('DOMContentLoaded', checkSession);
-  </script>
+  <script src="/js/app.js?v=1.0.3"></script>
 </body>
 
 </html>
-=======
-<body class="bg-background text-on-surface antialiased min-h-screen flex flex-col md:flex-row relative">
-<!-- SideNavBar -->
-<nav class="hidden md:flex bg-slate-50 dark:bg-slate-950 text-blue-600 dark:text-blue-400 font-headline docked left-0 h-screen w-64 bg-surface-container-low tonal-contrast flat no-shadows fixed left-0 top-0 flex flex-col h-full p-6 space-y-8 overflow-y-auto z-50">
-<div class="flex items-center space-x-3 mb-8">
-<div class="w-10 h-10 rounded-full bg-primary flex items-center justify-center text-on-primary font-bold text-lg">
-<span class="material-symbols-outlined">domain</span>
-</div>
-<div>
-<h1 class="text-lg font-bold text-slate-900 dark:text-white leading-tight">Internship System</h1>
-<p class="text-xs text-on-surface-variant font-body">Portal</p>
-</div>
-</div>
-<nav class="flex-1 space-y-2 mt-8">
-<a class="flex items-center space-x-3 px-4 py-3 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/50 hover:translate-x-1 transition-all duration-300" href="manager-dashboard.html">
-<span class="material-symbols-outlined">grid_view</span>
-<span class="font-body text-sm">Dashboard</span>
-</a>
-<a class="flex items-center space-x-3 px-4 py-3 rounded-lg text-blue-700 dark:text-blue-300 font-semibold bg-blue-50 dark:bg-blue-900/20 active:scale-95 transition-all duration-300" href="manager-attendance.html">
-<span class="material-symbols-outlined">event_available</span>
-<span class="font-body text-sm">Attendance</span>
-</a>
-<a class="flex items-center space-x-3 px-4 py-3 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/50 hover:translate-x-1 transition-all duration-300" href="manager-loge.html">
-<span class="material-symbols-outlined">history_edu</span>
-<span class="font-body text-sm">Logs</span>
-</a>
-</nav>
-<div class="mt-auto pt-6 border-t border-outline-variant/10">
-    <button id="logout-btn" class="w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-red-500 hover:bg-red-50 transition-all font-semibold group">
-        <span class="material-symbols-outlined group-hover:rotate-12 transition-transform">logout</span>
-        <span class="text-sm">Sign Out</span>
-    </button>
-</div>
-</nav>
-
-<!-- Main Content Area -->
-<main class="flex-1 md:ml-64 flex flex-col min-h-screen relative z-10">
-<header class="bg-white/80 dark:bg-slate-900/80 backdrop-blur-md text-blue-600 dark:text-blue-400 docked full-width top-0 sticky z-40 no-border tonal-shift-bg shadow-[0_8px_32px_rgba(44,52,55,0.06)] flex justify-between items-center w-full px-8 py-3 mx-auto">
-<div class="flex items-center space-x-4">
-<span class="text-xl font-extrabold tracking-tight text-slate-900 dark:text-white font-headline">Attendance Calendar</span>
-</div>
-<div class="flex items-center space-x-4">
-<div class="text-right hidden sm:block">
-    <div id="user-name" class="text-sm font-bold text-slate-900 dark:text-white">Loading...</div>
-    <div id="user-role" class="text-xs text-slate-500 capitalize">Role</div>
-</div>
-<div class="w-8 h-8 rounded-full bg-primary text-on-primary flex items-center justify-center font-bold">
-    <span class="material-symbols-outlined text-sm">person</span>
-</div>
-</div>
-</header>
-
-<div class="p-8 max-w-7xl mx-auto w-full flex-1">
-    <div class="flex justify-between items-center mb-6">
-        <h2 class="text-2xl font-bold font-headline text-on-surface" id="calendar-month-year">Loading...</h2>
-        <div class="flex items-center gap-4">
-            <select id="view-mode" class="min-w-[160px] bg-surface-container-low border-none rounded-xl px-4 py-2 text-sm font-bold focus:ring-2 focus:ring-primary/40">
-                <option value="all">All Info</option>
-                <option value="tasks">Tasks Only</option>
-                <option value="attendance">Attendance Only</option>
-            </select>
-            <select id="intern-filter" class="min-w-[200px] bg-surface-container-low border-none rounded-xl px-4 py-2 text-sm font-bold focus:ring-2 focus:ring-primary/40">
-                <option value="all">All Interns</option>
-                <!-- Interns will be populated here -->
-            </select>
-            <div class="flex bg-surface-container rounded-lg p-1">
-                <button id="prev-month" class="p-1.5 rounded-md hover:bg-white transition-colors"><span class="material-symbols-outlined">chevron_left</span></button>
-                <button id="next-month" class="p-1.5 rounded-md hover:bg-white transition-colors"><span class="material-symbols-outlined">chevron_right</span></button>
-            </div>
-        </div>
-    </div>
-
-    <div class="bg-white rounded-2xl shadow-sm border border-outline-variant/20 overflow-hidden">
-        <div class="grid grid-cols-7 bg-surface-container-low text-on-surface-variant font-bold text-[10px] uppercase tracking-widest py-3 text-center border-b border-outline-variant/10">
-            <div>Sun</div><div>Mon</div><div>Tue</div><div>Wed</div><div>Thu</div><div>Fri</div><div>Sat</div>
-        </div>
-        <div id="calendar-grid" class="calendar-grid"></div>
-    </div>
-  </div>
-</main>
-
-<style>
-    .calendar-grid { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); background-color: #e3e9ed; border-left: 1px solid #e3e9ed; border-top: 1px solid #e3e9ed; }
-    .calendar-cell { background-color: white; min-height: 160px; padding: 0.5rem; display: flex; flex-direction: column; position: relative; border-right: 1px solid #e3e9ed; border-bottom: 1px solid #e3e9ed; overflow: hidden; }
-    .log-bar { 
-        height: 22px; 
-        margin-bottom: 2px; 
-        padding: 0 6px; 
-        font-size: 9px; 
-        font-weight: 700; 
-        display: flex; 
-        align-items: center; 
-        border-radius: 4px;
-        color: white;
-        white-space: nowrap;
-        overflow: hidden;
-        cursor: pointer;
-    }
-    .span-start { border-top-right-radius: 0; border-bottom-right-radius: 0; margin-right: -0.51rem; width: calc(100% + 0.51rem); }
-    .span-mid { border-radius: 0; margin-left: -0.51rem; margin-right: -0.51rem; width: calc(100% + 1.02rem); }
-    .span-end { border-top-left-radius: 0; border-bottom-left-radius: 0; margin-left: -0.51rem; width: calc(100% + 0.51rem); }
-    
-    .user-box {
-        border-radius: 6px;
-        padding: 4px;
-        margin-bottom: 4px;
-        border-left: 3px solid;
-    }
-</style>
-
-<script src="/js/app.js"></script>
-</body></html>
->>>>>>> 5e44387685ffbbf195ad9bc48dda440d127a4f91

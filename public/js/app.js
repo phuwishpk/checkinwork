@@ -210,11 +210,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                                     </div>
                                 ` : ''}
                                 ${otHours > 0 ? `
-<<<<<<< HEAD
                                     <div class="px-2 py-0.5 bg-orange-500 text-white rounded-lg flex items-center gap-1 shadow-sm shadow-orange-200">
-=======
-                                    <div class="px-2 py-0.5 bg-orange-50 text-orange-600 rounded-lg flex items-center gap-1 border border-orange-100">
->>>>>>> 5e44387685ffbbf195ad9bc48dda440d127a4f91
                                         <span class="material-symbols-outlined text-[12px] font-bold">bolt</span>
                                         <span class="text-[10px] font-black">${otHours.toFixed(1)}h</span>
                                     </div>
@@ -226,7 +222,6 @@ document.addEventListener('DOMContentLoaded', async () => {
                     // If has OT, add to OT history list
                     if (otHours > 0 && otHistoryList) {
                         otHistoryList.innerHTML += `
-<<<<<<< HEAD
                         <div class="flex items-center justify-between p-3.5 bg-orange-50/30 rounded-2xl border border-orange-100/50 hover:bg-orange-50 transition-all duration-300 group">
                             <div class="flex items-center gap-3">
                                 <div class="w-9 h-9 rounded-xl bg-orange-100 text-orange-600 flex items-center justify-center transition-transform group-hover:rotate-6">
@@ -243,20 +238,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                                     <span class="w-1 h-1 rounded-full bg-orange-400"></span>
                                     <span class="text-[8px] text-on-surface-variant/40 font-black uppercase tracking-widest">Recorded</span>
                                 </div>
-=======
-                        <div class="flex items-center justify-between p-3.5 bg-orange-50/30 rounded-2xl border border-orange-100/50 hover:bg-orange-50 transition-colors duration-300">
-                            <div class="flex items-center gap-4">
-                                <div class="w-9 h-9 rounded-xl bg-orange-100 text-orange-600 flex items-center justify-center shadow-sm">
-                                    <span class="material-symbols-outlined text-sm">bolt</span>
-                                </div>
-                                <div>
-                                    <p class="text-[11px] font-black text-on-surface">${dateObj.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}</p>
-                                    <p class="text-[9px] text-orange-700/60 font-bold uppercase tracking-wider">After-hours session</p>
-                                </div>
                             </div>
-                            <div class="text-right">
-                                <p class="text-xs font-black text-orange-600 tracking-tight">+${otHours.toFixed(2)}h</p>
->>>>>>> 5e44387685ffbbf195ad9bc48dda440d127a4f91
                             </div>
                         </div>`;
                     }

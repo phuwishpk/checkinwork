@@ -50,7 +50,6 @@ const requireAdmin = (req, res, next) => {
 app.post('/api/login', async (req, res) => {
   const { username, password } = req.body;
   try {
-    // Hardcoded auth users mapping
     const hardcodedUsers = {
       'admin': { id: 1, username: 'admin', password: 'password', role: 'admin', full_name: 'Admin Manager' },
       'intern': { id: 2, username: 'intern', password: 'password', role: 'intern', full_name: 'Intern User' },
@@ -73,7 +72,6 @@ app.post('/api/login', async (req, res) => {
   }
 });
 
-// Logout
 app.post('/api/logout', (req, res) => {
   req.session.destroy((err) => {
     if (err) return res.status(500).json({ error: 'Could not log out' });
@@ -82,7 +80,6 @@ app.post('/api/logout', (req, res) => {
   });
 });
 
-// Get Session
 app.get('/api/session', (req, res) => {
   if (req.session.user) {
     res.json({ user: req.session.user });
@@ -91,7 +88,7 @@ app.get('/api/session', (req, res) => {
   }
 });
 
-// Clock In
+// Clock In/Out
 app.post('/api/clock-in', requireAuth, async (req, res) => {
   const userId = req.session.user.id;
   const today = new Date().toISOString().slice(0, 10);
@@ -106,7 +103,6 @@ app.post('/api/clock-in', requireAuth, async (req, res) => {
   }
 });
 
-// Clock Out
 app.post('/api/clock-out', requireAuth, async (req, res) => {
   const userId = req.session.user.id;
   const today = new Date().toISOString().slice(0, 10);
@@ -115,28 +111,23 @@ app.post('/api/clock-out', requireAuth, async (req, res) => {
     const [active] = await db.execute('SELECT * FROM attendance WHERE user_id = ? AND clock_out_time IS NULL ORDER BY id DESC LIMIT 1', [userId]);
     if (active.length === 0) return res.status(400).json({ error: 'No active clock-in record found' });
     
-    // Calculate duration for this session
     const clockIn = active[0].clock_in_time;
-    const dateStr = active[0].date; // YYYY-MM-DD
+    const dateStr = active[0].date;
     const timeIn = new Date(`1970-01-01T${clockIn}Z`);
     const timeOut = new Date(`1970-01-01T${nowTime}Z`);
     let diff = (timeOut - timeIn) / (1000 * 60 * 60);
     if (diff < 0) diff += 24;
 
-    const dayOfWeek = new Date(dateStr).getDay(); // 0 = Sun, 6 = Sat
+    const dayOfWeek = new Date(dateStr).getDay();
     const isWeekend = (dayOfWeek === 0 || dayOfWeek === 6);
-
-    // Calculate how much is after 17:00
     const limit17 = new Date(`1970-01-01T17:00:00Z`);
     let normalDiff = diff;
     let otDiff = 0;
 
     if (isWeekend) {
-      // All weekend work is OT
       normalDiff = 0;
       otDiff = diff;
     } else {
-      // Split based on 5 PM limit
       if (timeIn < limit17) {
         if (timeOut > limit17) {
           normalDiff = (limit17 - timeIn) / (1000 * 60 * 60);
@@ -146,22 +137,17 @@ app.post('/api/clock-out', requireAuth, async (req, res) => {
           otDiff = 0;
         }
       } else {
-        // Started after 5 PM
         normalDiff = 0;
         otDiff = diff;
       }
-
-      // Also cap normal hours at 8 per day total
       const [todayTotal] = await db.execute(
         'SELECT SUM(total_hours) as total FROM attendance WHERE user_id = ? AND date = ? AND id != ?',
         [userId, dateStr, active[0].id]
       );
       const hoursAlreadyLogged = todayTotal[0].total || 0;
       const remainingNormalCap = Math.max(0, 8 - hoursAlreadyLogged);
-      
       const cappedNormal = Math.min(normalDiff, remainingNormalCap);
       const excessFromCap = normalDiff - cappedNormal;
-      
       normalDiff = cappedNormal;
       otDiff += excessFromCap;
     }
@@ -197,12 +183,10 @@ app.post('/api/intern/log', requireAuth, async (req, res) => {
     );
     res.json({ message: 'Log created successfully' });
   } catch (error) {
-    console.error('Create log error:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
 });
 
-// Update Daily Log
 app.put('/api/intern/log/:id', requireAuth, async (req, res) => {
   const userId = req.session.user.id;
   const logId = req.params.id;
@@ -214,12 +198,10 @@ app.put('/api/intern/log/:id', requireAuth, async (req, res) => {
     );
     res.json({ message: 'Log updated successfully' });
   } catch (error) {
-    console.error('Update log error:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
 });
 
-// Delete Daily Log
 app.delete('/api/intern/log/:id', requireAuth, async (req, res) => {
   const userId = req.session.user.id;
   const logId = req.params.id;
@@ -227,14 +209,11 @@ app.delete('/api/intern/log/:id', requireAuth, async (req, res) => {
     await db.execute('DELETE FROM daily_logs WHERE id = ? AND user_id = ?', [logId, userId]);
     res.json({ message: 'Log deleted successfully' });
   } catch (error) {
-    console.error('Delete log error:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
 });
 
-
-// Intern Dash & Calendar
-// Get Intern Dashboard Data
+// Dashboards Data
 app.get('/api/intern/dashboard', requireAuth, async (req, res) => {
   const userId = req.session.user.id;
   try {
@@ -252,17 +231,15 @@ app.get('/api/intern/dashboard', requireAuth, async (req, res) => {
   }
 });
 
+// Get Intern Calendar data (Unified for specific users)
 app.get('/api/intern/calendar', requireAuth, async (req, res) => {
   try {
     const [users] = await db.execute(`SELECT id, full_name, username FROM users WHERE username IN ('krittinai', 'nawapon', 'phuwish')`);
     const userIds = users.map(u => u.id);
-    
     if (userIds.length === 0) return res.json({ attendance: [], logs: [], users: [] });
-
     const placeholders = userIds.map(() => '?').join(',');
     const [attendance] = await db.execute(`SELECT * FROM attendance WHERE user_id IN (${placeholders}) ORDER BY date ASC`, userIds);
     const [logs] = await db.execute(`SELECT * FROM daily_logs WHERE user_id IN (${placeholders}) ORDER BY date_start ASC`, userIds);
-    
     res.json({ attendance, logs, users });
   } catch (error) {
     console.error(error);
@@ -270,13 +247,9 @@ app.get('/api/intern/calendar', requireAuth, async (req, res) => {
   }
 });
 
-// Manager Endpoints
 app.get('/api/manager/dashboard', requireAdmin, async (req, res) => {
   try {
-    // 1. Total Program Hours (Sum of all attendance total_hours)
     const [totalHoursRes] = await db.execute('SELECT SUM(total_hours) as total_program_hours FROM attendance');
-    
-    // 2. Roster for specific interns (Krittinai, Nawapon, Phuwish)
     const [roster] = await db.execute(`
       SELECT u.id, u.full_name, u.username,
         (SELECT CASE WHEN COUNT(*) > 0 THEN 'online' ELSE 'offline' END 
@@ -285,8 +258,6 @@ app.get('/api/manager/dashboard', requireAdmin, async (req, res) => {
       FROM users u
       WHERE u.username IN ('krittinai', 'nawapon', 'phuwish')
     `);
-
-    // 3. Activity Feed (Unified view of Clock-ins, Clock-outs, and Tasks)
     const [attendanceLogs] = await db.execute(`
       SELECT 'attendance' as type, u.full_name, a.date, a.clock_in_time as time_in, a.clock_out_time as time_out, 
              a.total_hours, a.ot_hours, a.id as record_id
@@ -295,7 +266,6 @@ app.get('/api/manager/dashboard', requireAdmin, async (req, res) => {
       WHERE u.username IN ('krittinai', 'nawapon', 'phuwish')
       ORDER BY a.id DESC LIMIT 10
     `);
-
     const [dailyTasks] = await db.execute(`
       SELECT 'task' as type, u.full_name, l.date_start as date, l.task_category, l.description, l.status, l.id as record_id
       FROM daily_logs l
@@ -303,8 +273,6 @@ app.get('/api/manager/dashboard', requireAdmin, async (req, res) => {
       WHERE u.username IN ('krittinai', 'nawapon', 'phuwish')
       ORDER BY l.id DESC LIMIT 15
     `);
-
-    // Combine and sort by date/ID if needed, but for now we'll send them separately for specialized UI components
     res.json({ 
       totalProgramHours: totalHoursRes[0].total_program_hours || 0, 
       roster, 
@@ -312,25 +280,10 @@ app.get('/api/manager/dashboard', requireAdmin, async (req, res) => {
       recentTasks: dailyTasks
     });
   } catch (error) {
-    console.error('Manager dashboard error:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
 });
 
-<<<<<<< HEAD
-// Get all attendance for manager
-app.get('/api/manager/attendance', requireAdmin, async (req, res) => {
-  try {
-    const [attendance] = await db.execute(`
-      SELECT a.*, u.full_name, u.username
-      FROM attendance a
-      JOIN users u ON a.user_id = u.id
-      ORDER BY a.date DESC, a.clock_in_time DESC
-    `);
-    res.json({ attendance });
-  } catch (error) {
-    console.error('Error fetching attendance:', error);
-=======
 app.get('/api/manager/calendar-data', requireAdmin, async (req, res) => {
   try {
     const [users] = await db.execute("SELECT id, full_name, username FROM users WHERE role = 'intern' AND username NOT IN ('intern', 'sarah')");
@@ -350,18 +303,25 @@ app.get('/api/manager/calendar-data', requireAdmin, async (req, res) => {
     `);
     res.json({ users, attendance, logs });
   } catch (error) {
-    console.error('Manager calendar data error:', error);
->>>>>>> 5e44387685ffbbf195ad9bc48dda440d127a4f91
     res.status(500).json({ error: 'Internal server error' });
   }
 });
 
-<<<<<<< HEAD
-// --- Logs Management Routes ---
+// Review/Attendance endpoints for manager
+app.get('/api/manager/attendance', requireAdmin, async (req, res) => {
+  try {
+    const [attendance] = await db.execute(`
+      SELECT a.*, u.full_name, u.username
+      FROM attendance a
+      JOIN users u ON a.user_id = u.id
+      ORDER BY a.date DESC, a.clock_in_time DESC
+    `);
+    res.json({ attendance });
+  } catch (error) {
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
 
-// Get all logs for manager review
-=======
->>>>>>> 5e44387685ffbbf195ad9bc48dda440d127a4f91
 app.get('/api/logs/all', requireAdmin, async (req, res) => {
   try {
     const [logs] = await db.execute(`
