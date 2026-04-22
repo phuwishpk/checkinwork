@@ -16,76 +16,36 @@
       theme: {
         extend: {
           colors: {
-            "on-error-container": "#6e0a12",
-            "surface-container-highest": "#dce4e8",
-            "surface-container-high": "#e3e9ed",
-            "error-dim": "#67040d",
-            "on-error": "#fff7f6",
-            "tertiary-container": "#e6cafa",
-            "surface-container-lowest": "#ffffff",
-            "secondary-container": "#d3e4fe",
-            "tertiary-fixed": "#e6cafa",
-            "primary-container": "#3e76fe",
-            "surface-tint": "#0053dc",
-            surface: "#f7f9fb",
-            "on-tertiary-fixed": "#422d53",
-            error: "#a83836",
-            outline: "#747c80",
-            "surface-bright": "#f7f9fb",
-            "primary-fixed": "#3e76fe",
-            "on-secondary-fixed": "#314055",
-            "on-secondary": "#f7f9ff",
-            "on-primary-fixed-variant": "#f9f7ff",
-            "error-container": "#fa746f",
-            "secondary-fixed-dim": "#c5d6f0",
-            background: "#f7f9fb",
-            "surface-variant": "#dce4e8",
-            "secondary-fixed": "#d3e4fe",
+            "primary": "#0053dc",
             "primary-dim": "#0049c2",
-            "on-background": "#2c3437",
-            "inverse-surface": "#0b0f10",
-            "inverse-primary": "#618bff",
-            secondary: "#506076",
-            "secondary-dim": "#44546a",
-            "on-tertiary-fixed-variant": "#604a71",
-            "tertiary-fixed-dim": "#d8bceb",
-            "on-surface": "#2c3437",
-            "outline-variant": "#acb3b7",
-            "inverse-on-surface": "#9a9d9f",
-            "on-primary-container": "#000000",
+            "primary-container": "#3e76fe",
+            "background": "#f7f9fb",
+            "surface": "#ffffff",
             "surface-container": "#eaeff2",
-            "on-secondary-container": "#435368",
             "surface-container-low": "#f0f4f7",
-            "primary-fixed-dim": "#2d68f0",
-            "on-secondary-fixed-variant": "#4d5d73",
-            "tertiary-dim": "#604a72",
-            "on-primary": "#faf8ff",
-            "on-tertiary-container": "#564067",
-            "on-primary-fixed": "#ffffff",
-            primary: "#0053dc",
-            tertiary: "#6d567f",
+            "surface-container-highest": "#dce4e8",
+            "on-surface": "#2c3437",
             "on-surface-variant": "#596064",
-            "surface-dim": "#d4dbdf",
-            "on-tertiary": "#fff6fe",
-          },
-          borderRadius: {
-            DEFAULT: "0.125rem",
-            lg: "0.25rem",
-            xl: "0.5rem",
-            full: "0.75rem",
+            "outline-variant": "#acb3b7",
+            "tertiary-container": "#e6cafa",
+            "on-tertiary-container": "#564067",
           },
           fontFamily: {
             headline: ["Manrope", "sans-serif"],
-            body: ["Inter", "sans-serif"],
-            label: ["Inter", "sans-serif"],
+            body: ["Inter", "sans-serif"]
           },
+          borderRadius: {
+            "3xl": "1.5rem",
+            "4xl": "2rem",
+          }
         },
       },
-    };
+    }
   </script>
   <style>
-    body { font-family: "Inter", sans-serif; background-color: #f7f9fb; color: #2c3437; }
-    h1, h2, h3, h4, h5, h6, .font-headline { font-family: "Manrope", sans-serif; letter-spacing: -0.02em; }
+    body { font-family: 'Inter', sans-serif; }
+    h1, h2, h3, h4, h5, h6, .font-headline { font-family: 'Manrope', sans-serif; letter-spacing: -0.02em; }
+    .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
     .glass-panel { background: rgba(247, 249, 251, 0.8); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
     .ambient-shadow { box-shadow: 0 8px 32px rgba(44, 52, 55, 0.06); }
     .calendar-grid { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); background-color: #e3e9ed; border-left: 1px solid #e3e9ed; border-top: 1px solid #e3e9ed; }
@@ -94,53 +54,58 @@
   </style>
 </head>
 
-<body class="bg-background text-on-surface antialiased min-h-screen flex flex-col md:flex-row relative">
-  <!-- SideNavBar -->
-  <aside class="hidden md:flex bg-slate-50 dark:bg-slate-950 docked left-0 h-screen w-64 bg-surface-container-low tonal-contrast flat no-shadows fixed left-0 top-0 flex flex-col h-full p-6 space-y-8 overflow-y-auto z-50">
-    <div class="flex items-center space-x-3 mb-8">
-      <div class="w-10 h-10 rounded-xl bg-primary flex items-center justify-center text-on-primary font-bold text-lg shadow-lg shadow-primary/20">
-        <span class="material-symbols-outlined">domain</span>
-      </div>
-      <div>
-        <h1 class="text-lg font-black text-slate-900 dark:text-white leading-tight font-headline">Internship Portal</h1>
-        <p class="text-[10px] text-on-surface-variant font-bold uppercase tracking-widest">Manager Workspace</p>
-      </div>
+<body class="bg-background text-on-surface antialiased min-h-screen flex flex-col md:flex-row">
+<!-- SideNavBar -->
+<nav id="side-nav" class="hidden md:flex flex-col fixed left-0 top-0 h-full w-64 bg-[#f0f4f7] p-6 gap-y-8 z-50 pt-8">
+  <div class="flex items-center gap-3">
+    <div class="w-10 h-10 flex-shrink-0 bg-primary rounded-lg flex items-center justify-center shadow-md">
+      <span class="material-symbols-outlined text-white text-lg">domain</span>
     </div>
-    <nav class="flex-1 space-y-2">
-      <a class="flex items-center space-x-3 px-4 py-3 rounded-xl text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/50 hover:translate-x-1 transition-all duration-300" href="manager-dashboard.html">
-        <span class="material-symbols-outlined">grid_view</span>
-        <span class="text-sm font-bold">Dashboard</span>
-      </a>
-      <a class="flex items-center space-x-3 px-4 py-3 rounded-xl text-blue-700 dark:text-blue-300 font-black bg-blue-50 dark:bg-blue-900/20 active:scale-95 transition-all duration-300" href="manager-attendance.html">
-        <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1">event_available</span>
-        <span class="text-sm">Attendance</span>
-      </a>
-      <a class="flex items-center space-x-3 px-4 py-3 rounded-xl text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/50 hover:translate-x-1 transition-all duration-300" href="manager-loge.html">
-        <span class="material-symbols-outlined">history_edu</span>
-        <span class="text-sm font-bold">Daily Logs</span>
-      </a>
-    </nav>
-    <div class="mt-auto pt-6 border-t border-outline-variant/10">
-      <button id="logout-btn" class="w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-red-500 hover:bg-red-50 transition-all font-bold group">
-        <span class="material-symbols-outlined group-hover:rotate-12 transition-transform">logout</span>
-        <span class="text-sm">Sign Out</span>
-      </button>
+    <div>
+      <p class="font-headline font-extrabold text-blue-700 leading-tight">Internship Portal</p>
+      <p class="text-[10px] text-on-surface-variant uppercase tracking-wider font-semibold">Manager Workspace</p>
     </div>
-  </aside>
+  </div>
+  <div class="flex flex-col gap-2">
+    <a class="text-slate-500 flex items-center gap-3 px-4 py-3 hover:translate-x-1 transition-transform" href="manager-dashboard.html">
+      <span class="material-symbols-outlined text-[20px]">grid_view</span>
+      <span class="text-sm font-medium">Dashboard</span>
+    </a>
+    <a class="text-blue-600 font-bold flex items-center gap-3 px-4 py-3 bg-white rounded-xl shadow-sm transition-transform" href="manager-attendance.html">
+      <span class="material-symbols-outlined fill text-[20px]" style="font-variation-settings:'FILL' 1">event_available</span>
+      <span class="text-sm">Attendance</span>
+    </a>
+    <a class="text-slate-500 flex items-center gap-3 px-4 py-3 hover:translate-x-1 transition-transform" href="manager-loge.html">
+      <span class="material-symbols-outlined text-[20px]">history_edu</span>
+      <span class="text-sm font-medium">Daily Logs</span>
+    </a>
+  </div>
+  <div class="mt-auto space-y-4">
+    <button id="logout-btn" class="flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-red-500 hover:bg-red-50 w-full transition-colors font-medium">
+      <span class="material-symbols-outlined text-[20px]">logout</span>
+      <span class="text-sm">Sign Out</span>
+    </button>
+  </div>
+</nav>
 
   <!-- Main Content -->
-  <main class="flex-1 md:ml-64 flex flex-col min-h-screen relative z-10">
-    <header class="bg-white/80 dark:bg-slate-900/80 backdrop-blur-md sticky top-0 z-40 border-b border-outline-variant/10 px-8 py-4 flex justify-between items-center">
+  <main class="flex-1 md:ml-64 flex flex-col min-h-screen bg-background">
+    <header class="sticky top-0 z-40 bg-white/80 backdrop-blur-md border-b border-outline-variant/10 shadow-sm flex items-center justify-between px-8 py-3.5">
       <div class="flex items-center gap-4">
-        <h2 class="text-xl font-black font-headline text-on-surface tracking-tight">Attendance Calendar</h2>
+        <button class="md:hidden p-2 rounded-lg hover:bg-surface-container" onclick="document.getElementById('side-nav').classList.toggle('hidden')">
+          <span class="material-symbols-outlined text-[20px]">menu</span>
+        </button>
+        <span class="text-base font-black text-on-surface font-headline tracking-tight">Attendance</span>
+        <div class="h-4 w-px bg-outline-variant/20 hidden sm:block"></div>
+        <span id="greeting-name" class="text-xs font-bold text-on-surface-variant hidden sm:block">Welcome back</span>
       </div>
-      <div class="flex items-center gap-4">
-        <div class="text-right hidden sm:block">
+      <div class="flex items-center space-x-4">
+        <div class="text-right hidden xs:block">
           <div id="user-name" class="text-xs font-black">Admin Manager</div>
-          <div class="text-[9px] text-primary font-black uppercase tracking-widest">Administrator</div>
+          <div class="text-[9px] text-primary font-black uppercase tracking-[0.15em]">Administrator</div>
         </div>
-        <div class="w-9 h-9 rounded-full bg-primary flex items-center justify-center text-white shadow-md">
-          <span class="material-symbols-outlined text-lg">person</span>
+        <div class="w-9 h-9 rounded-full bg-primary flex items-center justify-center shadow-md text-white group cursor-pointer hover:opacity-90 transition-all">
+          <span class="material-symbols-outlined text-[20px]">person</span>
         </div>
       </div>
     </header>
@@ -173,13 +138,7 @@
     </div>
   </main>
 
-  <script src="/js/app.js?v=1.0.3"></script>
+  <script src="/js/common.js"></script>
+  <script src="/js/manager-attendance.js"></script>
 </body>
-
-<<<<<<< HEAD
 </html>
-=======
-<script src="/js/common.js"></script>
-<script src="/js/manager-attendance.js"></script>
-</body></html>
->>>>>>> 03011bc048918915eb0e068d538260c5f84500f1

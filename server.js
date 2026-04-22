@@ -60,23 +60,6 @@ app.post('/api/login', async (req, res) => {
     return res.status(400).json({ error: 'Username and password are required' });
   }
   try {
-<<<<<<< HEAD
-    const hardcodedUsers = {
-      'admin': { id: 1, username: 'admin', password: 'password', role: 'admin', full_name: 'Admin Manager' },
-      'intern': { id: 2, username: 'intern', password: 'password', role: 'intern', full_name: 'Intern User' },
-      'krittinai': { id: 4, username: 'krittinai', password: 'password', role: 'intern', full_name: 'Krittinai' },
-      'nawapon': { id: 5, username: 'nawapon', password: 'password', role: 'intern', full_name: 'Nawapon' },
-      'phuwish': { id: 6, username: 'phuwish', password: 'password', role: 'intern', full_name: 'Phuwish' }
-    };
-    
-    const user = hardcodedUsers[username];
-    
-    if (user && user.password === password) {
-      req.session.user = { id: user.id, username: user.username, role: user.role, full_name: user.full_name };
-      res.json({ message: 'Login successful', user: req.session.user });
-    } else {
-      res.status(401).json({ error: 'Invalid username or password' });
-=======
     const [rows] = await db.execute(
       'SELECT id, username, password, role, full_name FROM users WHERE username = ?',
       [username]
@@ -84,7 +67,6 @@ app.post('/api/login', async (req, res) => {
     const user = rows[0];
     if (!user || !(await bcrypt.compare(password, user.password))) {
       return res.status(401).json({ error: 'Invalid username or password' });
->>>>>>> 03011bc048918915eb0e068d538260c5f84500f1
     }
     req.session.user = { id: user.id, username: user.username, role: user.role, full_name: user.full_name };
     req.session.save((err) => {
@@ -278,10 +260,6 @@ app.get('/api/intern/calendar', requireAuth, async (req, res) => {
 app.get('/api/manager/dashboard', requireAdmin, async (req, res) => {
   try {
     const [totalHoursRes] = await db.execute('SELECT SUM(total_hours) as total_program_hours FROM attendance');
-<<<<<<< HEAD
-=======
-    
->>>>>>> 03011bc048918915eb0e068d538260c5f84500f1
     const [roster] = await db.execute(`
       SELECT u.id, u.full_name, u.username,
         (SELECT CASE WHEN COUNT(*) > 0 THEN 'online' ELSE 'offline' END
@@ -290,10 +268,6 @@ app.get('/api/manager/dashboard', requireAdmin, async (req, res) => {
       FROM users u
       WHERE u.role = 'intern'
     `);
-<<<<<<< HEAD
-=======
-
->>>>>>> 03011bc048918915eb0e068d538260c5f84500f1
     const [attendanceLogs] = await db.execute(`
       SELECT 'attendance' as type, u.full_name, a.date, a.clock_in_time as time_in, a.clock_out_time as time_out,
              a.total_hours, a.ot_hours, a.id as record_id

@@ -1,4 +1,19 @@
 services:
+  mariadb:
+    image: mariadb:11
+    container_name: checkinwork_mariadb
+    restart: unless-stopped
+    environment:
+      MARIADB_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+      MARIADB_DATABASE: ${DB_NAME}
+      MARIADB_USER: ${DB_USER}
+      MARIADB_PASSWORD: ${DB_PASSWORD}
+    ports:
+      - "${DB_PORT}:3306"
+    volumes:
+      - mariadb_data:/var/lib/mysql
+      - ./sql/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+
   app:
     build:
       context: .
@@ -7,12 +22,22 @@ services:
     restart: unless-stopped
     ports:
       - "3000:3000"
-    volumes:
-      # Mount the database file to persist data between container restarts.
-      # Note: If the file doesn't exist on the host, Docker might create a directory instead.
-      # Since it exists locally, this will work fine.
-      - ./database.sqlite:/app/database.sqlite
+    depends_on:
+      - mariadb
+    env_file:
+      - .env
     environment:
       - NODE_ENV=development
       - PORT=3000
       - TZ=Asia/Bangkok
+      - DB_HOST=mariadb
+      - DB_PORT=3306
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_NAME=${DB_NAME}
+    volumes:
+      - .:/app
+      - /app/node_modules
+
+volumes:
+  mariadb_data:

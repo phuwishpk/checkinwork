@@ -9,9 +9,6 @@
   <link
     href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;family=Inter:wght@400;500;600&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
     rel="stylesheet" />
-  <link
-    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
-    rel="stylesheet" />
   <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
   <script id="tailwind-config">
     tailwind.config = {
@@ -19,179 +16,103 @@
       theme: {
         extend: {
           colors: {
-            "on-secondary": "#f7f9ff",
-            outline: "#747c80",
-            "primary-fixed-dim": "#2d68f0",
-            "surface-bright": "#f7f9fb",
-            "on-tertiary-fixed": "#422d53",
-            "tertiary-fixed-dim": "#d8bceb",
-            tertiary: "#6d567f",
-            "error-container": "#fa746f",
-            "outline-variant": "#acb3b7",
-            "secondary-container": "#d3e4fe",
-            "on-primary-fixed-variant": "#f9f7ff",
-            "error-dim": "#67040d",
-            "secondary-fixed": "#d3e4fe",
-            primary: "#0053dc",
-            "surface-container-low": "#f0f4f7",
-            "surface-container-high": "#e3e9ed",
-            "surface-container-highest": "#dce4e8",
-            "on-error-container": "#6e0a12",
-            "primary-fixed": "#3e76fe",
-            error: "#a83836",
-            "on-tertiary": "#fff6fe",
-            "secondary-dim": "#44546a",
-            "on-primary": "#faf8ff",
-            "on-secondary-container": "#435368",
-            "surface-dim": "#d4dbdf",
-            "on-error": "#fff7f6",
-            "surface-container": "#eaeff2",
-            "on-background": "#2c3437",
-            "inverse-on-surface": "#9a9d9f",
-            "tertiary-fixed": "#e6cafa",
-            "surface-container-lowest": "#ffffff",
+            "primary": "#0053dc",
             "primary-dim": "#0049c2",
-            "tertiary-container": "#e6cafa",
-            "on-surface-variant": "#596064",
-            "on-secondary-fixed": "#314055",
-            "inverse-surface": "#0b0f10",
-            "on-primary-fixed": "#ffffff",
             "primary-container": "#3e76fe",
-            background: "#f7f9fb",
-            "on-tertiary-fixed-variant": "#604a71",
+            "background": "#f7f9fb",
+            "surface": "#ffffff",
+            "surface-container": "#eaeff2",
+            "surface-container-low": "#f0f4f7",
+            "surface-container-highest": "#dce4e8",
             "on-surface": "#2c3437",
-            "on-primary-container": "#000000",
-            secondary: "#506076",
-            "on-secondary-fixed-variant": "#4d5d73",
-            surface: "#f7f9fb",
-            "surface-tint": "#0053dc",
-            "inverse-primary": "#618bff",
-            "surface-variant": "#dce4e8",
+            "on-surface-variant": "#596064",
+            "outline-variant": "#acb3b7",
+            "tertiary-container": "#e6cafa",
             "on-tertiary-container": "#564067",
-            "secondary-fixed-dim": "#c5d6f0",
-            "tertiary-dim": "#604a72",
-          },
-          borderRadius: {
-            DEFAULT: "0.125rem",
-            lg: "0.25rem",
-            xl: "0.5rem",
-            full: "0.75rem",
           },
           fontFamily: {
-            headline: ["Manrope"],
-            body: ["Inter"],
-            label: ["Inter"],
+            headline: ["Manrope", "sans-serif"],
+            body: ["Inter", "sans-serif"]
           },
+          borderRadius: {
+            "3xl": "1.5rem",
+            "4xl": "2rem",
+          }
         },
       },
-    };
+    }
   </script>
   <style>
-    .material-symbols-outlined {
-      font-variation-settings:
-        "FILL" 0,
-        "wght" 400,
-        "GRAD" 0,
-        "opsz" 24;
-    }
-
-    body {
-      font-family: "Inter", sans-serif;
-    }
-
-    h1,
-    h2,
-    h3,
-    h4,
-    .font-headline {
-      font-family: "Manrope", sans-serif;
-    }
-
-    .glass-effect {
-      backdrop-filter: blur(12px);
-      background: rgba(255, 255, 255, 0.8);
-    }
+    body { font-family: 'Inter', sans-serif; }
+    h1, h2, h3, h4, h5, h6, .font-headline { font-family: 'Manrope', sans-serif; letter-spacing: -0.02em; }
+    .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+    .glass-panel { background: rgba(247, 249, 251, 0.8); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
+    .ambient-shadow { box-shadow: 0 8px 32px rgba(44, 52, 55, 0.06); }
+    .status-plan    { background:#dbeafe; color:#1e40af; }
+    .status-todo    { background:#fef3c7; color:#92400e; }
+    .status-inprogress { background:#e0f2fe; color:#0369a1; }
+    .status-done    { background:#dcfce7; color:#166534; }
   </style>
 </head>
 
-<body class="bg-background text-on-background min-h-screen flex flex-col md:flex-row">
-  <!-- TopNavBar (Web & Mobile, hidden on md if SideNav is present, but using as top bar per instruction if needed. Actually, instructed to use SideNav for Web. Let's use SideNavBar for md:flex and TopNavBar for md:hidden) -->
-  <!-- Mobile Top Navigation -->
-  <nav
-    class="md:hidden glass-panel docked full-width top-0 sticky z-40 flex justify-between items-center w-full px-8 py-3 mx-auto shadow-[0_8px_32px_rgba(44,52,55,0.06)] no-border tonal-shift-bg bg-white/80 dark:bg-slate-900/80 backdrop-blur-md">
-    <div class="text-xl font-extrabold tracking-tight text-slate-900 dark:text-white font-headline">
-      Architect Portal
-    </div>
-    <div class="flex items-center space-x-4 text-blue-600 dark:text-blue-400">
-      <span
-        class="material-symbols-outlined cursor-pointer hover:text-blue-700 dark:hover:text-blue-300 transition-colors scale-95 active:scale-90 duration-200">notifications</span>
-      <span
-        class="material-symbols-outlined cursor-pointer hover:text-blue-700 dark:hover:text-blue-300 transition-colors scale-95 active:scale-90 duration-200">help_outline</span>
-      <img alt="User profile photo" class="w-8 h-8 rounded-full ml-2"
-        data-alt="Small circular user profile picture placeholder with gray background"
-        src="https://lh3.googleusercontent.com/aida-public/AB6AXuC2ursSRIxoOm7petVp8EOqpFiWBYTKWLxJwCEnuartaYPlOktm5hPZfaRLq_fOx7AO5QBl1fddJJ7bG5Wr4sd_dyqDE6xIgyHK3CyCJwhxq6rHf6_83TUy-NV5f3Xb1QdwuLFH35MB6n2B1kokmqtV8JaYivhC8nB1kSnugEIYT7c2nrr7ns3X5DUGY9EhMpn59vDI0u6W7btVKspONUyX7ejnikePJ1htlvHbPOQOII6r4TVnlZqsvJt3jtgkbV0c5VmMxW7jE4s" />
-    </div>
-  </nav>
-  <!-- SideNavBar (Web) -->
-  <aside
-    class="hidden md:flex bg-slate-50 dark:bg-slate-950 docked left-0 h-screen w-64 bg-surface-container-low tonal-contrast flat no-shadows fixed left-0 top-0 flex flex-col h-full p-6 space-y-8 overflow-y-auto z-50">
-    <div class="flex items-center space-x-3">
-      <div
-        class="w-10 h-10 rounded-lg bg-primary flex items-center justify-center text-on-primary font-headline font-bold">
-        IM
+<body class="bg-background text-on-surface antialiased min-h-screen flex flex-col md:flex-row">
+  <!-- SideNavBar -->
+  <nav id="side-nav" class="hidden md:flex flex-col fixed left-0 top-0 h-full w-64 bg-[#f0f4f7] p-6 gap-y-8 z-50 pt-8">
+    <div class="flex items-center gap-3">
+      <div class="w-10 h-10 flex-shrink-0 bg-primary rounded-lg flex items-center justify-center shadow-md">
+        <span class="material-symbols-outlined text-white text-lg">domain</span>
       </div>
       <div>
-        <h1 class="text-lg font-bold text-slate-900 dark:text-white font-headline leading-tight">
-          Internship Manager
-        </h1>
-        <p class="text-xs text-on-surface-variant font-label">
-          Institutional Authority
-        </p>
+        <p class="font-headline font-extrabold text-blue-700 leading-tight">Internship Portal</p>
+        <p class="text-[10px] text-on-surface-variant uppercase tracking-wider font-semibold">Manager Workspace</p>
       </div>
     </div>
-    <nav class="flex-1 space-y-2 mt-8">
-      <a class="flex items-center space-x-3 px-4 py-3 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/50 rounded-lg font-label text-sm hover:translate-x-1 transition-all duration-300"
-        href="manager-dashboard.html">
-        <span class="material-symbols-outlined" style="font-variation-settings: &quot;FILL&quot; 1">grid_view</span>
-        <span>Dashboard</span>
+    <div class="flex flex-col gap-2">
+      <a class="text-slate-500 flex items-center gap-3 px-4 py-3 hover:translate-x-1 transition-transform" href="manager-dashboard.html">
+        <span class="material-symbols-outlined text-[20px]">grid_view</span>
+        <span class="text-sm font-medium">Dashboard</span>
       </a>
-      <a class="flex items-center space-x-3 px-4 py-3 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/50 rounded-lg font-label text-sm hover:translate-x-1 transition-all duration-300"
-        href="manager-attendance.html">
-        <span class="material-symbols-outlined">event_available</span>
-        <span>Attendance</span>
+      <a class="text-slate-500 flex items-center gap-3 px-4 py-3 hover:translate-x-1 transition-transform" href="manager-attendance.html">
+        <span class="material-symbols-outlined text-[20px]">event_available</span>
+        <span class="text-sm font-medium">Attendance</span>
       </a>
-      <a class="flex items-center space-x-3 px-4 py-3 text-blue-700 dark:text-blue-300 font-semibold bg-blue-50 dark:bg-blue-900/20 rounded-lg font-label text-sm hover:translate-x-1 transition-all duration-300"
-        href="#">
-        <span class="material-symbols-outlined">history_edu</span>
-        <span>Logs</span>
+      <a class="text-blue-600 font-bold flex items-center gap-3 px-4 py-3 bg-white rounded-xl shadow-sm transition-transform" href="manager-loge.html">
+        <span class="material-symbols-outlined fill text-[20px]" style="font-variation-settings:'FILL' 1">history_edu</span>
+        <span class="text-sm">Daily Logs</span>
       </a>
-    </nav>
-    <div class="mt-auto pt-6 border-t border-outline-variant/10">
-      <button id="logout-btn" class="w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-red-500 hover:bg-red-50 transition-all font-semibold group">
-        <span class="material-symbols-outlined group-hover:rotate-12 transition-transform">logout</span>
+    </div>
+    <div class="mt-auto space-y-4">
+      <button id="logout-btn" class="flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-red-500 hover:bg-red-50 w-full transition-colors font-medium">
+        <span class="material-symbols-outlined text-[20px]">logout</span>
         <span class="text-sm">Sign Out</span>
       </button>
     </div>
-  </aside>
+  </nav>
   <!-- Main Content Area -->
-  <main class="flex-1 md:ml-64 p-6 md:p-12 max-w-7xl mx-auto w-full">
+  <main class="flex-1 md:ml-64 flex flex-col min-h-screen bg-background">
     <!-- Header Section -->
-    <header class="mb-12 flex flex-col md:flex-row md:items-end justify-between gap-4">
-      <div>
-        <p class="text-on-surface-variant font-label text-sm mb-1 uppercase tracking-wider">
-          Log Management
-        </p>
-        <h2 class="text-4xl font-headline font-extrabold text-on-surface">
-          Review Daily Logs
-        </h2>
+    <header class="sticky top-0 z-40 bg-white/80 backdrop-blur-md border-b border-outline-variant/10 shadow-sm flex items-center justify-between px-8 py-3.5">
+      <div class="flex items-center gap-4">
+        <button class="md:hidden p-2 rounded-lg hover:bg-surface-container" onclick="document.getElementById('side-nav').classList.toggle('hidden')">
+          <span class="material-symbols-outlined text-[20px]">menu</span>
+        </button>
+        <span class="text-base font-black text-on-surface font-headline tracking-tight">Daily Logs</span>
+        <div class="h-4 w-px bg-outline-variant/20 hidden sm:block"></div>
+        <span id="greeting-name" class="text-xs font-bold text-on-surface-variant hidden sm:block">Welcome back</span>
       </div>
-      <div class="flex items-center space-x-4 bg-surface-container-lowest px-4 py-2 rounded-xl ambient-shadow">
-        <span class="text-sm font-label text-on-surface-variant">Current Term:</span>
-        <span class="text-sm font-label font-semibold text-primary">Fall 2024</span>
+      <div class="flex items-center space-x-4">
+        <div class="text-right hidden xs:block">
+          <div id="user-name" class="text-xs font-black">Loading...</div>
+          <div class="text-[9px] text-primary font-black uppercase tracking-[0.15em]">Administrator</div>
+        </div>
+        <div class="w-9 h-9 rounded-full bg-primary flex items-center justify-center shadow-md text-white group cursor-pointer hover:opacity-90 transition-all">
+          <span class="material-symbols-outlined text-[20px]">person</span>
+        </div>
       </div>
     </header>
     <!-- Bento Grid Layout -->
-    <div class="grid grid-cols-1 md:grid-cols-12 gap-8">
+    <div class="p-8 max-w-7xl mx-auto w-full space-y-8">
+      <div class="grid grid-cols-1 md:grid-cols-12 gap-8">
       <!-- Stats Cards -->
       <div class="md:col-span-3 bg-surface-container-lowest rounded-xl p-6 ambient-shadow">
         <h3 class="font-headline text-lg font-bold text-on-surface mb-4">
@@ -261,7 +182,7 @@
           </div>
           <div class="flex items-end">
             <button
-              class="w-full bg-primary text-on-primary px-4 py-2 rounded-lg font-medium hover:bg-primary-dim transition-colors"
+              class="w-full bg-primary text-white px-4 py-2 rounded-lg font-medium hover:bg-primary-dim transition-colors"
               onclick="applyFilters()">
               Apply Filters
             </button>
@@ -284,240 +205,9 @@
         </div>
       </div>
     </div>
+    </div>
   </main>
-  <!-- Background Decoration -->
-  <div class="fixed top-0 right-0 -z-10 w-1/2 h-full opacity-30 pointer-events-none">
-    <div class="absolute top-20 right-20 w-96 h-96 bg-primary-container rounded-full blur-[120px]"></div>
-    <div class="absolute bottom-20 right-40 w-64 h-64 bg-tertiary-container rounded-full blur-[100px]"></div>
-  </div>
   <script src="/js/common.js"></script>
   <script src="/js/manager-loge.js"></script>
-  <script>
-    let allLogs = [];
-    let filteredLogs = [];
-
-    // Fetch and populate logs management
-    async function loadLogsManagement() {
-      try {
-        const response = await fetch('/api/manager/dashboard');
-        if (!response.ok) {
-          window.location.href = 'index.html';
-          return;
-        }
-        const data = await response.json();
-
-        // Get all logs (we'll need to fetch all logs, not just recent ones)
-        const logsResponse = await fetch('/api/logs/all');
-        if (logsResponse.ok) {
-          const logsData = await logsResponse.json();
-          allLogs = logsData.logs || [];
-        } else {
-          // Fallback to recent logs from dashboard
-          allLogs = data.recentLogs || [];
-        }
-
-        filteredLogs = [...allLogs];
-
-        // Update stats
-        updateStats();
-
-        // Populate intern filter
-        populateInternFilter(data.roster || []);
-
-        // Display logs
-        displayLogs();
-
-      } catch (error) {
-        console.error('Error loading logs management:', error);
-      }
-    }
-
-    function updateStats() {
-      const plan = allLogs.filter(log => log.status === 'Plan' || log.task_category === 'Plan').length;
-      const todo = allLogs.filter(log => log.status === 'To Do' || log.task_category === 'To Do').length;
-      const inprogress = allLogs.filter(log => log.status === 'In Progress' || log.task_category === 'In Progress').length;
-      const done = allLogs.filter(log => log.status === 'Done' || log.task_category === 'Done').length;
-
-      document.getElementById('countPlan').textContent = plan;
-      document.getElementById('countToDo').textContent = todo;
-      document.getElementById('countInProgress').textContent = inprogress;
-      document.getElementById('countDone').textContent = done;
-    }
-
-    function populateInternFilter(roster) {
-      const internFilter = document.getElementById('internFilter');
-      roster.forEach(intern => {
-        const option = document.createElement('option');
-        option.value = intern.id;
-        option.textContent = intern.full_name;
-        internFilter.appendChild(option);
-      });
-    }
-
-    function applyFilters() {
-      const dateFilter = document.getElementById('dateFilter').value;
-      const internFilter = document.getElementById('internFilter').value;
-      const statusFilter = document.getElementById('statusFilter').value;
-
-      filteredLogs = allLogs.filter(log => {
-        // Date filter
-        if (dateFilter !== 'all') {
-          const logDate = new Date(log.date);
-          const now = new Date();
-
-          switch (dateFilter) {
-            case 'today':
-              if (logDate.toDateString() !== now.toDateString()) return false;
-              break;
-            case 'week':
-              const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
-              if (logDate < weekAgo) return false;
-              break;
-            case 'month':
-              if (logDate.getMonth() !== now.getMonth() || logDate.getFullYear() !== now.getFullYear()) return false;
-              break;
-          }
-        }
-
-        // Intern filter
-        if (internFilter !== 'all' && log.user_id != internFilter) return false;
-
-        // Status filter
-        if (statusFilter !== 'all' && log.status !== statusFilter) return false;
-
-        return true;
-      });
-
-      displayLogs();
-    }
-
-    function computeDuration(start, finish) {
-      if (!start || !finish) return '—';
-      const s = new Date(start), f = new Date(finish);
-      const diffDays = Math.round((f - s) / (1000 * 60 * 60 * 24));
-      if (diffDays < 0) return '—';
-      if (diffDays === 0) return '1 day';
-      return `${diffDays + 1} days`;
-    }
-
-    function displayLogs() {
-      const logsContainer = document.getElementById('logsContainer');
-      logsContainer.innerHTML = filteredLogs.map(log => {
-        const duration = computeDuration(log.date_start, log.date_finish);
-        return `
-            <div class="bg-surface-container-lowest p-6 rounded-xl ambient-shadow">
-              <div class="flex justify-between items-start mb-4">
-                <div class="flex items-center space-x-3">
-                  <div class="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center text-xs font-bold text-primary">
-                    ${log.full_name.split(' ').map(n => n[0]).join('').substring(0, 2)}
-                  </div>
-                  <div>
-                    <p class="font-label text-sm font-semibold text-on-surface">${log.full_name}</p>
-                    <p class="font-label text-xs text-on-surface-variant">${new Date(log.date_start || log.date).toLocaleDateString()}</p>
-                  </div>
-                </div>
-                <span class="px-3 py-1 rounded-full text-xs font-label font-medium ${
-                  log.status === 'Plan' ? 'bg-surface-container-highest text-on-surface' :
-                  log.status === 'To Do' ? 'bg-tertiary-container text-on-tertiary-container' :
-                  log.status === 'In Progress' ? 'bg-primary text-on-primary' :
-                  log.status === 'Done' ? 'bg-secondary-fixed text-on-secondary-container' :
-                  'bg-outline text-on-surface'
-                }">
-                  ${log.status}
-                </span>
-              </div>
-              <h4 class="font-headline font-semibold text-on-surface mb-2">${log.task_category}</h4>
-              <p class="text-sm font-label text-on-surface-variant line-clamp-2 mb-4">${log.description}</p>
-              <div class="flex items-center justify-between pt-4 border-t border-outline-variant/15">
-                <span class="text-sm font-label font-medium text-on-surface">${duration}</span>
-                <div class="flex space-x-2">
-                  <button class="px-3 py-1 text-xs font-medium text-primary hover:bg-primary/10 rounded-lg transition-colors" onclick="viewLogDetails(${log.id})">
-                    View Details
-                  </button>
-                </div>
-              </div>
-            </div>
-          `;
-      }).join('');
-    }
-
-    async function approveLog(logId) {
-      try {
-        const response = await fetch(`/api/logs/${logId}/approve`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' }
-        });
-
-        if (response.ok) {
-          // Update local data
-          const log = allLogs.find(l => l.id == logId);
-          if (log) log.status = 'approved';
-          applyFilters();
-          updateStats();
-        }
-      } catch (error) {
-        console.error('Error approving log:', error);
-      }
-    }
-
-    async function rejectLog(logId) {
-      try {
-        const response = await fetch(`/api/logs/${logId}/reject`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' }
-        });
-
-        if (response.ok) {
-          // Update local data
-          const log = allLogs.find(l => l.id == logId);
-          if (log) log.status = 'rejected';
-          applyFilters();
-          updateStats();
-        }
-      } catch (error) {
-        console.error('Error rejecting log:', error);
-      }
-    }
-
-    function viewLogDetails(logId) {
-      const log = allLogs.find(l => l.id == logId);
-      if (log) {
-        const duration = computeDuration(log.date_start, log.date_finish);
-        alert(`Log Details:\n\nIntern: ${log.full_name}\nStart Date: ${new Date(log.date_start).toLocaleDateString()}\nFinish Date: ${new Date(log.date_finish).toLocaleDateString()}\nTask: ${log.task_category}\nDescription: ${log.description}\nDuration: ${duration}\nStatus: ${log.status}`);
-      }
-    }
-
-<<<<<<< HEAD
-    // Check session and load logs management
-    async function checkSession() {
-      try {
-        const response = await fetch('/api/session');
-        const data = await response.json();
-        if (data.user && data.user.role === 'admin') {
-          loadLogsManagement();
-        } else {
-          window.location.href = 'index.html';
-        }
-      } catch (error) {
-        window.location.href = 'index.html';
-      }
-    }
-
-    // Load on page load
-    checkSession();
-    document.getElementById('logout-btn').addEventListener('click', async () => {
-      try {
-        const response = await fetch('/api/logout', { method: 'POST' });
-        if (response.ok) {
-          window.location.href = 'index.html';
-        }
-      } catch (error) {
-        console.error('Logout error:', error);
-      }
-    });
-=======
->>>>>>> 03011bc048918915eb0e068d538260c5f84500f1
-  </script>
 </body>
-
 </html>
