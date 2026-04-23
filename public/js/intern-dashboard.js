@@ -2,6 +2,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     const user = await protectRoute();
     if (!user) return;
     setupLogout();
+    initHamburgerMenu();
 
     let isClockedIn = false;
     let clockInTime = null;

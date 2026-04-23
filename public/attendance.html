@@ -82,7 +82,7 @@
 <body class="bg-background text-on-surface antialiased min-h-screen flex flex-col md:flex-row">
 
 <!-- SideNavBar -->
-<nav class="hidden md:flex flex-col fixed left-0 top-0 h-full w-64 bg-[#f0f4f7] p-6 gap-y-8 z-50 pt-8">
+<nav id="sidebar" class="fixed left-0 top-0 h-full w-64 bg-[#f0f4f7] p-6 z-50 pt-8 flex flex-col gap-y-8 transition-transform duration-300 -translate-x-full md:translate-x-0">
   <div class="flex items-center gap-3">
     <div class="w-10 h-10 flex-shrink-0 bg-primary rounded-lg flex items-center justify-center shadow-md">
       <span class="material-symbols-outlined text-white text-lg">domain</span>
@@ -114,9 +114,15 @@
   </div>
 </nav>
 
+<!-- Mobile Overlay -->
+<div id="sidebar-overlay" class="fixed inset-0 bg-black/40 z-40 hidden md:hidden"></div>
+
 <main class="flex-1 md:ml-64 flex flex-col min-h-screen bg-background">
-  <header class="sticky top-0 z-40 bg-white/80 backdrop-blur-md border-b border-outline-variant/10 shadow-sm flex items-center justify-between px-8 py-3.5">
+  <header class="sticky top-0 z-40 bg-white/80 backdrop-blur-md border-b border-outline-variant/10 shadow-sm flex items-center justify-between px-4 md:px-8 py-3.5">
     <div class="flex items-center gap-4">
+      <button id="hamburger-btn" class="md:hidden p-2 hover:bg-surface-container rounded-lg transition-colors">
+        <span class="material-symbols-outlined text-[24px]">menu</span>
+      </button>
       <span class="text-base font-black text-on-surface font-headline tracking-tight">Attendance</span>
       <div class="h-4 w-px bg-outline-variant/20 hidden sm:block"></div>
       <span id="greeting-name" class="text-xs font-bold text-on-surface-variant hidden sm:block">Welcome back</span>
@@ -132,23 +138,25 @@
     </div>
   </header>
 
-  <div class="p-8 max-w-7xl mx-auto w-full flex-1">
-    <div class="flex justify-between items-center mb-6">
-        <h2 class="text-2xl font-bold font-headline text-on-surface" id="calendar-month-year">Loading...</h2>
-        <div class="flex items-center gap-4">
-            <select id="intern-filter" class="min-w-[180px] bg-surface-container-low border-none rounded-xl px-4 py-2 text-xs font-bold focus:ring-2 focus:ring-primary/40">
-                <option value="all">All Interns</option>
-            </select>
-            <div class="flex bg-surface-container rounded-lg p-1 mr-2">
-                <button data-view-filter="all" class="view-filter-btn px-3 py-1.5 rounded-md text-xs font-bold bg-white shadow-sm text-primary transition-all">All</button>
-                <button data-view-filter="tasks" class="view-filter-btn px-3 py-1.5 rounded-md text-xs font-bold text-on-surface-variant hover:bg-white/50 transition-all">Tasks</button>
-                <button data-view-filter="time" class="view-filter-btn px-3 py-1.5 rounded-md text-xs font-bold text-on-surface-variant hover:bg-white/50 transition-all">Time</button>
-            </div>
+  <div class="p-4 md:p-8 max-w-7xl mx-auto w-full flex-1 overflow-x-hidden">
+    <div class="flex flex-col gap-4 mb-6">
+        <div class="flex justify-between items-center">
+            <h2 class="text-2xl font-bold font-headline text-on-surface" id="calendar-month-year">Loading...</h2>
             <div class="flex bg-surface-container rounded-lg p-1">
                 <button id="prev-month" class="p-1.5 rounded-md hover:bg-white transition-colors"><span class="material-symbols-outlined">chevron_left</span></button>
                 <button id="next-month" class="p-1.5 rounded-md hover:bg-white transition-colors"><span class="material-symbols-outlined">chevron_right</span></button>
             </div>
-            <button id="open-new-task-btn2" class="bg-[#0053dc] text-white px-5 py-2.5 rounded-xl font-bold text-sm shadow-lg shadow-primary/20 hover:bg-blue-700 transition-all active:scale-95">New Task</button>
+        </div>
+        <div class="flex flex-wrap gap-2 items-center">
+            <select id="intern-filter" class="flex-1 min-w-[150px] bg-surface-container-low border-none rounded-xl px-4 py-2 text-xs font-bold focus:ring-2 focus:ring-primary/40">
+                <option value="all">All Interns</option>
+            </select>
+            <div class="flex bg-surface-container rounded-lg p-1">
+                <button data-view-filter="all" class="view-filter-btn px-2 md:px-3 py-1.5 rounded-md text-xs font-bold bg-white shadow-sm text-primary transition-all">All</button>
+                <button data-view-filter="tasks" class="view-filter-btn px-2 md:px-3 py-1.5 rounded-md text-xs font-bold text-on-surface-variant hover:bg-white/50 transition-all">Tasks</button>
+                <button data-view-filter="time" class="view-filter-btn px-2 md:px-3 py-1.5 rounded-md text-xs font-bold text-on-surface-variant hover:bg-white/50 transition-all">Time</button>
+            </div>
+            <button id="open-new-task-btn2" class="bg-[#0053dc] text-white px-3 md:px-5 py-2.5 rounded-xl font-bold text-xs md:text-sm shadow-lg shadow-primary/20 hover:bg-blue-700 transition-all active:scale-95">New Task</button>
         </div>
     </div>
 
@@ -240,6 +248,7 @@
 </div>
 
 <script src="/js/common.js"></script>
+<script src="/js/hamburger.js"></script>
 <script src="/js/attendance.js"></script>
 </body>
 </html>
