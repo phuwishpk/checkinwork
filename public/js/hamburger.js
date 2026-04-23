@@ -7,15 +7,19 @@ function initHamburgerMenu() {
 
     const closeSidebar = () => {
         sidebar.classList.add('-translate-x-full');
-        sidebarOverlay.classList.add('hidden');
+        sidebarOverlay.classList.add('hidden', 'pointer-events-none');
+        sidebarOverlay.classList.remove('pointer-events-auto');
     };
 
     const openSidebar = () => {
         sidebar.classList.remove('-translate-x-full');
-        sidebarOverlay.classList.remove('hidden');
+        sidebarOverlay.classList.remove('hidden', 'pointer-events-none');
+        sidebarOverlay.classList.add('pointer-events-auto');
     };
 
-    hamburgerBtn.addEventListener('click', () => {
+    hamburgerBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
         if (sidebar.classList.contains('-translate-x-full')) {
             openSidebar();
         } else {
