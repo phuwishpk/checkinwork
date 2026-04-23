@@ -58,3 +58,7 @@ INSERT IGNORE INTO users (id, username, password, role, full_name) VALUES
 (2, 'krittinai', '$2a$10$7yOuCVKNbmY8Qr9LdaiON.odcwamjYdl6MDOXFxRiI9KETQMQExai', 'intern', 'Krittinai'),
 (3, 'nawapon',   '$2a$10$IK.cuaUphj9ZRd18WbkQuO6b4otc8pBaU1TUIAIvLOSrmIrpK797a', 'intern', 'Nawapon'),
 (4, 'phuwish',   '$2a$10$ZAV2ozk/LIkzrDIGUmLqf.AnSYyjpsokBTN/CsTJ1nO0Ke6uCO/Q.', 'intern', 'Phuwish');
+
+-- Grant access from any host (needed for Docker bridge network)
+GRANT ALL PRIVILEGES ON intern_clickrobot.* TO 'intern_clickrobot'@'%' IDENTIFIED BY 'intern_clickrobot';
+FLUSH PRIVILEGES;
