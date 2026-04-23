@@ -42,17 +42,16 @@
     body { font-family: 'Inter', sans-serif; }
     h1, h2, h3, h4, h5, h6, .font-headline { font-family: 'Manrope', sans-serif; letter-spacing: -0.02em; }
     .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
-</style>
     .calendar-grid { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); background-color: #e3e9ed; border-left: 1px solid #e3e9ed; border-top: 1px solid #e3e9ed; }
     .calendar-cell { background-color: white; min-height: 140px; padding: 0.5rem; display: flex; flex-direction: column; position: relative; border-right: 1px solid #e3e9ed; border-bottom: 1px solid #e3e9ed; }
-    .log-bar { 
-        height: 24px; 
-        margin-bottom: 3px; 
-        padding: 0 8px; 
-        font-size: 10px; 
-        font-weight: 700; 
-        display: flex; 
-        align-items: center; 
+    .log-bar {
+        height: 24px;
+        margin-bottom: 3px;
+        padding: 0 8px;
+        font-size: 10px;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
         cursor: pointer;
         white-space: nowrap;
         overflow: visible;
@@ -63,19 +62,19 @@
         position: relative;
     }
     .log-bar:hover { filter: brightness(1.1); z-index: 20; }
-    .log-bar.span-start { 
-        border-top-right-radius: 0; border-bottom-right-radius: 0; 
-        margin-right: -0.51rem; 
+    .log-bar.span-start {
+        border-top-right-radius: 0; border-bottom-right-radius: 0;
+        margin-right: -0.51rem;
         width: calc(100% + 0.51rem);
     }
-    .log-bar.span-mid { 
-        border-radius: 0; 
-        margin-left: -0.51rem; margin-right: -0.51rem; 
+    .log-bar.span-mid {
+        border-radius: 0;
+        margin-left: -0.51rem; margin-right: -0.51rem;
         width: calc(100% + 1.02rem);
     }
-    .log-bar.span-end { 
-        border-top-left-radius: 0; border-bottom-left-radius: 0; 
-        margin-left: -0.51rem; 
+    .log-bar.span-end {
+        border-top-left-radius: 0; border-bottom-left-radius: 0;
+        margin-left: -0.51rem;
         width: calc(100% + 0.51rem);
     }
 </style>
