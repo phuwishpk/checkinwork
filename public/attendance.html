@@ -83,7 +83,7 @@
 <body class="bg-background text-on-surface antialiased min-h-screen flex flex-col md:flex-row">
 
 <!-- SideNavBar -->
-<nav class="hidden md:flex flex-col fixed left-0 top-0 h-full w-64 bg-[#f0f4f7] p-6 gap-y-8 z-50 pt-8">
+<nav id="side-nav" class="hidden md:flex flex-col fixed left-0 top-0 h-full w-64 bg-[#f0f4f7] p-6 gap-y-8 z-50 pt-8">
   <div class="flex items-center gap-3">
     <div class="w-10 h-10 flex-shrink-0 bg-primary rounded-lg flex items-center justify-center shadow-md">
       <span class="material-symbols-outlined text-white text-lg">domain</span>
@@ -118,6 +118,9 @@
 <main class="flex-1 md:ml-64 flex flex-col min-h-screen bg-background">
   <header class="sticky top-0 z-40 bg-white/80 backdrop-blur-md border-b border-outline-variant/10 shadow-sm flex items-center justify-between px-8 py-3.5">
     <div class="flex items-center gap-4">
+      <button class="md:hidden p-2 rounded-lg hover:bg-surface-container" onclick="document.getElementById('side-nav').classList.toggle('hidden')">
+        <span class="material-symbols-outlined text-[20px]">menu</span>
+      </button>
       <span class="text-base font-black text-on-surface font-headline tracking-tight">Attendance</span>
       <div class="h-4 w-px bg-outline-variant/20 hidden sm:block"></div>
       <span id="greeting-name" class="text-xs font-bold text-on-surface-variant hidden sm:block">Welcome back</span>
