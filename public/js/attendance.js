@@ -3,6 +3,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (!user) return;
     setupLogout();
 
+    initHamburgerMenu();
+
     let currentDate = new Date();
     let allAttendance = [], allLogs = [], allUsers = [];
     let isDragging = false, dragStart = null, dragEnd = null;

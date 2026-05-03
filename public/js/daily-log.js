@@ -2,6 +2,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     const user = await protectRoute();
     if (!user) return;
     setupLogout();
+    initHamburgerMenu();
 
     const STATUS_STYLE = {
         'Plan': 'status-plan', 'To Do': 'status-todo',
