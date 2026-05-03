@@ -47,9 +47,17 @@
     .status-inprogress { background:#e0f2fe; color:#0369a1; }
     .status-done    { background:#dcfce7; color:#166534; }
     #log-modal { transition: opacity 0.2s; }
+
+    /* Mobile sidebar overlay */
+    #side-nav.mobile-open { display:flex !important; position:fixed; z-index:100; }
+    #nav-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.4); z-index:99; }
+    #nav-overlay.active { display:block; }
 </style>
 </head>
 <body class="bg-background text-on-surface antialiased min-h-screen flex flex-col md:flex-row">
+
+<!-- Nav overlay for mobile -->
+<div id="nav-overlay" onclick="closeMobileNav()"></div>
 
 <!-- SideNavBar -->
 <nav id="side-nav" class="hidden md:flex flex-col fixed left-0 top-0 h-full w-64 bg-[#f0f4f7] p-6 gap-y-8 z-50 pt-8">
@@ -86,9 +94,9 @@
 
 <!-- Main Content -->
 <main class="flex-1 md:ml-64 flex flex-col min-h-screen bg-background">
-  <header class="sticky top-0 z-40 bg-white/80 backdrop-blur-md border-b border-outline-variant/10 shadow-sm flex items-center justify-between px-8 py-3.5">
+  <header class="sticky top-0 z-40 bg-white/80 backdrop-blur-md border-b border-outline-variant/10 shadow-sm flex items-center justify-between px-4 sm:px-8 py-3.5">
     <div class="flex items-center gap-4">
-      <button class="md:hidden p-2 rounded-lg hover:bg-surface-container" onclick="document.getElementById('side-nav').classList.toggle('hidden')">
+      <button class="md:hidden p-2 rounded-lg hover:bg-surface-container" onclick="toggleMobileNav()">
         <span class="material-symbols-outlined text-[20px]">menu</span>
       </button>
       <span class="text-base font-black text-on-surface font-headline tracking-tight">Daily Logs</span>
@@ -106,15 +114,15 @@
     </div>
   </header>
 
-  <div class="flex-1 p-6 md:p-8 max-w-7xl w-full mx-auto space-y-6">
+    <div class="flex-1 p-4 sm:p-6 md:p-8 max-w-7xl w-full mx-auto space-y-4 sm:space-y-6">
 
     <!-- Page Title + Add Button -->
-    <div class="flex items-center justify-between">
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
       <div>
-        <h1 class="text-3xl font-extrabold text-on-surface font-headline">Daily Work Log</h1>
-        <p class="text-on-surface-variant text-sm mt-1">Manage and track your tasks linked with attendance records.</p>
+        <h1 class="text-xl sm:text-3xl font-extrabold text-on-surface font-headline">Daily Work Log</h1>
+        <p class="text-on-surface-variant text-xs sm:text-sm mt-1">Manage and track your tasks linked with attendance records.</p>
       </div>
-      <button id="open-log-modal-btn2" class="flex items-center gap-2 px-5 py-2.5 bg-primary text-white rounded-xl font-semibold shadow-md hover:opacity-90 transition-all">
+      <button id="open-log-modal-btn2" class="flex items-center justify-center gap-2 px-4 sm:px-5 py-2.5 bg-primary text-white rounded-xl font-semibold shadow-md hover:opacity-90 transition-all text-sm w-full sm:w-auto">
         <span class="material-symbols-outlined text-lg">add</span>
         New Log
       </button>
@@ -125,14 +133,14 @@
 
       <!-- Log Table (spans 2/3) -->
       <div class="xl:col-span-2 bg-white rounded-2xl shadow-sm border border-outline-variant/10 overflow-hidden">
-        <div class="flex items-center justify-between px-6 py-4 border-b border-outline-variant/10">
-          <h2 class="text-base font-bold font-headline text-on-surface">All Tasks</h2>
-          <div class="flex gap-2">
-            <button data-filter="all" class="filter-btn px-3 py-1 rounded-full text-xs font-semibold bg-primary text-white">All</button>
-            <button data-filter="Plan" class="filter-btn px-3 py-1 rounded-full text-xs font-semibold bg-slate-100 text-slate-600 hover:bg-blue-100">Plan</button>
-            <button data-filter="To Do" class="filter-btn px-3 py-1 rounded-full text-xs font-semibold bg-slate-100 text-slate-600 hover:bg-yellow-100">To Do</button>
-            <button data-filter="In Progress" class="filter-btn px-3 py-1 rounded-full text-xs font-semibold bg-slate-100 text-slate-600 hover:bg-sky-100">In Progress</button>
-            <button data-filter="Done" class="filter-btn px-3 py-1 rounded-full text-xs font-semibold bg-slate-100 text-slate-600 hover:bg-green-100">Done</button>
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between px-4 sm:px-6 py-3 sm:py-4 border-b border-outline-variant/10 gap-2">
+          <h2 class="text-sm sm:text-base font-bold font-headline text-on-surface">All Tasks</h2>
+          <div class="flex gap-1.5 sm:gap-2 flex-wrap">
+            <button data-filter="all" class="filter-btn px-2.5 sm:px-3 py-1 rounded-full text-[10px] sm:text-xs font-semibold bg-primary text-white">All</button>
+            <button data-filter="Plan" class="filter-btn px-2.5 sm:px-3 py-1 rounded-full text-[10px] sm:text-xs font-semibold bg-slate-100 text-slate-600 hover:bg-blue-100">Plan</button>
+            <button data-filter="To Do" class="filter-btn px-2.5 sm:px-3 py-1 rounded-full text-[10px] sm:text-xs font-semibold bg-slate-100 text-slate-600 hover:bg-yellow-100">To Do</button>
+            <button data-filter="In Progress" class="filter-btn px-2.5 sm:px-3 py-1 rounded-full text-[10px] sm:text-xs font-semibold bg-slate-100 text-slate-600 hover:bg-sky-100">In Progress</button>
+            <button data-filter="Done" class="filter-btn px-2.5 sm:px-3 py-1 rounded-full text-[10px] sm:text-xs font-semibold bg-slate-100 text-slate-600 hover:bg-green-100">Done</button>
           </div>
         </div>
         <div class="overflow-x-auto">
@@ -240,6 +248,16 @@
   </div>
 </div>
 
+<script>
+function toggleMobileNav(){
+  var n=document.getElementById('side-nav'),o=document.getElementById('nav-overlay');
+  n.classList.toggle('mobile-open');n.classList.toggle('hidden');o.classList.toggle('active');
+}
+function closeMobileNav(){
+  var n=document.getElementById('side-nav'),o=document.getElementById('nav-overlay');
+  n.classList.remove('mobile-open');n.classList.add('hidden');o.classList.remove('active');
+}
+</script>
 <script src="/js/common.js"></script>
 <script src="/js/daily-log.js"></script>
 </body>
