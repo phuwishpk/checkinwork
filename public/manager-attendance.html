@@ -102,7 +102,7 @@
       <div class="flex items-center space-x-4">
         <div class="text-right hidden xs:block">
           <div id="user-name" class="text-xs font-black">Admin Manager</div>
-          <div class="text-[9px] text-primary font-black uppercase tracking-[0.15em]">Administrator</div>
+          <div id="user-role-label" class="text-[9px] text-primary font-black uppercase tracking-[0.15em]">Administrator</div>
         </div>
         <div class="w-9 h-9 rounded-full bg-primary flex items-center justify-center shadow-md text-white group cursor-pointer hover:opacity-90 transition-all">
           <span class="material-symbols-outlined text-[20px]">person</span>
@@ -114,13 +114,17 @@
       <div class="flex flex-col md:flex-row justify-between items-center gap-4">
         <h3 class="text-2xl font-black font-headline text-on-surface" id="calendar-month-year">Loading...</h3>
         <div class="flex flex-wrap items-center gap-3">
+          <button id="add-manual-btn" class="bg-primary text-white rounded-xl px-4 py-2.5 text-xs font-bold hover:bg-primary-dim transition-all shadow-md flex items-center gap-2">
+            <span class="material-symbols-outlined text-[18px]">add</span>
+            Add Manual Record
+          </button>
           <select id="view-mode" class="bg-white border border-outline-variant/20 rounded-xl px-4 py-2.5 text-xs font-bold focus:ring-2 focus:ring-primary/40 shadow-sm">
             <option value="all">All Activities</option>
             <option value="tasks">Tasks Only</option>
             <option value="attendance">Attendance Only</option>
           </select>
           <select id="intern-filter" class="bg-white border border-outline-variant/20 rounded-xl px-4 py-2.5 text-xs font-bold focus:ring-2 focus:ring-primary/40 shadow-sm min-w-[180px]">
-            <option value="all">All Interns</option>
+            <option value="all">All Participants</option>
           </select>
           <div class="flex bg-surface-container rounded-xl p-1 shadow-inner">
             <button id="prev-month" class="p-2 rounded-lg hover:bg-white hover:shadow-sm transition-all"><span class="material-symbols-outlined">chevron_left</span></button>
@@ -137,6 +141,71 @@
       </div>
     </div>
   </main>
+
+  <div id="manual-modal" class="fixed inset-0 z-[100] hidden">
+    <div class="absolute inset-0 bg-on-surface/20 backdrop-blur-sm"></div>
+    <div class="absolute inset-0 flex items-center justify-center p-4">
+      <div class="bg-white rounded-[2.5rem] shadow-2xl w-full max-w-lg overflow-hidden ambient-shadow border border-outline-variant/10">
+        <div class="p-8 space-y-6">
+          <div class="flex justify-between items-center">
+            <h3 class="text-xl font-black font-headline text-on-surface" id="modal-title">Add Manual Attendance</h3>
+            <button id="close-modal" class="p-2 rounded-full hover:bg-surface-container transition-colors">
+              <span class="material-symbols-outlined">close</span>
+            </button>
+          </div>
+          <form id="manual-attendance-form" class="space-y-4">
+            <input type="hidden" name="id" id="modal-record-id">
+            <div class="space-y-2">
+              <label class="text-[10px] font-black uppercase tracking-wider text-on-surface-variant ml-1">User</label>
+              <select name="user_id" id="modal-intern-select" class="w-full bg-surface-container-low border-none rounded-2xl px-4 py-3 text-sm font-bold focus:ring-2 focus:ring-primary/40 shadow-sm" required>
+                <option value="">Select User</option>
+              </select>
+            </div>
+            <div class="space-y-2">
+              <label class="text-[10px] font-black uppercase tracking-wider text-on-surface-variant ml-1">Date</label>
+              <input type="date" name="date" class="w-full bg-surface-container-low border-none rounded-2xl px-4 py-3 text-sm font-bold focus:ring-2 focus:ring-primary/40 shadow-sm" required>
+            </div>
+            <div class="grid grid-cols-2 gap-4">
+              <div class="space-y-2">
+                <label class="text-[10px] font-black uppercase tracking-wider text-on-surface-variant ml-1">Clock In</label>
+                <input type="time" name="clock_in_time" class="w-full bg-surface-container-low border-none rounded-2xl px-4 py-3 text-sm font-bold focus:ring-2 focus:ring-primary/40 shadow-sm" required>
+              </div>
+              <div class="space-y-2">
+                <label class="text-[10px] font-black uppercase tracking-wider text-on-surface-variant ml-1">Clock Out</label>
+                <input type="time" name="clock_out_time" class="w-full bg-surface-container-low border-none rounded-2xl px-4 py-3 text-sm font-bold focus:ring-2 focus:ring-primary/40 shadow-sm" required>
+              </div>
+            </div>
+            
+            <div id="task-fields" class="pt-4 border-t border-outline-variant/10 space-y-4">
+              <p class="text-[10px] font-black uppercase tracking-widest text-primary">Daily Task (Optional)</p>
+              <div class="space-y-2">
+                <label class="text-[10px] font-black uppercase tracking-wider text-on-surface-variant ml-1">Category</label>
+                <select name="task_category" class="w-full bg-surface-container-low border-none rounded-2xl px-4 py-3 text-sm font-bold focus:ring-2 focus:ring-primary/40 shadow-sm cursor-pointer">
+                  <option value="Plan">Plan</option>
+                  <option value="To Do">To Do</option>
+                  <option value="In Progress">In Progress</option>
+                  <option value="Done" selected>Done</option>
+                </select>
+              </div>
+              <div class="space-y-2">
+                <label class="text-[10px] font-black uppercase tracking-wider text-on-surface-variant ml-1">Description</label>
+                <textarea name="task_description" rows="2" placeholder="What was done?" class="w-full bg-surface-container-low border-none rounded-2xl px-4 py-3 text-sm font-bold focus:ring-2 focus:ring-primary/40 shadow-sm"></textarea>
+              </div>
+            </div>
+
+            <div class="flex gap-3 mt-4">
+              <button type="button" id="delete-record-btn" class="hidden bg-red-50 text-red-600 rounded-2xl px-6 py-4 text-sm font-black hover:bg-red-100 transition-all">
+                Delete
+              </button>
+              <button type="submit" id="submit-record-btn" class="flex-1 bg-primary text-white rounded-2xl py-4 text-sm font-black hover:bg-primary-dim transition-all shadow-lg shadow-primary/20">
+                Save Record
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <script src="/js/common.js"></script>
   <script src="/js/manager-attendance.js"></script>

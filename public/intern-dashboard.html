@@ -1,17 +1,22 @@
 <!DOCTYPE html>
-<html class="light" lang="en"><head>
-<meta charset="utf-8"/>
-<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>Intern Dashboard - Architect Portal</title>
-<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet"/>
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
-<script id="tailwind-config">
+<html class="light" lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+  <title>Intern Dashboard - Architect Portal</title>
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Inter:wght@400;500;600&display=swap"
+    rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+    rel="stylesheet" />
+  <script id="tailwind-config">
     tailwind.config = {
-    darkMode: "class",
-    theme: {
+      darkMode: "class",
+      theme: {
         extend: {
-        "colors": {
+          "colors": {
             "primary": "#0053dc",
             "primary-dim": "#0049c2",
             "primary-container": "#3e76fe",
@@ -25,293 +30,359 @@
             "outline-variant": "#acb3b7",
             "tertiary-container": "#e6cafa",
             "on-tertiary-container": "#564067",
-        },
-        "fontFamily": {
+          },
+          "fontFamily": {
             headline: ["Manrope", "sans-serif"],
             body: ["Inter", "sans-serif"]
-        },
-        "borderRadius": {
+          },
+          "borderRadius": {
             "3xl": "1.5rem",
             "4xl": "2rem",
-        }
+          }
         },
-    },
+      },
     }
-</script>
-<style>
-    body { font-family: 'Inter', sans-serif; }
-    h1, h2, h3, h4, h5, h6, .font-headline { font-family: 'Manrope', sans-serif; letter-spacing: -0.02em; }
-    .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
-    .clock-btn-ring { box-shadow: 0 0 0 8px rgba(0, 83, 220, 0.1); }
-</style>
+  </script>
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+    }
+
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6,
+    .font-headline {
+      font-family: 'Manrope', sans-serif;
+      letter-spacing: -0.02em;
+    }
+
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+    }
+
+    .clock-btn-ring {
+      box-shadow: 0 0 0 8px rgba(0, 83, 220, 0.1);
+    }
+  </style>
 </head>
+
 <body class="bg-background text-on-surface antialiased min-h-screen flex flex-col md:flex-row">
 
-<!-- SideNavBar -->
-<nav id="sidebar" class="fixed left-0 top-0 h-full w-64 bg-[#f0f4f7] p-6 z-50 pt-8 flex flex-col gap-y-8 transition-transform duration-300 -translate-x-full md:translate-x-0">
-  <div class="flex items-center gap-3">
-    <div class="w-10 h-10 flex-shrink-0 bg-primary rounded-lg flex items-center justify-center shadow-md">
-      <span class="material-symbols-outlined text-white text-lg">domain</span>
+  <!-- SideNavBar -->
+  <nav class="hidden md:flex flex-col fixed left-0 top-0 h-full w-64 bg-[#f0f4f7] p-6 gap-y-8 z-50 pt-8">
+    <div class="flex items-center gap-3">
+      <div class="w-10 h-10 flex-shrink-0 bg-primary rounded-lg flex items-center justify-center shadow-md">
+        <span class="material-symbols-outlined text-white text-lg">domain</span>
+      </div>
+      <div>
+        <p class="font-headline font-extrabold text-blue-700 leading-tight">Internship Portal</p>
+        <p class="text-[10px] text-on-surface-variant uppercase tracking-wider font-semibold">Intern Workspace</p>
+      </div>
     </div>
-    <div>
-      <p class="font-headline font-extrabold text-blue-700 leading-tight">Internship Portal</p>
-      <p class="text-[10px] text-on-surface-variant uppercase tracking-wider font-semibold">Intern Workspace</p>
+    <div class="flex flex-col gap-2">
+      <a class="text-blue-600 font-bold flex items-center gap-3 px-4 py-3 bg-white rounded-xl shadow-sm transition-transform"
+        href="/intern-dashboard.html">
+        <span class="material-symbols-outlined fill text-[20px]"
+          style="font-variation-settings:'FILL' 1">grid_view</span>
+        <span class="text-sm">Dashboard</span>
+      </a>
+      <a class="text-slate-500 flex items-center gap-3 px-4 py-3 hover:translate-x-1 transition-transform"
+        href="/attendance.html">
+        <span class="material-symbols-outlined text-[20px]">event_available</span>
+        <span class="text-sm font-medium">Attendance</span>
+      </a>
+      <a class="text-slate-500 flex items-center gap-3 px-4 py-3 hover:translate-x-1 transition-transform"
+        href="/daily-log.html">
+        <span class="material-symbols-outlined text-[20px]">history_edu</span>
+        <span class="text-sm font-medium">Daily Logs</span>
+      </a>
     </div>
-  </div>
-  <div class="flex flex-col gap-2">
-    <a class="text-blue-600 font-bold flex items-center gap-3 px-4 py-3 bg-white rounded-xl shadow-sm transition-transform" href="/intern-dashboard.html">
-      <span class="material-symbols-outlined fill text-[20px]" style="font-variation-settings:'FILL' 1">grid_view</span>
-      <span class="text-sm">Dashboard</span>
-    </a>
-    <a class="text-slate-500 flex items-center gap-3 px-4 py-3 hover:translate-x-1 transition-transform" href="/attendance.html">
-      <span class="material-symbols-outlined text-[20px]">event_available</span>
-      <span class="text-sm font-medium">Attendance</span>
-    </a>
-    <a class="text-slate-500 flex items-center gap-3 px-4 py-3 hover:translate-x-1 transition-transform" href="/daily-log.html">
-      <span class="material-symbols-outlined text-[20px]">history_edu</span>
-      <span class="text-sm font-medium">Daily Logs</span>
-    </a>
-  </div>
-  <div class="mt-auto space-y-4">
-    <button id="logout-btn" class="flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-red-500 hover:bg-red-50 w-full transition-colors font-medium">
-      <span class="material-symbols-outlined text-[20px]">logout</span>
-      <span class="text-sm">Sign Out</span>
-    </button>
-  </div>
-</nav>
-
-<!-- Mobile Overlay -->
-<div id="sidebar-overlay" class="fixed inset-0 bg-black/40 z-40 hidden md:hidden"></div>
-
-<main class="flex-1 md:ml-64 flex flex-col min-h-screen bg-background">
-  <header class="sticky top-0 z-40 bg-white/80 backdrop-blur-md border-b border-outline-variant/10 shadow-sm flex items-center justify-between px-4 md:px-8 py-3.5">
-    <div class="flex items-center gap-4">
-      <button id="hamburger-btn" class="md:hidden p-2 hover:bg-surface-container rounded-lg transition-colors">
-        <span class="material-symbols-outlined text-[24px]">menu</span>
+    <div class="mt-auto space-y-4">
+      <button id="logout-btn"
+        class="flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-red-500 hover:bg-red-50 w-full transition-colors font-medium">
+        <span class="material-symbols-outlined text-[20px]">logout</span>
+        <span class="text-sm">Sign Out</span>
       </button>
-      <span class="text-base font-black text-on-surface font-headline tracking-tight">Dashboard</span>
-      <div class="h-4 w-px bg-outline-variant/20 hidden sm:block"></div>
-      <span id="greeting-name" class="text-xs font-bold text-on-surface-variant hidden sm:block">Welcome back</span>
     </div>
-    <div class="flex items-center space-x-4">
-      <div class="text-right hidden xs:block">
-        <div id="user-name" class="text-xs font-black">Loading...</div>
-        <div class="text-[9px] text-primary font-black uppercase tracking-[0.15em]">Active Intern</div>
+  </nav>
+
+  <!-- Mobile Overlay -->
+  <div id="sidebar-overlay" class="fixed inset-0 bg-black/40 z-40 hidden md:hidden"></div>
+
+  <main class="flex-1 md:ml-64 flex flex-col min-h-screen bg-background">
+    <header
+      class="sticky top-0 z-40 bg-white/80 backdrop-blur-md border-b border-outline-variant/10 shadow-sm flex items-center justify-between px-4 md:px-8 py-3.5">
+      <div class="flex items-center gap-4">
+        <span class="text-base font-black text-on-surface font-headline tracking-tight">Dashboard</span>
+        <div class="h-4 w-px bg-outline-variant/20 hidden sm:block"></div>
+        <span id="greeting-name" class="text-xs font-bold text-on-surface-variant hidden sm:block">Welcome back</span>
       </div>
-      <div class="w-9 h-9 rounded-full bg-primary flex items-center justify-center shadow-md text-white group cursor-pointer hover:opacity-90 transition-all">
-        <span class="material-symbols-outlined text-[20px]">person</span>
-      </div>
-    </div>
-  </header>
-
-  <div class="p-8 max-w-7xl mx-auto w-full space-y-8">
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-      <!-- Profile Card -->
-      <div class="lg:col-span-1">
-        <div class="bg-white rounded-3xl shadow-sm border border-outline-variant/10 overflow-hidden relative group hover:shadow-md transition-all duration-300 h-full flex flex-col">
-          <!-- Top Header Accent with Mesh Gradient -->
-          <div class="h-28 bg-gradient-to-br from-primary via-primary-dim to-blue-400 relative flex-shrink-0">
-            <div class="absolute inset-0 opacity-20 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')]"></div>
-            <div class="absolute -bottom-12 left-1/2 -translate-x-1/2">
-              <div class="w-24 h-24 rounded-3xl border-4 border-white overflow-hidden shadow-lg bg-white group-hover:scale-105 transition-transform duration-500">
-                <img
-                  alt="Intern Profile"
-                  id="profile-card-image"
-                  class="w-full h-full object-cover"
-                  src="https://ui-avatars.com/api/?name=Intern&background=0053dc&color=fff&size=128"
-                />
-              </div>
-            </div>
-          </div>
-          
-          <!-- Content Body -->
-          <div class="pt-16 pb-8 px-6 text-center flex-grow flex flex-col justify-between">
-            <div class="space-y-1">
-              <h2 class="text-2xl font-headline font-extrabold text-on-surface tracking-tight" id="profile-card-name">
-                Intern
-              </h2>
-              <div class="inline-flex items-center px-3 py-1 bg-primary/5 rounded-full">
-                <span class="w-1.5 h-1.5 rounded-full bg-primary mr-2 animate-pulse"></span>
-                <p class="text-primary font-bold text-[10px] uppercase tracking-widest" id="profile-card-role">
-                  Internship Program
-                </p>
-              </div>
-            </div>
-
-            <!-- Stats Grid -->
-            <div class="grid grid-cols-3 gap-3 mt-8">
-              <div class="bg-surface-container-low/50 p-3 rounded-2xl border border-outline-variant/5 group/stat">
-                <p class="text-[8px] font-bold text-on-surface-variant uppercase tracking-widest mb-1 opacity-60">Hours</p>
-                <p class="text-base font-black text-primary" id="profile-hours">0.0</p>
-              </div>
-              <div class="bg-surface-container-low/50 p-3 rounded-2xl border border-outline-variant/5 group/stat">
-                <p class="text-[8px] font-bold text-on-surface-variant uppercase tracking-widest mb-1 opacity-60">Days</p>
-                <p class="text-base font-black text-on-surface" id="profile-days">0</p>
-              </div>
-              <div class="bg-surface-container-low/50 p-3 rounded-2xl border border-outline-variant/5 group/stat">
-                <p class="text-[8px] font-bold text-on-surface-variant uppercase tracking-widest mb-1 opacity-60">Growth</p>
-                <p class="text-base font-black text-on-surface" id="profile-pct">0%</p>
-              </div>
-            </div>
-
-            <button class="w-full mt-8 py-3.5 rounded-2xl bg-white border border-outline-variant/20 text-on-surface-variant font-black text-[10px] uppercase tracking-[0.2em] hover:border-primary hover:text-primary hover:shadow-lg hover:shadow-primary/5 transition-all duration-300 flex items-center justify-center gap-3 group/btn">
-              <span class="material-symbols-outlined text-[18px] group-hover/btn:rotate-12 transition-transform">settings</span>
-              Account Settings
-            </button>
-          </div>
+      <div class="flex items-center space-x-4">
+        <div class="text-right hidden xs:block">
+          <div id="user-name" class="text-xs font-black">Loading...</div>
+          <div class="text-[9px] text-primary font-black uppercase tracking-[0.15em]">Active Intern</div>
+        </div>
+        <div
+          class="w-9 h-9 rounded-full bg-primary flex items-center justify-center shadow-md text-white group cursor-pointer hover:opacity-90 transition-all">
+          <span class="material-symbols-outlined text-[20px]">person</span>
         </div>
       </div>
+    </header>
 
-      <!-- Session Card -->
-      <div class="lg:col-span-1">
-        <div class="bg-white rounded-3xl p-6 shadow-sm border border-outline-variant/10 relative overflow-hidden flex flex-col justify-between h-full group transition-all duration-300 hover:shadow-md">
-          <div class="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full -translate-y-16 translate-x-16 transition-transform group-hover:scale-110 duration-700"></div>
-          
-          <div class="flex justify-between items-center relative z-10">
-            <div class="inline-flex items-center gap-2 px-2.5 py-1 bg-surface-container-low rounded-full border border-outline-variant/5" id="status-badge">
-              <span class="w-1.5 h-1.5 rounded-full bg-outline-variant transition-colors duration-500" id="status-dot"></span>
-              <span class="text-[9px] font-black uppercase tracking-widest text-on-surface-variant" id="status-text">Not Clocked In</span>
-            </div>
-            <p class="text-[10px] font-black text-on-surface opacity-40 uppercase tracking-tighter" id="current-date">-- --- ----</p>
-          </div>
-
-          <div class="text-center py-6 relative z-10">
-            <div id="session-timer" class="text-6xl font-headline font-black text-on-surface tracking-tighter drop-shadow-sm transition-all duration-500">00:00:00</div>
-            <p class="text-[8px] font-bold text-on-surface-variant uppercase tracking-[0.2em] mt-1 opacity-40">Session Duration</p>
-          </div>
-
-          <div class="space-y-4 relative z-10">
-            <div class="flex items-center justify-between px-2 min-h-[32px]">
-              <div id="clock-in-info" class="hidden flex items-center gap-2">
-                <div class="w-7 h-7 rounded-lg bg-green-50 flex items-center justify-center text-green-600">
-                  <span class="material-symbols-outlined text-base">login</span>
-                </div>
-                <div class="flex flex-col">
-                  <span class="text-[7px] font-bold text-on-surface-variant uppercase tracking-widest opacity-40 leading-none">Started</span>
-                  <p class="text-xs font-black text-on-surface" id="clock-in-time">--:--</p>
-                </div>
+    <div class="p-8 max-w-7xl mx-auto w-full space-y-8">
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <!-- Profile Card -->
+        <div class="lg:col-span-1">
+          <div
+            class="bg-white rounded-3xl shadow-sm border border-outline-variant/10 overflow-hidden relative group hover:shadow-md transition-all duration-300 h-full flex flex-col">
+            <!-- Top Header Accent with Mesh Gradient -->
+            <div class="h-28 bg-gradient-to-br from-primary via-primary-dim to-blue-400 relative flex-shrink-0">
+              <div
+                class="absolute inset-0 opacity-20 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')]">
               </div>
-              <div id="ot-container" class="hidden flex items-center gap-2 ml-auto">
-                <div class="w-7 h-7 rounded-lg bg-orange-50 flex items-center justify-center text-orange-600 animate-pulse">
-                  <span class="material-symbols-outlined text-base">bolt</span>
-                </div>
-                <div class="flex flex-col text-right">
-                  <span class="text-[7px] font-bold text-orange-600 uppercase tracking-widest opacity-40 leading-none">Overtime</span>
-                  <p class="text-xs font-black text-orange-700" id="ot-timer">00:00:00</p>
+              <div class="absolute -bottom-12 left-1/2 -translate-x-1/2">
+                <div
+                  class="w-24 h-24 rounded-3xl border-4 border-white overflow-hidden shadow-lg bg-white group-hover:scale-105 transition-transform duration-500">
+                  <img alt="Intern Profile" id="profile-card-image" class="w-full h-full object-cover"
+                    src="https://ui-avatars.com/api/?name=Intern&background=0053dc&color=fff&size=128" />
                 </div>
               </div>
             </div>
 
-            <button id="clock-btn" class="w-full flex items-center justify-center gap-3 py-4 rounded-2xl bg-primary text-white shadow-xl shadow-primary/20 hover:scale-[1.02] active:scale-[0.98] transition-all group/btn overflow-hidden relative">
-              <div class="absolute inset-0 bg-white/10 opacity-0 group-hover/btn:opacity-100 transition-opacity"></div>
-              <span id="clock-text" class="text-[10px] font-black uppercase tracking-widest">Clock In</span>
-              <div class="w-8 h-8 rounded-xl bg-white/15 flex items-center justify-center backdrop-blur-md group-hover/btn:bg-white/25 transition-colors border border-white/5">
-                <span id="clock-icon" class="material-symbols-outlined text-lg transition-transform group-hover/btn:scale-110">play_arrow</span>
+            <!-- Content Body -->
+            <div class="pt-16 pb-8 px-6 text-center flex-grow flex flex-col justify-between">
+              <div class="space-y-1">
+                <h2 class="text-2xl font-headline font-extrabold text-on-surface tracking-tight" id="profile-card-name">
+                  Intern
+                </h2>
+                <div class="inline-flex items-center px-3 py-1 bg-primary/5 rounded-full">
+                  <span class="w-1.5 h-1.5 rounded-full bg-primary mr-2 animate-pulse"></span>
+                  <p class="text-primary font-bold text-[10px] uppercase tracking-widest" id="profile-card-role">
+                    Internship Program
+                  </p>
+                </div>
               </div>
-            </button>
+
+              <!-- Stats Grid -->
+              <div class="grid grid-cols-3 gap-3 mt-8">
+                <div class="bg-surface-container-low/50 p-3 rounded-2xl border border-outline-variant/5 group/stat">
+                  <p class="text-[8px] font-bold text-on-surface-variant uppercase tracking-widest mb-1 opacity-60">
+                    Hours</p>
+                  <p class="text-base font-black text-primary" id="profile-hours">0.0</p>
+                </div>
+                <div class="bg-surface-container-low/50 p-3 rounded-2xl border border-outline-variant/5 group/stat">
+                  <p class="text-[8px] font-bold text-on-surface-variant uppercase tracking-widest mb-1 opacity-60">Days
+                  </p>
+                  <p class="text-base font-black text-on-surface" id="profile-days">0</p>
+                </div>
+                <div class="bg-surface-container-low/50 p-3 rounded-2xl border border-outline-variant/5 group/stat">
+                  <p class="text-[8px] font-bold text-on-surface-variant uppercase tracking-widest mb-1 opacity-60">
+                    Growth</p>
+                  <p class="text-base font-black text-on-surface" id="profile-pct">0%</p>
+                </div>
+              </div>
+
+              <button
+                class="w-full mt-8 py-3.5 rounded-2xl bg-white border border-outline-variant/20 text-on-surface-variant font-black text-[10px] uppercase tracking-[0.2em] hover:border-primary hover:text-primary hover:shadow-lg hover:shadow-primary/5 transition-all duration-300 flex items-center justify-center gap-3 group/btn">
+                <span
+                  class="material-symbols-outlined text-[18px] group-hover/btn:rotate-12 transition-transform">settings</span>
+                Account Settings
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Session Card -->
+        <div class="lg:col-span-1">
+          <div
+            class="bg-white rounded-3xl p-6 shadow-sm border border-outline-variant/10 relative overflow-hidden flex flex-col justify-between h-full group transition-all duration-300 hover:shadow-md">
+            <div
+              class="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full -translate-y-16 translate-x-16 transition-transform group-hover:scale-110 duration-700">
+            </div>
+
+            <div class="flex justify-between items-center relative z-10">
+              <div
+                class="inline-flex items-center gap-2 px-2.5 py-1 bg-surface-container-low rounded-full border border-outline-variant/5"
+                id="status-badge">
+                <span class="w-1.5 h-1.5 rounded-full bg-outline-variant transition-colors duration-500"
+                  id="status-dot"></span>
+                <span class="text-[9px] font-black uppercase tracking-widest text-on-surface-variant"
+                  id="status-text">Not Clocked In</span>
+              </div>
+              <p class="text-[10px] font-black text-on-surface opacity-40 uppercase tracking-tighter" id="current-date">
+                -- --- ----</p>
+            </div>
+
+            <div class="text-center py-6 relative z-10">
+              <div id="session-timer"
+                class="text-6xl font-headline font-black text-on-surface tracking-tighter drop-shadow-sm transition-all duration-500">
+                00:00:00</div>
+              <p class="text-[8px] font-bold text-on-surface-variant uppercase tracking-[0.2em] mt-1 opacity-40">Session
+                Duration</p>
+            </div>
+
+            <div class="space-y-4 relative z-10">
+              <div class="flex items-center justify-between px-2 min-h-[32px]">
+                <div id="clock-in-info" class="hidden flex items-center gap-2">
+                  <div class="w-7 h-7 rounded-lg bg-green-50 flex items-center justify-center text-green-600">
+                    <span class="material-symbols-outlined text-base">login</span>
+                  </div>
+                  <div class="flex flex-col">
+                    <span
+                      class="text-[7px] font-bold text-on-surface-variant uppercase tracking-widest opacity-40 leading-none">Started</span>
+                    <p class="text-xs font-black text-on-surface" id="clock-in-time">--:--</p>
+                  </div>
+                </div>
+                <div id="ot-container" class="hidden flex items-center gap-2 ml-auto">
+                  <div
+                    class="w-7 h-7 rounded-lg bg-orange-50 flex items-center justify-center text-orange-600 animate-pulse">
+                    <span class="material-symbols-outlined text-base">bolt</span>
+                  </div>
+                  <div class="flex flex-col text-right">
+                    <span
+                      class="text-[7px] font-bold text-orange-600 uppercase tracking-widest opacity-40 leading-none">Overtime</span>
+                    <p class="text-xs font-black text-orange-700" id="ot-timer">00:00:00</p>
+                  </div>
+                </div>
+              </div>
+
+              <button id="clock-btn"
+                class="w-full flex items-center justify-center gap-3 py-4 rounded-2xl bg-primary text-white shadow-xl shadow-primary/20 hover:scale-[1.02] active:scale-[0.98] transition-all group/btn overflow-hidden relative">
+                <div class="absolute inset-0 bg-white/10 opacity-0 group-hover/btn:opacity-100 transition-opacity">
+                </div>
+                <span id="clock-text" class="text-[10px] font-black uppercase tracking-widest">Clock In</span>
+                <div
+                  class="w-8 h-8 rounded-xl bg-white/15 flex items-center justify-center backdrop-blur-md group-hover/btn:bg-white/25 transition-colors border border-white/5">
+                  <span id="clock-icon"
+                    class="material-symbols-outlined text-lg transition-transform group-hover/btn:scale-110">play_arrow</span>
+                </div>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Stats Stack -->
+        <div class="lg:col-span-1 flex flex-col gap-6">
+          <!-- Progress Card -->
+          <div
+            class="bg-white rounded-3xl p-7 shadow-sm border border-outline-variant/10 flex-1 flex flex-col justify-center relative overflow-hidden group hover:shadow-md transition-all duration-300">
+            <div class="absolute top-0 right-0 p-4 opacity-[0.03] group-hover:opacity-[0.06] transition-opacity">
+              <span class="material-symbols-outlined text-6xl">analytics</span>
+            </div>
+            <p
+              class="text-[10px] font-bold text-on-surface-variant uppercase tracking-widest mb-5 flex items-center gap-2">
+              <span class="w-1 h-4 bg-primary rounded-full"></span>
+              Program Progress
+            </p>
+            <div class="flex items-baseline gap-2 mb-4">
+              <span id="progress-hours" class="text-5xl font-black text-primary font-headline tracking-tighter">0</span>
+              <span class="text-xs text-on-surface-variant font-bold opacity-60">/ 400 hrs</span>
+            </div>
+            <div class="w-full bg-surface-container h-2.5 rounded-full overflow-hidden mb-3">
+              <div id="progress-bar"
+                class="bg-gradient-to-r from-primary to-primary-container h-full rounded-full transition-all duration-1000 shadow-[0_0_8px_rgba(0,83,220,0.3)]"
+                style="width:0%"></div>
+            </div>
+            <div class="flex justify-between items-center">
+              <p id="progress-pct" class="text-[10px] text-primary font-black uppercase tracking-wider">0% complete</p>
+              <span class="text-[9px] text-on-surface-variant font-bold opacity-40 uppercase">Remaining: <span
+                  id="hours-left">400</span>h</span>
+            </div>
+          </div>
+
+          <!-- OT Card -->
+          <div
+            class="bg-white rounded-3xl p-7 shadow-sm border border-outline-variant/10 flex-1 flex flex-col justify-center relative overflow-hidden group hover:shadow-md transition-all duration-300">
+            <div
+              class="absolute -right-4 -bottom-4 w-24 h-24 bg-orange-500/5 rounded-full blur-2xl group-hover:bg-orange-500/10 transition-colors">
+            </div>
+            <div class="absolute top-0 right-0 p-4 opacity-[0.03] group-hover:opacity-[0.06] transition-opacity">
+              <span class="material-symbols-outlined text-6xl text-orange-600">bolt</span>
+            </div>
+            <p class="text-[10px] font-bold text-orange-600 uppercase tracking-widest mb-5 flex items-center gap-2">
+              <span class="w-1 h-4 bg-orange-500 rounded-full"></span>
+              Overtime Hours
+            </p>
+            <div class="flex items-baseline gap-2">
+              <span id="ot-total-hours"
+                class="text-5xl font-black text-orange-600 font-headline tracking-tighter">0.00</span>
+              <span class="text-xs text-on-surface-variant font-bold opacity-60">hrs</span>
+            </div>
+            <div class="mt-4 inline-flex items-center gap-2 px-3 py-1.5 bg-orange-50 rounded-xl">
+              <span class="material-symbols-outlined text-orange-600 text-[14px]">trending_up</span>
+              <p class="text-[9px] text-orange-800 font-bold uppercase tracking-wide">Total extra contribution</p>
+            </div>
           </div>
         </div>
       </div>
 
-      <!-- Stats Stack -->
-      <div class="lg:col-span-1 flex flex-col gap-6">
-        <!-- Progress Card -->
-        <div class="bg-white rounded-3xl p-7 shadow-sm border border-outline-variant/10 flex-1 flex flex-col justify-center relative overflow-hidden group hover:shadow-md transition-all duration-300">
-          <div class="absolute top-0 right-0 p-4 opacity-[0.03] group-hover:opacity-[0.06] transition-opacity">
-            <span class="material-symbols-outlined text-6xl">analytics</span>
-          </div>
-          <p class="text-[10px] font-bold text-on-surface-variant uppercase tracking-widest mb-5 flex items-center gap-2">
-            <span class="w-1 h-4 bg-primary rounded-full"></span>
-            Program Progress
-          </p>
-          <div class="flex items-baseline gap-2 mb-4">
-            <span id="progress-hours" class="text-5xl font-black text-primary font-headline tracking-tighter">0</span>
-            <span class="text-xs text-on-surface-variant font-bold opacity-60">/ 400 hrs</span>
-          </div>
-          <div class="w-full bg-surface-container h-2.5 rounded-full overflow-hidden mb-3">
-            <div id="progress-bar" class="bg-gradient-to-r from-primary to-primary-container h-full rounded-full transition-all duration-1000 shadow-[0_0_8px_rgba(0,83,220,0.3)]" style="width:0%"></div>
-          </div>
-          <div class="flex justify-between items-center">
-            <p id="progress-pct" class="text-[10px] text-primary font-black uppercase tracking-wider">0% complete</p>
-            <span class="text-[9px] text-on-surface-variant font-bold opacity-40 uppercase">Remaining: <span id="hours-left">400</span>h</span>
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div class="lg:col-span-2 space-y-6">
+          <div
+            class="bg-white rounded-[2.5rem] p-8 shadow-sm border border-outline-variant/10 relative overflow-hidden">
+            <div
+              class="absolute top-0 right-0 w-64 h-64 bg-primary/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2">
+            </div>
+
+            <div class="flex justify-between items-center mb-10 relative z-10">
+              <div class="flex items-center gap-5">
+                <div
+                  class="w-14 h-14 bg-primary/5 rounded-2xl flex items-center justify-center text-primary border border-primary/5">
+                  <span class="material-symbols-outlined text-[28px]"
+                    style="font-variation-settings: 'FILL' 1">event_available</span>
+                </div>
+                <div>
+                  <h3 class="text-2xl font-black font-headline text-on-surface tracking-tight">Recent Attendance</h3>
+                  <p class="text-[10px] text-on-surface-variant font-bold uppercase tracking-widest opacity-60">Verified
+                    clock-in logs</p>
+                </div>
+              </div>
+              <a href="/attendance.html"
+                class="flex items-center gap-3 px-5 py-2.5 rounded-2xl bg-surface-container-low hover:bg-primary hover:text-white text-on-surface font-black text-[10px] uppercase tracking-widest transition-all duration-300 group shadow-sm">
+                View History
+                <span
+                  class="material-symbols-outlined text-[16px] group-hover:translate-x-1 transition-transform">arrow_forward</span>
+              </a>
+            </div>
+            <div id="weekly-attendance-list" class="space-y-3.5 relative z-10">
+              <!-- Attendance items will be populated by JavaScript -->
+            </div>
           </div>
         </div>
+        <div class="space-y-8">
+          <div class="space-y-6">
+            <div class="flex justify-between items-center px-2">
+              <div class="flex items-center gap-2">
+                <span class="w-1.5 h-1.5 rounded-full bg-orange-500"></span>
+                <h3 class="text-lg font-black font-headline text-on-surface tracking-tight">Overtime History</h3>
+              </div>
+              <span
+                class="text-[8px] bg-orange-100/50 text-orange-600 px-2 py-1 rounded-lg font-black uppercase tracking-tighter">Live
+                Sync</span>
+            </div>
+            <div id="ot-history-list" class="space-y-3">
+              <!-- OT items will be populated by JavaScript -->
+            </div>
+          </div>
 
-        <!-- OT Card -->
-        <div class="bg-white rounded-3xl p-7 shadow-sm border border-outline-variant/10 flex-1 flex flex-col justify-center relative overflow-hidden group hover:shadow-md transition-all duration-300">
-          <div class="absolute -right-4 -bottom-4 w-24 h-24 bg-orange-500/5 rounded-full blur-2xl group-hover:bg-orange-500/10 transition-colors"></div>
-          <div class="absolute top-0 right-0 p-4 opacity-[0.03] group-hover:opacity-[0.06] transition-opacity">
-            <span class="material-symbols-outlined text-6xl text-orange-600">bolt</span>
-          </div>
-          <p class="text-[10px] font-bold text-orange-600 uppercase tracking-widest mb-5 flex items-center gap-2">
-            <span class="w-1 h-4 bg-orange-500 rounded-full"></span>
-            Overtime Hours
-          </p>
-          <div class="flex items-baseline gap-2">
-            <span id="ot-total-hours" class="text-5xl font-black text-orange-600 font-headline tracking-tighter">0.00</span>
-            <span class="text-xs text-on-surface-variant font-bold opacity-60">hrs</span>
-          </div>
-          <div class="mt-4 inline-flex items-center gap-2 px-3 py-1.5 bg-orange-50 rounded-xl">
-            <span class="material-symbols-outlined text-orange-600 text-[14px]">trending_up</span>
-            <p class="text-[9px] text-orange-800 font-bold uppercase tracking-wide">Total extra contribution</p>
+          <div class="space-y-6">
+            <div class="flex justify-between items-center">
+              <h3 class="text-xl font-bold font-headline text-on-surface">Daily Logs</h3>
+              <a href="/daily-log.html" class="text-xs font-bold text-primary hover:underline">View All</a>
+            </div>
+            <div id="recent-logs-list" class="space-y-4"></div>
           </div>
         </div>
       </div>
     </div>
+  </main>
 
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-      <div class="lg:col-span-2 space-y-6">
-        <div class="bg-white rounded-[2.5rem] p-8 shadow-sm border border-outline-variant/10 relative overflow-hidden">
-          <div class="absolute top-0 right-0 w-64 h-64 bg-primary/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2"></div>
-          
-          <div class="flex justify-between items-center mb-10 relative z-10">
-            <div class="flex items-center gap-5">
-              <div class="w-14 h-14 bg-primary/5 rounded-2xl flex items-center justify-center text-primary border border-primary/5">
-                <span class="material-symbols-outlined text-[28px]" style="font-variation-settings: 'FILL' 1">event_available</span>
-              </div>
-              <div>
-                <h3 class="text-2xl font-black font-headline text-on-surface tracking-tight">Recent Attendance</h3>
-                <p class="text-[10px] text-on-surface-variant font-bold uppercase tracking-widest opacity-60">Verified clock-in logs</p>
-              </div>
-            </div>
-            <a href="/attendance.html" class="flex items-center gap-3 px-5 py-2.5 rounded-2xl bg-surface-container-low hover:bg-primary hover:text-white text-on-surface font-black text-[10px] uppercase tracking-widest transition-all duration-300 group shadow-sm">
-              View History
-              <span class="material-symbols-outlined text-[16px] group-hover:translate-x-1 transition-transform">arrow_forward</span>
-            </a>
-          </div>
-          <div id="weekly-attendance-list" class="space-y-3.5 relative z-10">
-            <!-- Attendance items will be populated by JavaScript -->
-          </div>
-        </div>
-      </div>
-      <div class="space-y-8">
-        <div class="space-y-6">
-          <div class="flex justify-between items-center px-2">
-            <div class="flex items-center gap-2">
-              <span class="w-1.5 h-1.5 rounded-full bg-orange-500"></span>
-              <h3 class="text-lg font-black font-headline text-on-surface tracking-tight">Overtime History</h3>
-            </div>
-            <span class="text-[8px] bg-orange-100/50 text-orange-600 px-2 py-1 rounded-lg font-black uppercase tracking-tighter">Live Sync</span>
-          </div>
-          <div id="ot-history-list" class="space-y-3">
-            <!-- OT items will be populated by JavaScript -->
-          </div>
-        </div>
-
-        <div class="space-y-6">
-          <div class="flex justify-between items-center">
-            <h3 class="text-xl font-bold font-headline text-on-surface">Daily Logs</h3>
-            <a href="/daily-log.html" class="text-xs font-bold text-primary hover:underline">View All</a>
-          </div>
-          <div id="recent-logs-list" class="space-y-4"></div>
-        </div>
-      </div>
-    </div>
-  </div>
-</main>
-
-<script src="/js/common.js"></script>
-<script src="/js/hamburger.js"></script>
-<script src="/js/intern-dashboard.js"></script>
+  <script src="/js/common.js"></script>
+  <script src="/js/hamburger.js"></script>
+  <script src="/js/intern-dashboard.js"></script>
 </body>
+
 </html>

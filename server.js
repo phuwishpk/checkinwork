@@ -45,8 +45,15 @@ const requireAuth = (req, res, next) => {
 };
 
 const requireAdmin = (req, res, next) => {
-  if (!req.session.user || req.session.user.role !== 'admin') {
+  if (!req.session.user || (req.session.user.role !== 'admin' && req.session.user.role !== 'superadmin')) {
     return res.status(403).json({ error: 'Forbidden' });
+  }
+  next();
+};
+
+const requireSuperAdmin = (req, res, next) => {
+  if (!req.session.user || req.session.user.role !== 'superadmin') {
+    return res.status(403).json({ error: 'Forbidden: Super Admin only' });
   }
   next();
 };
@@ -120,7 +127,7 @@ app.post('/api/clock-out', requireAuth, async (req, res) => {
   try {
     const [active] = await db.execute('SELECT * FROM attendance WHERE user_id = ? AND clock_out_time IS NULL ORDER BY id DESC LIMIT 1', [userId]);
     if (active.length === 0) return res.status(400).json({ error: 'No active clock-in record found' });
-    
+
     const clockIn = active[0].clock_in_time;
     const dateStr = active[0].date;
     const timeIn = new Date(`1970-01-01T${clockIn}Z`);
@@ -244,7 +251,7 @@ app.get('/api/intern/dashboard', requireAuth, async (req, res) => {
 // Get Intern Calendar data (Unified for specific users)
 app.get('/api/intern/calendar', requireAuth, async (req, res) => {
   try {
-    const [users] = await db.execute(`SELECT id, full_name, username FROM users WHERE role = 'intern'`);
+    const [users] = await db.execute(`SELECT id, full_name, username, role FROM users`);
     const userIds = users.map(u => u.id);
     if (userIds.length === 0) return res.json({ attendance: [], logs: [], users: [] });
     const placeholders = userIds.map(() => '?').join(',');
@@ -266,21 +273,18 @@ app.get('/api/manager/dashboard', requireAdmin, async (req, res) => {
          FROM attendance a
          WHERE a.user_id = u.id AND a.clock_out_time IS NULL) as status
       FROM users u
-      WHERE u.role = 'intern'
     `);
     const [attendanceLogs] = await db.execute(`
       SELECT 'attendance' as type, u.full_name, a.date, a.clock_in_time as time_in, a.clock_out_time as time_out,
              a.total_hours, a.ot_hours, a.id as record_id
       FROM attendance a
       JOIN users u ON a.user_id = u.id
-      WHERE u.role = 'intern'
       ORDER BY a.id DESC LIMIT 10
     `);
     const [dailyTasks] = await db.execute(`
       SELECT 'task' as type, u.full_name, l.date_start as date, l.task_category, l.description, l.status, l.id as record_id
       FROM daily_logs l
       JOIN users u ON l.user_id = u.id
-      WHERE u.role = 'intern'
       ORDER BY l.id DESC LIMIT 15
     `);
     res.json({ 
@@ -294,21 +298,168 @@ app.get('/api/manager/dashboard', requireAdmin, async (req, res) => {
   }
 });
 
+app.post('/api/manager/attendance/manual', requireSuperAdmin, async (req, res) => {
+  const { user_id, date, clock_in_time, clock_out_time, task_category, task_description } = req.body;
+  if (!user_id || !date || !clock_in_time || !clock_out_time) {
+    return res.status(400).json({ error: 'All attendance fields are required' });
+  }
+  try {
+    const timeIn = new Date(`1970-01-01T${clock_in_time}Z`);
+    const timeOut = new Date(`1970-01-01T${clock_out_time}Z`);
+    let diff = (timeOut - timeIn) / (1000 * 60 * 60);
+    if (diff < 0) diff += 24;
+
+    const dayOfWeek = new Date(date).getDay();
+    const isWeekend = (dayOfWeek === 0 || dayOfWeek === 6);
+    const limit17 = new Date(`1970-01-01T17:00:00Z`);
+    let normalDiff = diff;
+    let otDiff = 0;
+
+    if (isWeekend) {
+      normalDiff = 0;
+      otDiff = diff;
+    } else {
+      if (timeIn < limit17) {
+        if (timeOut > limit17) {
+          normalDiff = (limit17 - timeIn) / (1000 * 60 * 60);
+          otDiff = (timeOut - limit17) / (1000 * 60 * 60);
+        } else {
+          normalDiff = diff;
+          otDiff = 0;
+        }
+      } else {
+        normalDiff = 0;
+        otDiff = diff;
+      }
+      const [todayTotal] = await db.execute(
+        'SELECT SUM(total_hours) as total FROM attendance WHERE user_id = ? AND date = ?',
+        [user_id, date]
+      );
+      const hoursAlreadyLogged = todayTotal[0].total || 0;
+      const remainingNormalCap = Math.max(0, 8 - hoursAlreadyLogged);
+      const cappedNormal = Math.min(normalDiff, remainingNormalCap);
+      const excessFromCap = normalDiff - cappedNormal;
+      normalDiff = cappedNormal;
+      otDiff += excessFromCap;
+    }
+
+    let logId = null;
+    if (task_category) {
+      const [logResult] = await db.execute(
+        'INSERT INTO daily_logs (user_id, date, date_start, date_finish, task_category, description, status) VALUES (?, ?, ?, ?, ?, ?, ?)',
+        [user_id, date, date, date, task_category, task_description, 'Done']
+      );
+      logId = logResult.insertId;
+    }
+
+    const [result] = await db.execute(
+      'INSERT INTO attendance (user_id, date, clock_in_time, clock_out_time, total_hours, ot_hours, log_id) VALUES (?, ?, ?, ?, ?, ?, ?)',
+      [user_id, date, clock_in_time, clock_out_time, normalDiff.toFixed(2), otDiff.toFixed(2), logId]
+    );
+
+    res.json({ message: 'Manual attendance and task recorded successfully', id: result.insertId });
+  } catch (error) {
+    console.error('Manual attendance error:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+app.put('/api/manager/attendance/manual/:id', requireSuperAdmin, async (req, res) => {
+  const { user_id, date, clock_in_time, clock_out_time, task_category, task_description } = req.body;
+  const { id } = req.params;
+  try {
+    const timeIn = new Date(`1970-01-01T${clock_in_time}Z`);
+    const timeOut = new Date(`1970-01-01T${clock_out_time}Z`);
+    let diff = (timeOut - timeIn) / (1000 * 60 * 60);
+    if (diff < 0) diff += 24;
+
+    const dayOfWeek = new Date(date).getDay();
+    const isWeekend = (dayOfWeek === 0 || dayOfWeek === 6);
+    const limit17 = new Date(`1970-01-01T17:00:00Z`);
+    let normalDiff = diff;
+    let otDiff = 0;
+
+    if (isWeekend) {
+      normalDiff = 0;
+      otDiff = diff;
+    } else {
+      if (timeIn < limit17) {
+        if (timeOut > limit17) {
+          normalDiff = (limit17 - timeIn) / (1000 * 60 * 60);
+          otDiff = (timeOut - limit17) / (1000 * 60 * 60);
+        } else {
+          normalDiff = diff;
+          otDiff = 0;
+        }
+      } else {
+        normalDiff = 0;
+        otDiff = diff;
+      }
+      const [todayTotal] = await db.execute(
+        'SELECT SUM(total_hours) as total FROM attendance WHERE user_id = ? AND date = ? AND id != ?',
+        [user_id, date, id]
+      );
+      const hoursAlreadyLogged = todayTotal[0].total || 0;
+      const remainingNormalCap = Math.max(0, 8 - hoursAlreadyLogged);
+      const cappedNormal = Math.min(normalDiff, remainingNormalCap);
+      const excessFromCap = normalDiff - cappedNormal;
+      normalDiff = cappedNormal;
+      otDiff += excessFromCap;
+    }
+
+    // Get current log_id
+    const [current] = await db.execute('SELECT log_id FROM attendance WHERE id = ?', [id]);
+    const existingLogId = current[0]?.log_id;
+
+    if (task_category) {
+      if (existingLogId) {
+        await db.execute(
+          'UPDATE daily_logs SET task_category = ?, description = ?, date = ?, date_start = ?, date_finish = ? WHERE id = ?',
+          [task_category, task_description, date, date, date, existingLogId]
+        );
+      } else {
+        const [newLog] = await db.execute(
+          'INSERT INTO daily_logs (user_id, date, date_start, date_finish, task_category, description, status) VALUES (?, ?, ?, ?, ?, ?, ?)',
+          [user_id, date, date, date, task_category, task_description, 'Done']
+        );
+        await db.execute('UPDATE attendance SET log_id = ? WHERE id = ?', [newLog.insertId, id]);
+      }
+    }
+
+    await db.execute(
+      'UPDATE attendance SET user_id = ?, date = ?, clock_in_time = ?, clock_out_time = ?, total_hours = ?, ot_hours = ? WHERE id = ?',
+      [user_id, date, clock_in_time, clock_out_time, normalDiff.toFixed(2), otDiff.toFixed(2), id]
+    );
+    res.json({ message: 'Attendance and task updated successfully' });
+  } catch (error) {
+    console.error('Update error:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+app.delete('/api/manager/attendance/manual/:id', requireSuperAdmin, async (req, res) => {
+  try {
+    await db.execute('DELETE FROM attendance WHERE id = ?', [req.params.id]);
+    res.json({ message: 'Attendance record deleted successfully' });
+  } catch (error) {
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
 app.get('/api/manager/calendar-data', requireAdmin, async (req, res) => {
   try {
-    const [users] = await db.execute("SELECT id, full_name, username FROM users WHERE role = 'intern'");
+    const [users] = await db.execute("SELECT id, full_name, username, role FROM users");
     const [attendance] = await db.execute(`
-      SELECT a.*, u.full_name, u.username
+      SELECT a.*, u.full_name, u.username, dl.task_category, dl.description as task_description
       FROM attendance a
       JOIN users u ON a.user_id = u.id
-      WHERE u.role = 'intern'
+      LEFT JOIN daily_logs dl ON a.log_id = dl.id
       ORDER BY a.date ASC, a.clock_in_time ASC
     `);
     const [logs] = await db.execute(`
       SELECT dl.*, u.full_name, u.username
       FROM daily_logs dl
       JOIN users u ON dl.user_id = u.id
-      WHERE u.role = 'intern'
       ORDER BY dl.date_start ASC, dl.id ASC
     `);
     res.json({ users, attendance, logs });
@@ -358,7 +509,7 @@ app.post('/api/logs/:id/reject', requireAdmin, async (req, res) => {
   try {
     await db.execute('UPDATE daily_logs SET status = ? WHERE id = ?', ['rejected', req.params.id]);
     res.json({ message: 'Log rejected successfully' });
-  } catch (error) {
+  }  catch (error) {
     res.status(500).json({ error: 'Internal server error' });
   }
 });

@@ -35,7 +35,7 @@ async function protectRoute() {
 
     // Redirect away from login page
     if (path === '/' || path === '/index.html' || path === '') {
-        window.location.href = user.role === 'admin' ? '/manager' : '/dashboard';
+        window.location.href = (user.role === 'admin' || user.role === 'superadmin') ? '/manager' : '/dashboard';
         return user;
     }
 
@@ -44,16 +44,25 @@ async function protectRoute() {
         window.location.href = '/dashboard';
         return user;
     }
-    if (user.role === 'admin' && (path === '/dashboard' || path === '/daily-log' || path === '/attendance')) {
-        window.location.href = '/manager';
-        return user;
+    // If the user is admin or superadmin, they should be able to access any manager page.
+    // The previous logic incorrectly redirected 'admin' from '/manager/attendance'.
+    // No explicit redirect needed here if the user is admin/superadmin and on a manager page.
+    if ((user.role === 'admin' || user.role === 'superadmin') && !path.startsWith('/manager')) {
+        // Only redirect if an admin/superadmin tries to access an intern page directly
+        if (path === '/dashboard' || path === '/daily-log' || path === '/attendance') {
+            window.location.href = '/manager';
+            return user;
+        }
     }
+
 
     // Update UI user info present on page
     if (document.getElementById('user-name'))
         document.getElementById('user-name').textContent = user.full_name || user.username;
     if (document.getElementById('user-role'))
         document.getElementById('user-role').textContent = user.role;
+    if (document.getElementById('user-role-label'))
+        document.getElementById('user-role-label').textContent = user.role === 'superadmin' ? 'Super Admin' : (user.role === 'admin' ? 'Administrator' : 'Intern');
     if (document.getElementById('greeting-name')) {
         const h = new Date().getHours();
         const greeting = (h >= 5 && h < 12) ? 'Good morning' : 'Good evening';
@@ -62,7 +71,7 @@ async function protectRoute() {
     if (document.getElementById('profile-card-name'))
         document.getElementById('profile-card-name').textContent = user.full_name || user.username;
     if (document.getElementById('profile-card-role'))
-        document.getElementById('profile-card-role').textContent = user.role === 'admin' ? 'Manager' : 'Intern';
+        document.getElementById('profile-card-role').textContent = user.role === 'superadmin' ? 'Super Admin' : (user.role === 'admin' ? 'Manager' : 'Intern');
     if (document.getElementById('dynamic-greeting')) {
         const h = new Date().getHours();
         document.getElementById('dynamic-greeting').textContent =
