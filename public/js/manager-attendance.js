@@ -64,24 +64,23 @@ document.addEventListener('DOMContentLoaded', async () => {
                         });
                     }
 
-                    if (uAtts.length > 0 || uLogs.length > 0) {
-                        let logsMarkup = '';
-                        if (uLogs.length > 0) {
-                            const maxSlot = Math.max(...uLogs.map(l => l.slot));
-                            for (let s = 0; s <= maxSlot; s++) {
-                                const l = uLogs.find(log => log.slot === s);
-                                if (l) {
-                                    const isStart = dateStr === l.date_start;
-                                    const isEnd = dateStr === (l.date_finish || l.date_start);
-                                    let spanClass = (!isStart&&!isEnd)?'span-mid':(!isStart&&isEnd)?'span-end':(isStart&&!isEnd)?'span-start':'';
-                                    logsMarkup += `<div class="text-[8px] px-1 mb-0.5 rounded truncate text-white font-bold ${spanClass}" style="background-color:${l.color||userColor}">${isStart?l.task_category:'&nbsp;'}</div>`;
-                                } else {
-                                    logsMarkup += `<div class="h-[12px] mb-0.5"></div>`;
-                                }
+                    // Always render the user box even if they have no records
+                    let logsMarkup = '';
+                    if (uLogs.length > 0) {
+                        const maxSlot = Math.max(...uLogs.map(l => l.slot));
+                        for (let s = 0; s <= maxSlot; s++) {
+                            const l = uLogs.find(log => log.slot === s);
+                            if (l) {
+                                const isStart = dateStr === l.date_start;
+                                const isEnd = dateStr === (l.date_finish || l.date_start);
+                                let spanClass = (!isStart&&!isEnd)?'span-mid':(!isStart&&isEnd)?'span-end':(isStart&&!isEnd)?'span-start':'';
+                                logsMarkup += `<div class="text-[8px] px-1 mb-0.5 rounded truncate text-white font-bold ${spanClass}" style="background-color:${l.color||userColor}">${isStart?l.task_category:'&nbsp;'}</div>`;
+                            } else {
+                                logsMarkup += `<div class="h-[12px] mb-0.5"></div>`;
                             }
                         }
-                        contentHtml += `<div class="user-box bg-white shadow-sm border border-outline-variant/10 mb-2" style="border-left-color:${userColor}"><div class="flex items-center justify-between mb-1"><span class="text-[8px] font-black uppercase" style="color:${userColor}">${u.full_name}</span>${uAtts.length>0?`<span class="text-[7px] bg-slate-100 px-1 rounded">${uAtts.length} sess</span>`:''}</div><div class="space-y-0.5">${logsMarkup}${uAtts.map(a=>`<div class="attendance-item cursor-pointer hover:bg-primary/5 transition-colors text-[7px] text-slate-500 font-medium flex items-center gap-0.5" data-id="${a.id}" data-user-id="${a.user_id}" data-date="${a.date.slice(0,10)}" data-in="${a.clock_in_time}" data-out="${a.clock_out_time}" data-task-category="${a.task_category||''}" data-task-description="${a.task_description||''}"><span class="material-symbols-outlined text-[8px]">login</span>${a.clock_in_time?.slice(0,5)}${a.clock_out_time?`<span class="material-symbols-outlined text-[8px]">logout</span>${a.clock_out_time.slice(0,5)}`:''}</div>`).join('')}</div></div>`;
                     }
+                    contentHtml += `<div class="user-box bg-white shadow-sm border border-outline-variant/10 mb-2" style="border-left-color:${userColor}"><div class="flex items-center justify-between mb-1"><span class="text-[8px] font-black uppercase" style="color:${userColor}">${u.full_name}</span>${uAtts.length>0?`<span class="text-[7px] bg-slate-100 px-1 rounded">${uAtts.length} sess</span>`:''}</div><div class="space-y-0.5">${logsMarkup}${uAtts.map(a=>`<div class="attendance-item cursor-pointer hover:bg-primary/5 transition-colors text-[7px] text-slate-500 font-medium flex items-center gap-0.5" data-id="${a.id}" data-user-id="${a.user_id}" data-date="${a.date.slice(0,10)}" data-in="${a.clock_in_time}" data-out="${a.clock_out_time}" data-task-category="${a.task_category||''}" data-task-description="${a.task_description||''}"><span class="material-symbols-outlined text-[8px]">login</span>${a.clock_in_time?.slice(0,5)}${a.clock_out_time?`<span class="material-symbols-outlined text-[8px]">logout</span>${a.clock_out_time.slice(0,5)}`:''}</div>`).join('')}</div></div>`;
                 });
             } else {
                 const uid = parseInt(selectedUserId);
