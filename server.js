@@ -464,7 +464,8 @@ app.get('/api/manager/calendar-data', requireAdmin, async (req, res) => {
     `);
     res.json({ users, attendance, logs });
   } catch (error) {
-    res.status(500).json({ error: 'Internal server error' });
+    console.error('calendar-data error:', error);
+    res.status(500).json({ error: 'Internal server error', detail: error.message });
   }
 });
 
@@ -551,6 +552,19 @@ app.get('/health', async (req, res) => {
 // Final Handlers
 app.use((req, res) => res.status(404).json({ error: 'Not found' }));
 
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
+async function runMigrations() {
+  const migrations = [
+    "ALTER TABLE attendance ADD COLUMN log_id INT",
+    "ALTER TABLE daily_logs ADD COLUMN color VARCHAR(20) NOT NULL DEFAULT '#3e76fe'",
+    "ALTER TABLE daily_logs ADD COLUMN created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP",
+  ];
+  for (const sql of migrations) {
+    try { await db.execute(sql); } catch (e) { /* column already exists */ }
+  }
+}
+
+runMigrations().then(() => {
+  app.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}`);
+  });
 });
