@@ -2,7 +2,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     const user = await protectRoute();
     if (!user) return;
     setupLogout();
-    initHamburgerMenu();
+    if (typeof initHamburgerMenu === 'function') initHamburgerMenu();
 
     const STATUS_STYLE = {
         'Plan': 'status-plan', 'To Do': 'status-todo',
@@ -108,7 +108,6 @@ document.addEventListener('DOMContentLoaded', async () => {
             return `
             <tr class="hover:bg-surface-container-low transition-colors group">
                 <td class="px-5 py-3.5 max-w-[200px]">
-                    <p class="font-medium text-on-surface text-sm truncate">${log.description || '—'}</p>
                     <span class="text-[10px] px-2 py-0.5 rounded-full font-semibold ${catCls}">${log.task_category}</span>
                 </td>
                 <td class="px-5 py-3.5"><span class="px-2.5 py-1 rounded-full text-xs font-semibold ${cls}">${log.status}</span></td>

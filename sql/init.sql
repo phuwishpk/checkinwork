@@ -27,7 +27,9 @@ CREATE TABLE IF NOT EXISTS attendance (
     clock_out_time TIME,
     total_hours    DECIMAL(6,2) DEFAULT 0,
     ot_hours       DECIMAL(6,2) DEFAULT 0,
-    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+    log_id         INT, -- New column for linking to daily_logs
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (log_id) REFERENCES daily_logs(id) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- -------------------------------------------------------------------
@@ -55,9 +57,10 @@ CREATE TABLE IF NOT EXISTS daily_logs (
 -- -------------------------------------------------------------------
 INSERT IGNORE INTO users (id, username, password, role, full_name) VALUES
 (1, 'admin',     '$2a$10$VMXZIqdYktS4066Q3Y/znOVQxFbGO0.brFQpbH2tITBhFvzUfqM7e', 'admin',  'Admin Manager'),
-(2, 'krittinai', '$2a$10$7yOuCVKNbmY8Qr9LdaiON.odcwamjYdl6MDOXFxRiI9KETQMQExai', 'intern', 'Krittinai'),
-(3, 'nawapon',   '$2a$10$IK.cuaUphj9ZRd18WbkQuO6b4otc8pBaU1TUIAIvLOSrmIrpK797a', 'intern', 'Nawapon'),
-(4, 'phuwish',   '$2a$10$ZAV2ozk/LIkzrDIGUmLqf.AnSYyjpsokBTN/CsTJ1nO0Ke6uCO/Q.', 'intern', 'Phuwish');
+(2, 'superadmin', '$2a$10$VMXZIqdYktS4066Q3Y/znOVQxFbGO0.brFQpbH2tITBhFvzUfqM7e', 'superadmin', 'Super Administrator'),
+(3, 'krittinai', '$2a$10$7yOuCVKNbmY8Qr9LdaiON.odcwamjYdl6MDOXFxRiI9KETQMQExai', 'intern', 'Krittinai'),
+(4, 'nawapon',   '$2a$10$IK.cuaUphj9ZRd18WbkQuO6b4otc8pBaU1TUIAIvLOSrmIrpK797a', 'intern', 'Nawapon'),
+(5, 'phuwish',   '$2a$10$ZAV2ozk/LIkzrDIGUmLqf.AnSYyjpsokBTN/CsTJ1nO0Ke6uCO/Q.', 'intern', 'Phuwish');
 
 -- Grant access from any host (needed for Docker bridge network)
 GRANT ALL PRIVILEGES ON intern_clickrobot.* TO 'intern_clickrobot'@'%' IDENTIFIED BY 'intern_clickrobot';

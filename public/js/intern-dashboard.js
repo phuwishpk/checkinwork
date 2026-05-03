@@ -2,7 +2,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     const user = await protectRoute();
     if (!user) return;
     setupLogout();
-    initHamburgerMenu();
+    if (typeof initHamburgerMenu === 'function') initHamburgerMenu();
 
     let isClockedIn = false;
     let clockInTime = null;
@@ -194,7 +194,6 @@ document.addEventListener('DOMContentLoaded', async () => {
                             <span class="text-[9px] px-2.5 py-1 rounded-lg font-black uppercase tracking-wider ${catCls}">${log.task_category}</span>
                             <span class="text-[10px] text-on-surface-variant/40 font-bold uppercase tracking-widest">${new Date(log.date_start || log.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</span>
                         </div>
-                        <p class="text-xs text-on-surface font-bold leading-relaxed line-clamp-2 mb-4 group-hover:text-primary transition-colors">${log.description}</p>
                         <div class="flex justify-between items-center pt-3 border-t border-outline-variant/5">
                             <span class="text-[9px] px-2.5 py-1 rounded-lg font-black uppercase tracking-wider ${statusCls}">${log.status}</span>
                             <span class="text-[9px] text-on-surface-variant/40 font-bold uppercase tracking-widest">${log.date_finish ? 'Ends: ' + new Date(log.date_finish).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : ''}</span>

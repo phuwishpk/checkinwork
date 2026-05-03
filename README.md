@@ -90,12 +90,13 @@ npm start
 
 ### Default Users (จาก init.sql)
 
-| Username   | Password | Role   |
-|------------|----------|--------|
-| admin      | 12345    | admin  |
-| krittinai  | 12345    | intern |
-| nawapon    | 12345    | intern |
-| phuwish    | 12345    | intern |
+| Username   | Password | Role       |
+|------------|----------|------------|
+| superadmin | 12345    | superadmin |
+| admin      | 12345    | admin      |
+| krittinai  | 12345    | intern     |
+| nawapon    | 12345    | intern     |
+| phuwish    | 12345    | intern     |
 
 ### API Endpoints
 

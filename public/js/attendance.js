@@ -3,7 +3,11 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (!user) return;
     setupLogout();
 
-    initHamburgerMenu();
+    if (typeof initHamburgerMenu === 'function') {
+        initHamburgerMenu();
+    } else {
+        console.warn('initHamburgerMenu not found');
+    }
 
     let currentDate = new Date();
     let allAttendance = [], allLogs = [], allUsers = [];
@@ -111,9 +115,21 @@ document.addEventListener('DOMContentLoaded', async () => {
             allAttendance = data.attendance;
             allLogs = data.logs;
             allUsers = data.users;
+
+            // Normalize dates to YYYY-MM-DD (handling timezone shifts)
+            const toLocalDate = (dateStr) => {
+                if (!dateStr) return null;
+                const d = new Date(dateStr);
+                return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+            };
+            allAttendance.forEach(a => { a.date = toLocalDate(a.date); });
+            allLogs.forEach(l => {
+                l.date_start = toLocalDate(l.date_start);
+                l.date_finish = toLocalDate(l.date_finish);
+            });
             if (internFilter) {
                 const currentVal = internFilter.value;
-                internFilter.innerHTML = '<option value="all">All Interns</option>';
+                internFilter.innerHTML = '<option value="all">All Participants</option>';
                 allUsers.forEach(u => { internFilter.innerHTML += `<option value="${u.id}">${u.full_name}</option>`; });
                 internFilter.value = currentVal;
             }
@@ -172,7 +188,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                                 const isOwn = l.user_id === user.id;
                                 const safeLog = encodeURIComponent(JSON.stringify(l));
                                 let spanClass = (!isStart && !isEnd) ? 'span-mid' : (!isStart && isEnd) ? 'span-end' : (isStart && !isEnd) ? 'span-start' : '';
-                                logsMarkup += `<div class="log-bar ${spanClass}" style="background-color:${l.color||userColor};height:16px;font-size:8px;margin-bottom:1px;" ${isOwn?`onclick="event.stopPropagation();editLog('${safeLog}')"`:''}>${isStart?`<span class="truncate">${l.task_category}</span>`:'&nbsp;'}</div>`;
+                                logsMarkup += `<div class="log-bar ${spanClass}" style="background-color:${l.color||userColor};height:16px;font-size:8px;margin-bottom:1px;" ${isOwn?`onclick="event.stopPropagation();editLog('${safeLog}')"`:''}>${isStart?`<span class="truncate">${l.task_category}</span>`:''}</div>`;
                             } else {
                                 logsMarkup += `<div class="h-[16px] mb-[1px]"></div>`;
                             }
