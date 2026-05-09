@@ -175,7 +175,8 @@ app.post('/api/clock-out', requireAuth, async (req, res) => {
     );
     res.json({ message: 'Clocked out successfully', time: nowTime, hours: normalDiff.toFixed(2), ot: otDiff.toFixed(2) });
   } catch (error) {
-    res.status(500).json({ error: 'Internal server error' });
+    console.error('Clock-out error:', error);
+    res.status(500).json({ error: 'Internal server error: ' + error.message });
   }
 });
 
@@ -186,7 +187,8 @@ app.get('/api/intern/logs', requireAuth, async (req, res) => {
     const [logs] = await db.execute('SELECT * FROM daily_logs WHERE user_id = ? ORDER BY date_start DESC, id DESC', [userId]);
     res.json({ logs });
   } catch (error) {
-    res.status(500).json({ error: 'Internal server error' });
+    console.error('Get logs error:', error);
+    res.status(500).json({ error: 'Internal server error: ' + error.message });
   }
 });
 
@@ -200,7 +202,8 @@ app.post('/api/intern/log', requireAuth, async (req, res) => {
     );
     res.json({ message: 'Log created successfully' });
   } catch (error) {
-    res.status(500).json({ error: 'Internal server error' });
+    console.error('Create log error:', error);
+    res.status(500).json({ error: 'Internal server error: ' + error.message });
   }
 });
 
@@ -215,7 +218,8 @@ app.put('/api/intern/log/:id', requireAuth, async (req, res) => {
     );
     res.json({ message: 'Log updated successfully' });
   } catch (error) {
-    res.status(500).json({ error: 'Internal server error' });
+    console.error('Update log error:', error);
+    res.status(500).json({ error: 'Internal server error: ' + error.message });
   }
 });
 
@@ -226,7 +230,8 @@ app.delete('/api/intern/log/:id', requireAuth, async (req, res) => {
     await db.execute('DELETE FROM daily_logs WHERE id = ? AND user_id = ?', [logId, userId]);
     res.json({ message: 'Log deleted successfully' });
   } catch (error) {
-    res.status(500).json({ error: 'Internal server error' });
+    console.error('Delete log error:', error);
+    res.status(500).json({ error: 'Internal server error: ' + error.message });
   }
 });
 
@@ -244,7 +249,8 @@ app.get('/api/intern/dashboard', requireAuth, async (req, res) => {
       totalOtHours: totalHoursRes[0].total_ot_hours || 0
     });
   } catch (error) {
-    res.status(500).json({ error: 'Internal server error' });
+    console.error('Intern dashboard error:', error);
+    res.status(500).json({ error: 'Internal server error: ' + error.message });
   }
 });
 
@@ -259,8 +265,8 @@ app.get('/api/intern/calendar', requireAuth, async (req, res) => {
     const [logs] = await db.execute(`SELECT * FROM daily_logs WHERE user_id IN (${placeholders}) ORDER BY date_start ASC`, userIds);
     res.json({ attendance, logs, users });
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: 'Internal server error' });
+    console.error('Intern calendar error:', error);
+    res.status(500).json({ error: 'Internal server error: ' + error.message });
   }
 });
 
@@ -294,7 +300,8 @@ app.get('/api/manager/dashboard', requireAdmin, async (req, res) => {
       recentTasks: dailyTasks
     });
   } catch (error) {
-    res.status(500).json({ error: 'Internal server error' });
+    console.error('Manager dashboard error:', error);
+    res.status(500).json({ error: 'Internal server error: ' + error.message });
   }
 });
 
@@ -360,7 +367,7 @@ app.post('/api/manager/attendance/manual', requireSuperAdmin, async (req, res) =
     res.json({ message: 'Manual attendance and task recorded successfully', id: result.insertId });
   } catch (error) {
     console.error('Manual attendance error:', error);
-    res.status(500).json({ error: 'Internal server error' });
+    res.status(500).json({ error: 'Internal server error: ' + error.message });
   }
 });
 
@@ -432,8 +439,8 @@ app.put('/api/manager/attendance/manual/:id', requireSuperAdmin, async (req, res
     );
     res.json({ message: 'Attendance and task updated successfully' });
   } catch (error) {
-    console.error('Update error:', error);
-    res.status(500).json({ error: 'Internal server error' });
+    console.error('Update attendance error:', error);
+    res.status(500).json({ error: 'Internal server error: ' + error.message });
   }
 });
 
@@ -442,7 +449,8 @@ app.delete('/api/manager/attendance/manual/:id', requireSuperAdmin, async (req, 
     await db.execute('DELETE FROM attendance WHERE id = ?', [req.params.id]);
     res.json({ message: 'Attendance record deleted successfully' });
   } catch (error) {
-    res.status(500).json({ error: 'Internal server error' });
+    console.error('Delete attendance error:', error);
+    res.status(500).json({ error: 'Internal server error: ' + error.message });
   }
 });
 
@@ -464,7 +472,8 @@ app.get('/api/manager/calendar-data', requireAdmin, async (req, res) => {
     `);
     res.json({ users, attendance, logs });
   } catch (error) {
-    res.status(500).json({ error: 'Internal server error' });
+    console.error('Manager calendar data error:', error);
+    res.status(500).json({ error: 'Database error: ' + error.message });
   }
 });
 
@@ -478,8 +487,10 @@ app.get('/api/manager/attendance', requireAdmin, async (req, res) => {
       ORDER BY a.date DESC, a.clock_in_time DESC
     `);
     res.json({ attendance });
+    res.status(500).json({ error: 'Internal server error: ' + error.message });
   } catch (error) {
-    res.status(500).json({ error: 'Internal server error' });
+    console.error('Manager attendance list error:', error);
+    res.status(500).json({ error: 'Internal server error: ' + error.message });
   }
 });
 
@@ -491,8 +502,10 @@ app.get('/api/logs/all', requireAdmin, async (req, res) => {
       ORDER BY dl.date DESC, dl.id DESC
     `);
     res.json({ logs });
+    res.status(500).json({ error: 'Internal server error: ' + error.message });
   } catch (error) {
-    res.status(500).json({ error: 'Internal server error' });
+    console.error('Get all logs error:', error);
+    res.status(500).json({ error: 'Internal server error: ' + error.message });
   }
 });
 
@@ -500,8 +513,10 @@ app.post('/api/logs/:id/approve', requireAdmin, async (req, res) => {
   try {
     await db.execute('UPDATE daily_logs SET status = ? WHERE id = ?', ['approved', req.params.id]);
     res.json({ message: 'Log approved successfully' });
+    res.status(500).json({ error: 'Internal server error: ' + error.message });
   } catch (error) {
-    res.status(500).json({ error: 'Internal server error' });
+    console.error('Approve log error:', error);
+    res.status(500).json({ error: 'Internal server error: ' + error.message });
   }
 });
 
@@ -509,8 +524,10 @@ app.post('/api/logs/:id/reject', requireAdmin, async (req, res) => {
   try {
     await db.execute('UPDATE daily_logs SET status = ? WHERE id = ?', ['rejected', req.params.id]);
     res.json({ message: 'Log rejected successfully' });
+    res.status(500).json({ error: 'Internal server error: ' + error.message });
   } catch (error) {
-    res.status(500).json({ error: 'Internal server error' });
+    console.error('Reject log error:', error);
+    res.status(500).json({ error: 'Internal server error: ' + error.message });
   }
 });
 
