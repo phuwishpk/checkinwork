@@ -5,7 +5,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     let currentDate = new Date();
     let allData = { users: [], attendance: [], logs: [] };
-    const colors = ['#0053dc','#10b981','#f59e0b','#8b5cf6','#ec4899','#06b6d4','#f43f5e'];
+    const colors = ['#0053dc', '#10b981', '#f59e0b', '#8b5cf6', '#ec4899', '#06b6d4', '#f43f5e'];
 
     const renderManagerCalendar = () => {
         const grid = document.getElementById('calendar-grid');
@@ -26,10 +26,10 @@ document.addEventListener('DOMContentLoaded', async () => {
         for (let i = 0; i < firstDay; i++) grid.innerHTML += `<div class="calendar-cell bg-surface-container-low opacity-50"></div>`;
 
         for (let day = 1; day <= daysInMonth; day++) {
-            const dateStr = `${year}-${String(month+1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
+            const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
             const cell = document.createElement('div');
             cell.className = 'calendar-cell cursor-pointer hover:bg-slate-50 transition-colors group/cell';
-            
+
             cell.addEventListener('click', () => {
                 if (user.role !== 'superadmin') return;
                 resetModal();
@@ -56,7 +56,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                         userAllLogs.forEach(log => {
                             let assigned = false;
                             for (let i = 0; i < userSlots.length; i++) {
-                                if (!userSlots[i].some(s => log.date_start <= (s.date_finish||s.date_start) && (log.date_finish||log.date_start) >= s.date_start)) {
+                                if (!userSlots[i].some(s => log.date_start <= (s.date_finish || s.date_start) && (log.date_finish || log.date_start) >= s.date_start)) {
                                     userSlots[i].push(log); log.slot = i; assigned = true; break;
                                 }
                             }
@@ -73,14 +73,14 @@ document.addEventListener('DOMContentLoaded', async () => {
                                 if (l) {
                                     const isStart = dateStr === l.date_start;
                                     const isEnd = dateStr === (l.date_finish || l.date_start);
-                                    let spanClass = (!isStart&&!isEnd)?'span-mid':(!isStart&&isEnd)?'span-end':(isStart&&!isEnd)?'span-start':'';
-                                    logsMarkup += `<div class="text-[8px] px-1 mb-0.5 rounded truncate text-white font-bold ${spanClass}" style="background-color:${l.color||userColor}">${isStart?l.task_category:'&nbsp;'}</div>`;
+                                    let spanClass = (!isStart && !isEnd) ? 'span-mid' : (!isStart && isEnd) ? 'span-end' : (isStart && !isEnd) ? 'span-start' : '';
+                                    logsMarkup += `<div class="text-[8px] px-1 mb-0.5 rounded truncate text-white font-bold ${spanClass}" style="background-color:${l.color || userColor}">${isStart ? l.task_category : '&nbsp;'}</div>`;
                                 } else {
                                     logsMarkup += `<div class="h-[12px] mb-0.5"></div>`;
                                 }
                             }
                         }
-                        contentHtml += `<div class="user-box bg-white shadow-sm border border-outline-variant/10 mb-2" style="border-left-color:${userColor}"><div class="flex items-center justify-between mb-1"><span class="text-[8px] font-black uppercase" style="color:${userColor}">${u.full_name}</span>${uAtts.length>0?`<span class="text-[7px] bg-slate-100 px-1 rounded">${uAtts.length} sess</span>`:''}</div><div class="space-y-0.5">${logsMarkup}${uAtts.map(a=>`<div class="attendance-item cursor-pointer hover:bg-primary/5 transition-colors text-[7px] text-slate-500 font-medium flex items-center gap-0.5" data-id="${a.id}" data-user-id="${a.user_id}" data-date="${(a.date || '').slice(0,10)}" data-in="${a.clock_in_time || ''}" data-out="${a.clock_out_time || ''}" data-task-category="${a.task_category||''}" data-task-description="${a.task_description||''}"><span class="material-symbols-outlined text-[8px]">login</span>${a.clock_in_time ? a.clock_in_time.slice(0,5) : '--'}${a.clock_out_time ? `<span class="material-symbols-outlined text-[8px]">logout</span>${a.clock_out_time.slice(0,5)}` : ''}</div>`).join('')}</div></div>`;
+                        contentHtml += `<div class="user-box bg-white shadow-sm border border-outline-variant/10 mb-2" style="border-left-color:${userColor}"><div class="flex items-center justify-between mb-1"><span class="text-[8px] font-black uppercase" style="color:${userColor}">${u.full_name}</span>${uAtts.length > 0 ? `<span class="text-[7px] bg-slate-100 px-1 rounded">${uAtts.length} sess</span>` : ''}</div><div class="space-y-0.5">${logsMarkup}${uAtts.map(a => `<div class="attendance-item cursor-pointer hover:bg-primary/5 transition-colors text-[7px] text-slate-500 font-medium flex items-center gap-0.5" data-id="${a.id}" data-user-id="${a.user_id}" data-date="${a.date.slice(0, 10)}" data-in="${a.clock_in_time}" data-out="${a.clock_out_time}" data-task-category="${a.task_category || ''}" data-task-description="${a.task_description || ''}"><span class="material-symbols-outlined text-[8px]">login</span>${a.clock_in_time?.slice(0, 5)}${a.clock_out_time ? `<span class="material-symbols-outlined text-[8px]">logout</span>${a.clock_out_time.slice(0, 5)}` : ''}</div>`).join('')}</div></div>`;
                     }
                 });
             } else {
@@ -97,11 +97,11 @@ document.addEventListener('DOMContentLoaded', async () => {
                     userAllLogs.forEach(log => {
                         let assigned = false;
                         for (let i = 0; i < userSlots.length; i++) {
-                            if (!userSlots[i].some(s => log.date_start<=(s.date_finish||s.date_start)&&(log.date_finish||log.date_start)>=s.date_start)) {
-                                userSlots[i].push(log); log.slot=i; assigned=true; break;
+                            if (!userSlots[i].some(s => log.date_start <= (s.date_finish || s.date_start) && (log.date_finish || log.date_start) >= s.date_start)) {
+                                userSlots[i].push(log); log.slot = i; assigned = true; break;
                             }
                         }
-                        if (!assigned) { log.slot=userSlots.length; userSlots.push([log]); }
+                        if (!assigned) { log.slot = userSlots.length; userSlots.push([log]); }
                     });
                 }
 
@@ -113,8 +113,8 @@ document.addEventListener('DOMContentLoaded', async () => {
                         if (l) {
                             const isStart = dateStr === l.date_start;
                             const isEnd = dateStr === (l.date_finish || l.date_start);
-                            let spanClass = (!isStart&&!isEnd)?'span-mid':(!isStart&&isEnd)?'span-end':(isStart&&!isEnd)?'span-start':'';
-                            contentHtml += `<div class="log-bar ${spanClass}" style="background-color:${l.color||userColor}"><span class="truncate">${isStart?l.task_category:''}</span></div>`;
+                            let spanClass = (!isStart && !isEnd) ? 'span-mid' : (!isStart && isEnd) ? 'span-end' : (isStart && !isEnd) ? 'span-start' : '';
+                            contentHtml += `<div class="log-bar ${spanClass}" style="background-color:${l.color || userColor}"><span class="truncate">${isStart ? l.task_category : ''}</span></div>`;
                         } else {
                             contentHtml += `<div class="h-[22px] mb-[2px]"></div>`;
                         }
@@ -122,7 +122,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                     contentHtml += `</div>`;
                 }
                 if (uAtts.length > 0) {
-                    contentHtml += `<div class="mt-auto pt-1 border-t border-dashed border-outline-variant/20"><p class="text-[7px] font-black uppercase text-slate-400 mb-0.5">Attendance (${uAtts.length})</p>${uAtts.map(a=>`<div class="attendance-item cursor-pointer flex items-center gap-1 text-[9px] font-bold text-primary bg-primary/5 hover:bg-primary/10 transition-colors px-1 rounded mb-0.5" data-id="${a.id}" data-user-id="${a.user_id}" data-date="${(a.date || '').slice(0,10)}" data-in="${a.clock_in_time || ''}" data-out="${a.clock_out_time || ''}" data-task-category="${a.task_category||''}" data-task-description="${a.task_description||''}"><span class="material-symbols-outlined text-[10px]">login</span>${a.clock_in_time ? a.clock_in_time.slice(0,5) : '--'}<span class="material-symbols-outlined text-[10px]">logout</span>${a.clock_out_time ? a.clock_out_time.slice(0,5) : '...'}</div>`).join('')}</div>`;
+                    contentHtml += `<div class="mt-auto pt-1 border-t border-dashed border-outline-variant/20"><p class="text-[7px] font-black uppercase text-slate-400 mb-0.5">Attendance (${uAtts.length})</p>${uAtts.map(a => `<div class="attendance-item cursor-pointer flex items-center gap-1 text-[9px] font-bold text-primary bg-primary/5 hover:bg-primary/10 transition-colors px-1 rounded mb-0.5" data-id="${a.id}" data-user-id="${a.user_id}" data-date="${(a.date || '').slice(0, 10)}" data-in="${a.clock_in_time || ''}" data-out="${a.clock_out_time || ''}" data-task-category="${a.task_category || ''}" data-task-description="${a.task_description || ''}"><span class="material-symbols-outlined text-[10px]">login</span>${a.clock_in_time ? a.clock_in_time.slice(0, 5) : '--'}<span class="material-symbols-outlined text-[10px]">logout</span>${a.clock_out_time ? a.clock_out_time.slice(0, 5) : '...'}</div>`).join('')}</div>`;
                 }
             }
 
@@ -183,20 +183,20 @@ document.addEventListener('DOMContentLoaded', async () => {
     const form = document.getElementById('manual-attendance-form');
     const deleteBtn = document.getElementById('delete-record-btn');
     const taskFields = document.getElementById('task-fields'); // New element to control task fields visibility
-    
+
     // Add these helper functions for modal control
     const openModalForEdit = (data) => {
         document.getElementById('modal-title').textContent = 'Edit Attendance Record';
         document.getElementById('modal-record-id').value = data.id;
         document.getElementById('modal-intern-select').value = data.userId;
         document.querySelector('#manual-attendance-form input[name="date"]').value = data.date;
-        document.querySelector('#manual-attendance-form input[name="clock_in_time"]').value = (data.in && data.in !== 'null') ? data.in.slice(0,5) : '';
-        document.querySelector('#manual-attendance-form input[name="clock_out_time"]').value = (data.out && data.out !== 'null') ? data.out.slice(0,5) : '';
-        
+        document.querySelector('#manual-attendance-form input[name="clock_in_time"]').value = (data.in && data.in !== 'null') ? data.in.slice(0, 5) : '';
+        document.querySelector('#manual-attendance-form input[name="clock_out_time"]').value = (data.out && data.out !== 'null') ? data.out.slice(0, 5) : '';
+
         // Populate task fields
         document.querySelector('#manual-attendance-form [name="task_category"]').value = data.taskCategory || 'Done';
         document.querySelector('#manual-attendance-form [name="task_description"]').value = data.taskDescription || '';
-        
+
         if (taskFields) taskFields.classList.remove('hidden'); // Show task fields for editing too
         if (deleteBtn) deleteBtn.classList.remove('hidden');
         modal.classList.remove('hidden');
@@ -249,7 +249,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 const recordId = document.getElementById('modal-record-id').value;
                 if (!recordId) return;
                 if (!confirm('Are you sure you want to delete this record?')) return;
-    
+
                 try {
                     const res = await apiCall(`/api/manager/attendance/manual/${recordId}`, 'DELETE');
                     alert(res.message || 'Deleted successfully');
@@ -276,14 +276,14 @@ document.addEventListener('DOMContentLoaded', async () => {
     const filter2 = document.getElementById('view-mode');
     if (filter1) filter1.addEventListener('change', renderManagerCalendar);
     if (filter2) filter2.addEventListener('change', renderManagerCalendar);
-    
-    document.getElementById('prev-month').addEventListener('click', () => { 
-        currentDate.setMonth(currentDate.getMonth()-1); 
-        renderManagerCalendar(); 
+
+    document.getElementById('prev-month').addEventListener('click', () => {
+        currentDate.setMonth(currentDate.getMonth() - 1);
+        renderManagerCalendar();
     });
-    document.getElementById('next-month').addEventListener('click', () => { 
-        currentDate.setMonth(currentDate.getMonth()+1); 
-        renderManagerCalendar(); 
+    document.getElementById('next-month').addEventListener('click', () => {
+        currentDate.setMonth(currentDate.getMonth() + 1);
+        renderManagerCalendar();
     });
 
     await loadManagerCalendar();

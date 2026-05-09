@@ -287,9 +287,9 @@ app.get('/api/manager/dashboard', requireAdmin, async (req, res) => {
       JOIN users u ON l.user_id = u.id
       ORDER BY l.id DESC LIMIT 15
     `);
-    res.json({ 
-      totalProgramHours: totalHoursRes[0].total_program_hours || 0, 
-      roster, 
+    res.json({
+      totalProgramHours: totalHoursRes[0].total_program_hours || 0,
+      roster,
       recentAttendance: attendanceLogs,
       recentTasks: dailyTasks
     });
@@ -464,8 +464,7 @@ app.get('/api/manager/calendar-data', requireAdmin, async (req, res) => {
     `);
     res.json({ users, attendance, logs });
   } catch (error) {
-    console.error('Calendar data error:', error);
-    res.status(500).json({ error: 'Database error: ' + error.message });
+    res.status(500).json({ error: 'Internal server error' });
   }
 });
 
@@ -510,18 +509,18 @@ app.post('/api/logs/:id/reject', requireAdmin, async (req, res) => {
   try {
     await db.execute('UPDATE daily_logs SET status = ? WHERE id = ?', ['rejected', req.params.id]);
     res.json({ message: 'Log rejected successfully' });
-  }  catch (error) {
+  } catch (error) {
     res.status(500).json({ error: 'Internal server error' });
   }
 });
 
 // Clean URL routes
-app.get('/dashboard',           (req, res) => res.sendFile(path.join(__dirname, 'public/intern-dashboard.html')));
-app.get('/daily-log',           (req, res) => res.sendFile(path.join(__dirname, 'public/daily-log.html')));
-app.get('/attendance',          (req, res) => res.sendFile(path.join(__dirname, 'public/attendance.html')));
-app.get('/manager',             (req, res) => res.sendFile(path.join(__dirname, 'public/manager-dashboard.html')));
-app.get('/manager/logs',        (req, res) => res.sendFile(path.join(__dirname, 'public/manager-loge.html')));
-app.get('/manager/attendance',  (req, res) => res.sendFile(path.join(__dirname, 'public/manager-attendance.html')));
+app.get('/dashboard', (req, res) => res.sendFile(path.join(__dirname, 'public/intern-dashboard.html')));
+app.get('/daily-log', (req, res) => res.sendFile(path.join(__dirname, 'public/daily-log.html')));
+app.get('/attendance', (req, res) => res.sendFile(path.join(__dirname, 'public/attendance.html')));
+app.get('/manager', (req, res) => res.sendFile(path.join(__dirname, 'public/manager-dashboard.html')));
+app.get('/manager/logs', (req, res) => res.sendFile(path.join(__dirname, 'public/manager-loge.html')));
+app.get('/manager/attendance', (req, res) => res.sendFile(path.join(__dirname, 'public/manager-attendance.html')));
 
 // Health check — also shows env config (no secrets)
 app.get('/health', async (req, res) => {
@@ -552,6 +551,19 @@ app.get('/health', async (req, res) => {
 // Final Handlers
 app.use((req, res) => res.status(404).json({ error: 'Not found' }));
 
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
+async function runMigrations() {
+  const migrations = [
+    "ALTER TABLE attendance ADD COLUMN log_id INT",
+    "ALTER TABLE daily_logs ADD COLUMN color VARCHAR(20) NOT NULL DEFAULT '#3e76fe'",
+    "ALTER TABLE daily_logs ADD COLUMN created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP",
+  ];
+  for (const sql of migrations) {
+    try { await db.execute(sql); } catch (e) { /* column already exists */ }
+  }
+}
+
+runMigrations().then(() => {
+  app.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}`);
+  });
 });
