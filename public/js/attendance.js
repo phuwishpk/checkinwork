@@ -12,7 +12,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     let currentDate = new Date();
     let allAttendance = [], allLogs = [], allUsers = [];
     let isDragging = false, dragStart = null, dragEnd = null;
-    let viewFilter = 'all', selectedUserId = 'all';
+    let viewFilter = 'all', selectedUserId = user.id;
     const colors = ['#0053dc','#10b981','#f59e0b','#8b5cf6','#ec4899','#06b6d4','#f43f5e'];
 
     const modal = document.getElementById('log-modal');
@@ -93,8 +93,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     }
 
-    const internFilter = document.getElementById('intern-filter');
-    if (internFilter) internFilter.addEventListener('change', (e) => { selectedUserId = e.target.value; renderCalendar(); });
+
 
     document.querySelectorAll('.view-filter-btn').forEach(btn => {
         btn.addEventListener('click', () => {
@@ -127,12 +126,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 l.date_start = toLocalDate(l.date_start);
                 l.date_finish = toLocalDate(l.date_finish);
             });
-            if (internFilter) {
-                const currentVal = internFilter.value;
-                internFilter.innerHTML = '<option value="all">All Participants</option>';
-                allUsers.forEach(u => { internFilter.innerHTML += `<option value="${u.id}">${u.full_name}</option>`; });
-                internFilter.value = currentVal;
-            }
+
             renderCalendar();
         } catch (err) { console.error(err); }
     };
