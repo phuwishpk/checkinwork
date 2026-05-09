@@ -17,6 +17,24 @@ CREATE TABLE IF NOT EXISTS users (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- -------------------------------------------------------------------
+-- -------------------------------------------------------------------
+-- daily_logs
+-- -------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS daily_logs (
+    id            INT AUTO_INCREMENT PRIMARY KEY,
+    user_id       INT         NOT NULL,
+    date          DATE,
+    date_start    DATE,
+    date_finish   DATE,
+    task_category VARCHAR(100),
+    description   TEXT,
+    status        VARCHAR(30) NOT NULL DEFAULT 'Plan',
+    color         VARCHAR(20) NOT NULL DEFAULT '#3e76fe',
+    created_at    TIMESTAMP   DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- -------------------------------------------------------------------
 -- attendance
 -- -------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS attendance (
@@ -32,25 +50,6 @@ CREATE TABLE IF NOT EXISTS attendance (
     FOREIGN KEY (log_id) REFERENCES daily_logs(id) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
--- -------------------------------------------------------------------
--- daily_logs
--- status is VARCHAR (not ENUM) because the app uses multiple value sets:
---   intern task status : 'Plan', 'To Do', 'In Progress', 'Done'
---   manager approval   : 'approved', 'rejected'
--- -------------------------------------------------------------------
-CREATE TABLE IF NOT EXISTS daily_logs (
-    id            INT AUTO_INCREMENT PRIMARY KEY,
-    user_id       INT         NOT NULL,
-    date          DATE,
-    date_start    DATE,
-    date_finish   DATE,
-    task_category VARCHAR(100),
-    description   TEXT,
-    status        VARCHAR(30) NOT NULL DEFAULT 'Plan',
-    color         VARCHAR(20) NOT NULL DEFAULT '#3e76fe',
-    created_at    TIMESTAMP   DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- -------------------------------------------------------------------
 -- Seed users (bcrypt hashed passwords, cost=10)

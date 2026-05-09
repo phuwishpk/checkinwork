@@ -95,18 +95,13 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 
 
-    document.querySelectorAll('.view-filter-btn').forEach(btn => {
-        btn.addEventListener('click', () => {
-            viewFilter = btn.dataset.viewFilter;
-            document.querySelectorAll('.view-filter-btn').forEach(b => {
-                b.classList.remove('bg-white','shadow-sm','text-primary');
-                b.classList.add('text-on-surface-variant','hover:bg-white/50');
-            });
-            btn.classList.add('bg-white','shadow-sm','text-primary');
-            btn.classList.remove('text-on-surface-variant','hover:bg-white/50');
+    const viewMode = document.getElementById('view-mode');
+    if (viewMode) {
+        viewMode.addEventListener('change', (e) => {
+            viewFilter = e.target.value;
             renderCalendar();
         });
-    });
+    }
 
     const loadCalendarData = async () => {
         try {

@@ -464,7 +464,8 @@ app.get('/api/manager/calendar-data', requireAdmin, async (req, res) => {
     `);
     res.json({ users, attendance, logs });
   } catch (error) {
-    res.status(500).json({ error: 'Internal server error' });
+    console.error('Calendar data error:', error);
+    res.status(500).json({ error: 'Database error: ' + error.message });
   }
 });
 
