@@ -46,7 +46,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             if (selectedUserId === 'all') {
                 allData.users.forEach((u, idx) => {
                     const userColor = colors[idx % colors.length];
-                    const uAtts = showAtts ? allData.attendance.filter(a => a.user_id === u.id && a.date.startsWith(dateStr)) : [];
+                    const uAtts = showAtts ? allData.attendance.filter(a => a.user_id === u.id && a.date && a.date.startsWith(dateStr)) : [];
                     const uLogs = showTasks ? allData.logs.filter(l => l.user_id === u.id && dateStr >= l.date_start && dateStr <= (l.date_finish || l.date_start)) : [];
 
                     if (day === 1) {
@@ -80,14 +80,14 @@ document.addEventListener('DOMContentLoaded', async () => {
                                 }
                             }
                         }
-                        contentHtml += `<div class="user-box bg-white shadow-sm border border-outline-variant/10 mb-2" style="border-left-color:${userColor}"><div class="flex items-center justify-between mb-1"><span class="text-[8px] font-black uppercase" style="color:${userColor}">${u.full_name}</span>${uAtts.length>0?`<span class="text-[7px] bg-slate-100 px-1 rounded">${uAtts.length} sess</span>`:''}</div><div class="space-y-0.5">${logsMarkup}${uAtts.map(a=>`<div class="attendance-item cursor-pointer hover:bg-primary/5 transition-colors text-[7px] text-slate-500 font-medium flex items-center gap-0.5" data-id="${a.id}" data-user-id="${a.user_id}" data-date="${a.date.slice(0,10)}" data-in="${a.clock_in_time}" data-out="${a.clock_out_time}" data-task-category="${a.task_category||''}" data-task-description="${a.task_description||''}"><span class="material-symbols-outlined text-[8px]">login</span>${a.clock_in_time?.slice(0,5)}${a.clock_out_time?`<span class="material-symbols-outlined text-[8px]">logout</span>${a.clock_out_time.slice(0,5)}`:''}</div>`).join('')}</div></div>`;
+                        contentHtml += `<div class="user-box bg-white shadow-sm border border-outline-variant/10 mb-2" style="border-left-color:${userColor}"><div class="flex items-center justify-between mb-1"><span class="text-[8px] font-black uppercase" style="color:${userColor}">${u.full_name}</span>${uAtts.length>0?`<span class="text-[7px] bg-slate-100 px-1 rounded">${uAtts.length} sess</span>`:''}</div><div class="space-y-0.5">${logsMarkup}${uAtts.map(a=>`<div class="attendance-item cursor-pointer hover:bg-primary/5 transition-colors text-[7px] text-slate-500 font-medium flex items-center gap-0.5" data-id="${a.id}" data-user-id="${a.user_id}" data-date="${(a.date || '').slice(0,10)}" data-in="${a.clock_in_time || ''}" data-out="${a.clock_out_time || ''}" data-task-category="${a.task_category||''}" data-task-description="${a.task_description||''}"><span class="material-symbols-outlined text-[8px]">login</span>${a.clock_in_time ? a.clock_in_time.slice(0,5) : '--'}${a.clock_out_time ? `<span class="material-symbols-outlined text-[8px]">logout</span>${a.clock_out_time.slice(0,5)}` : ''}</div>`).join('')}</div></div>`;
                     }
                 });
             } else {
                 const uid = parseInt(selectedUserId);
                 const userIdx = allData.users.findIndex(u => u.id === uid);
                 const userColor = colors[userIdx % colors.length];
-                const uAtts = showAtts ? allData.attendance.filter(a => a.user_id === uid && a.date.startsWith(dateStr)) : [];
+                const uAtts = showAtts ? allData.attendance.filter(a => a.user_id === uid && a.date && a.date.startsWith(dateStr)) : [];
                 const uLogs = showTasks ? allData.logs.filter(l => l.user_id === uid && dateStr >= l.date_start && dateStr <= (l.date_finish || l.date_start)) : [];
 
                 if (day === 1) {
@@ -122,7 +122,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                     contentHtml += `</div>`;
                 }
                 if (uAtts.length > 0) {
-                    contentHtml += `<div class="mt-auto pt-1 border-t border-dashed border-outline-variant/20"><p class="text-[7px] font-black uppercase text-slate-400 mb-0.5">Attendance (${uAtts.length})</p>${uAtts.map(a=>`<div class="attendance-item cursor-pointer flex items-center gap-1 text-[9px] font-bold text-primary bg-primary/5 hover:bg-primary/10 transition-colors px-1 rounded mb-0.5" data-id="${a.id}" data-user-id="${a.user_id}" data-date="${a.date.slice(0,10)}" data-in="${a.clock_in_time}" data-out="${a.clock_out_time}" data-task-category="${a.task_category||''}" data-task-description="${a.task_description||''}"><span class="material-symbols-outlined text-[10px]">login</span>${a.clock_in_time?.slice(0,5)}<span class="material-symbols-outlined text-[10px]">logout</span>${a.clock_out_time?a.clock_out_time.slice(0,5):'...'}</div>`).join('')}</div>`;
+                    contentHtml += `<div class="mt-auto pt-1 border-t border-dashed border-outline-variant/20"><p class="text-[7px] font-black uppercase text-slate-400 mb-0.5">Attendance (${uAtts.length})</p>${uAtts.map(a=>`<div class="attendance-item cursor-pointer flex items-center gap-1 text-[9px] font-bold text-primary bg-primary/5 hover:bg-primary/10 transition-colors px-1 rounded mb-0.5" data-id="${a.id}" data-user-id="${a.user_id}" data-date="${(a.date || '').slice(0,10)}" data-in="${a.clock_in_time || ''}" data-out="${a.clock_out_time || ''}" data-task-category="${a.task_category||''}" data-task-description="${a.task_description||''}"><span class="material-symbols-outlined text-[10px]">login</span>${a.clock_in_time ? a.clock_in_time.slice(0,5) : '--'}<span class="material-symbols-outlined text-[10px]">logout</span>${a.clock_out_time ? a.clock_out_time.slice(0,5) : '...'}</div>`).join('')}</div>`;
                 }
             }
 
@@ -190,8 +190,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         document.getElementById('modal-record-id').value = data.id;
         document.getElementById('modal-intern-select').value = data.userId;
         document.querySelector('#manual-attendance-form input[name="date"]').value = data.date;
-        document.querySelector('#manual-attendance-form input[name="clock_in_time"]').value = data.in.slice(0,5);
-        document.querySelector('#manual-attendance-form input[name="clock_out_time"]').value = data.out ? data.out.slice(0,5) : '';
+        document.querySelector('#manual-attendance-form input[name="clock_in_time"]').value = (data.in && data.in !== 'null') ? data.in.slice(0,5) : '';
+        document.querySelector('#manual-attendance-form input[name="clock_out_time"]').value = (data.out && data.out !== 'null') ? data.out.slice(0,5) : '';
         
         // Populate task fields
         document.querySelector('#manual-attendance-form [name="task_category"]').value = data.taskCategory || 'Done';

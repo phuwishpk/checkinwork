@@ -158,7 +158,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
             filteredUsers.forEach((u, idx) => {
                 const userColor = colors[idx % colors.length];
-                const uAtts = allAttendance.filter(a => a.user_id === u.id && a.date.startsWith(dateStr));
+                const uAtts = allAttendance.filter(a => a.user_id === u.id && a.date && a.date.startsWith(dateStr));
                 const uLogs = allLogs.filter(l => l.user_id === u.id && dateStr >= l.date_start && dateStr <= (l.date_finish || l.date_start));
 
                 if (day === 1) {
@@ -196,7 +196,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                     }
                     let attMarkup = '';
                     if (viewFilter !== 'tasks' && uAtts.length > 0) {
-                        attMarkup = uAtts.map(a => `<div class="flex items-center gap-0.5 text-[8px] font-bold" style="color:${userColor}"><span class="material-symbols-outlined text-[9px]">login</span>${a.clock_in_time?.slice(0,5)}</div>`).join('');
+                        attMarkup = uAtts.map(a => `<div class="flex items-center gap-0.5 text-[8px] font-bold" style="color:${userColor}"><span class="material-symbols-outlined text-[9px]">login</span>${a.clock_in_time ? a.clock_in_time.slice(0,5) : '--'}</div>`).join('');
                     }
                     if (logsMarkup || attMarkup) {
                         contentHtml += `<div class="mb-2 p-1 rounded border-l-2" style="border-left-color:${userColor};background:${userColor}08"><div class="flex items-center justify-between mb-0.5"><span class="text-[7px] font-black uppercase" style="color:${userColor}">${u.full_name}</span></div>${logsMarkup}${attMarkup}</div>`;
@@ -232,7 +232,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             const dateStr = `${year}-${String(month+1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
             filteredUsers.forEach((u, idx) => {
                 const userColor = colors[idx % colors.length];
-                const dayAtts = allAttendance.filter(a => a.user_id === u.id && a.date.startsWith(dateStr));
+                const dayAtts = allAttendance.filter(a => a.user_id === u.id && a.date && a.date.startsWith(dateStr));
                 const dayLogs = allLogs.filter(l => l.user_id === u.id && dateStr >= l.date_start && dateStr <= (l.date_finish || l.date_start));
                 if (dayAtts.length === 0 && dayLogs.length === 0) return;
                 const dateDisplay = new Date(dateStr).toLocaleDateString('en-GB', { day:'2-digit', month:'short' });
