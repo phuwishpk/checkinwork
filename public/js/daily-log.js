@@ -5,8 +5,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (typeof initHamburgerMenu === 'function') initHamburgerMenu();
 
     const STATUS_STYLE = {
-        'Plan': 'status-plan', 'To Do': 'status-todo',
-        'In Progress': 'status-inprogress', 'Done': 'status-done',
+        'Backend': 'status-backend', 'Frontend': 'status-frontend',
+        'Bug Fix': 'status-bugfix', 'Database': 'status-database',
     };
     let allLogs = [];
     let currentFilter = 'all';
@@ -25,8 +25,8 @@ document.addEventListener('DOMContentLoaded', async () => {
             submitText.textContent = 'Update Log';
             editingId.value = log.id;
             document.getElementById('log-description').value = log.description || '';
-            document.getElementById('log-category').value = log.task_category || 'Plan';
-            document.getElementById('log-status').value = log.status || 'Plan';
+            document.getElementById('log-category').value = log.task_category || 'Backend';
+            document.getElementById('log-status').value = log.status || 'Backend';
             document.getElementById('log-date-start').value = log.date_start || '';
             document.getElementById('log-date-finish').value = log.date_finish || '';
         } else {
@@ -102,8 +102,8 @@ document.addEventListener('DOMContentLoaded', async () => {
             return;
         }
         body.innerHTML = filtered.map(log => {
-            const cls = STATUS_STYLE[log.status] || STATUS_STYLE['Plan'];
-            const catCls = STATUS_STYLE[log.task_category] || STATUS_STYLE['Plan'];
+            const cls = STATUS_STYLE[log.status] || STATUS_STYLE['Backend'];
+            const catCls = STATUS_STYLE[log.task_category] || STATUS_STYLE['Backend'];
             const dur = computeDuration(log.date_start, log.date_finish);
             return `
             <tr class="hover:bg-surface-container-low transition-colors group">

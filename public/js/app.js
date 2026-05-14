@@ -259,10 +259,10 @@ document.addEventListener('DOMContentLoaded', async () => {
                 if (logList) {
                     logList.innerHTML = '';
                     const STATUS_STYLE = {
-                        'Plan':        'bg-blue-50 text-blue-700',
-                        'To Do':       'bg-yellow-50 text-yellow-700',
-                        'In Progress': 'bg-sky-50 text-sky-700',
-                        'Done':        'bg-green-50 text-green-700',
+                        'Backend':     'bg-blue-50 text-blue-700',
+                        'Frontend':    'bg-yellow-50 text-yellow-700',
+                        'Bug Fix':     'bg-sky-50 text-sky-700',
+                        'Database':    'bg-green-50 text-green-700',
                     };
                     
                     data.logs.slice(0, 3).forEach(log => {
@@ -391,10 +391,10 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     if (path.includes('daily-log')) {
         const STATUS_STYLE = {
-            'Plan':        'status-plan',
-            'To Do':       'status-todo',
-            'In Progress': 'status-inprogress',
-            'Done':        'status-done',
+            'Backend':     'status-backend',
+            'Frontend':    'status-frontend',
+            'Bug Fix':     'status-bugfix',
+            'Database':    'status-database',
         };
 
         let allLogs = [];
@@ -415,8 +415,8 @@ document.addEventListener('DOMContentLoaded', async () => {
                 submitText.textContent = 'Update Log';
                 editingId.value = log.id;
                 document.getElementById('log-description').value = log.description || '';
-                document.getElementById('log-category').value = log.task_category || 'Plan';
-                document.getElementById('log-status').value = log.status || 'Plan';
+                document.getElementById('log-category').value = log.task_category || 'Backend';
+                document.getElementById('log-status').value = log.status || 'Backend';
                 document.getElementById('log-date-start').value = log.date_start || '';
                 document.getElementById('log-date-finish').value = log.date_finish || '';
             } else {
@@ -486,8 +486,8 @@ document.addEventListener('DOMContentLoaded', async () => {
                 return;
             }
             body.innerHTML = filtered.map(log => {
-                const cls = STATUS_STYLE[log.status] || STATUS_STYLE['Plan'];
-                const catCls = STATUS_STYLE[log.task_category] || STATUS_STYLE['Plan'];
+                const cls = STATUS_STYLE[log.status] || STATUS_STYLE['Backend'];
+                const catCls = STATUS_STYLE[log.task_category] || STATUS_STYLE['Backend'];
                 const dur = computeDuration(log.date_start, log.date_finish);
                 return `
                 <tr class="hover:bg-surface-container-low transition-colors group">
@@ -689,7 +689,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 title.textContent = 'Edit Task';
                 editingId.value = log.id;
                 document.getElementById('log-description').value = log.description || '';
-                document.getElementById('log-category').value = log.task_category || 'Plan';
+                document.getElementById('log-category').value = log.task_category || 'Backend';
                 document.getElementById('log-color').value = log.color || '#3e76fe';
                 document.getElementById('log-date-start').value = log.date_start || '';
                 document.getElementById('log-date-finish').value = log.date_finish || '';
@@ -731,7 +731,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                     task_category: document.getElementById('log-category').value,
                     description:   document.getElementById('log-description').value,
                     color:         document.getElementById('log-color').value,
-                    status:        'Plan' // Default status
+                    status:        'Backend' // Default status
                 };
                 try {
                     if (editingId) await apiCall(`/api/intern/log/${editingId}`, 'PUT', payload);

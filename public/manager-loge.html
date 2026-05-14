@@ -48,10 +48,10 @@
     .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
     .glass-panel { background: rgba(247, 249, 251, 0.8); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
     .ambient-shadow { box-shadow: 0 8px 32px rgba(44, 52, 55, 0.06); }
-    .status-plan    { background:#dbeafe; color:#1e40af; }
-    .status-todo    { background:#fef3c7; color:#92400e; }
-    .status-inprogress { background:#e0f2fe; color:#0369a1; }
-    .status-done    { background:#dcfce7; color:#166534; }
+    .status-backend    { background:#dbeafe; color:#1e40af; }
+    .status-frontend   { background:#fef3c7; color:#92400e; }
+    .status-bugfix     { background:#e0f2fe; color:#0369a1; }
+    .status-database   { background:#dcfce7; color:#166534; }
   </style>
 </head>
 
@@ -116,31 +116,31 @@
       <!-- Stats Cards -->
       <div class="md:col-span-3 bg-surface-container-lowest rounded-xl p-6 ambient-shadow">
         <h3 class="font-headline text-lg font-bold text-on-surface mb-4">
-          Plan
+          Backend
         </h3>
-        <div class="text-3xl font-extrabold gradient-text" id="countPlan">0</div>
-        <p class="text-sm text-on-surface-variant mt-2">Tasks in planning phase</p>
+        <div class="text-3xl font-extrabold gradient-text" id="countBackend">0</div>
+        <p class="text-sm text-on-surface-variant mt-2">Backend related tasks</p>
       </div>
       <div class="md:col-span-3 bg-surface-container-lowest rounded-xl p-6 ambient-shadow">
         <h3 class="font-headline text-lg font-bold text-on-surface mb-4">
-          To Do
+          Frontend
         </h3>
-        <div class="text-3xl font-extrabold text-emerald-600" id="countToDo">0</div>
-        <p class="text-sm text-on-surface-variant mt-2">Tasks to be started</p>
+        <div class="text-3xl font-extrabold text-emerald-600" id="countFrontend">0</div>
+        <p class="text-sm text-on-surface-variant mt-2">Frontend related tasks</p>
       </div>
       <div class="md:col-span-3 bg-surface-container-lowest rounded-xl p-6 ambient-shadow">
         <h3 class="font-headline text-lg font-bold text-on-surface mb-4">
-          In Progress
+          Bug Fix
         </h3>
-        <div class="text-3xl font-extrabold text-primary" id="countInProgress">0</div>
-        <p class="text-sm text-on-surface-variant mt-2">Tasks currently active</p>
+        <div class="text-3xl font-extrabold text-primary" id="countBugFix">0</div>
+        <p class="text-sm text-on-surface-variant mt-2">Bug fixing tasks</p>
       </div>
       <div class="md:col-span-3 bg-surface-container-lowest rounded-xl p-6 ambient-shadow">
         <h3 class="font-headline text-lg font-bold text-on-surface mb-4">
-          Done
+          Database
         </h3>
-        <div class="text-3xl font-extrabold text-secondary" id="countDone">0</div>
-        <p class="text-sm text-on-surface-variant mt-2">Completed tasks</p>
+        <div class="text-3xl font-extrabold text-secondary" id="countDatabase">0</div>
+        <p class="text-sm text-on-surface-variant mt-2">Database related tasks</p>
       </div>
 
       <!-- Filters Section -->
@@ -169,15 +169,15 @@
             </select>
           </div>
           <div>
-            <label class="block text-sm font-medium text-on-surface-variant mb-2">Status</label>
+            <label class="block text-sm font-medium text-on-surface-variant mb-2">Category</label>
             <select
               class="w-full px-3 py-2 border border-outline rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
               id="statusFilter">
-              <option value="all">All Status</option>
-              <option value="Plan">Plan</option>
-              <option value="To Do">To Do</option>
-              <option value="In Progress">In Progress</option>
-              <option value="Done">Done</option>
+              <option value="all">All Categories</option>
+              <option value="Backend">Backend</option>
+              <option value="Frontend">Frontend</option>
+              <option value="Bug Fix">Bug Fix</option>
+              <option value="Database">Database</option>
             </select>
           </div>
           <div class="flex items-end">

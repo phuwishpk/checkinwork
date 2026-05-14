@@ -23,10 +23,10 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     function updateStats() {
-        document.getElementById('countPlan').textContent      = allLogs.filter(l => l.status === 'Plan' || l.task_category === 'Plan').length;
-        document.getElementById('countToDo').textContent      = allLogs.filter(l => l.status === 'To Do' || l.task_category === 'To Do').length;
-        document.getElementById('countInProgress').textContent= allLogs.filter(l => l.status === 'In Progress' || l.task_category === 'In Progress').length;
-        document.getElementById('countDone').textContent      = allLogs.filter(l => l.status === 'Done' || l.task_category === 'Done').length;
+        document.getElementById('countBackend').textContent   = allLogs.filter(l => l.status === 'Backend' || l.task_category === 'Backend').length;
+        document.getElementById('countFrontend').textContent  = allLogs.filter(l => l.status === 'Frontend' || l.task_category === 'Frontend').length;
+        document.getElementById('countBugFix').textContent    = allLogs.filter(l => l.status === 'Bug Fix' || l.task_category === 'Bug Fix').length;
+        document.getElementById('countDatabase').textContent  = allLogs.filter(l => l.status === 'Database' || l.task_category === 'Database').length;
     }
 
     function populateInternFilter(roster) {
@@ -50,11 +50,11 @@ document.addEventListener('DOMContentLoaded', async () => {
         document.getElementById('logsContainer').innerHTML = filteredLogs.map(log => {
             const duration = computeDuration(log.date_start, log.date_finish);
             const statusCls =
-                log.status === 'Plan'        ? 'bg-surface-container-highest text-on-surface' :
-                log.status === 'To Do'       ? 'bg-tertiary-container text-on-tertiary-container' :
-                log.status === 'In Progress' ? 'bg-primary text-on-primary' :
-                log.status === 'Done'        ? 'bg-secondary-fixed text-on-secondary-container' :
-                                               'bg-outline text-on-surface';
+                log.status === 'Backend'  ? 'bg-surface-container-highest text-on-surface' :
+                log.status === 'Frontend' ? 'bg-tertiary-container text-on-tertiary-container' :
+                log.status === 'Bug Fix'  ? 'bg-primary text-on-primary' :
+                log.status === 'Database' ? 'bg-secondary-fixed text-on-secondary-container' :
+                                            'bg-outline text-on-surface';
             return `
             <div class="bg-surface-container-lowest p-6 rounded-xl ambient-shadow">
                 <div class="flex justify-between items-start mb-4">

@@ -63,22 +63,22 @@
       font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
     }
 
-    .status-plan {
+    .status-backend {
       background: #dbeafe;
       color: #1e40af;
     }
 
-    .status-todo {
+    .status-frontend {
       background: #fef3c7;
       color: #92400e;
     }
 
-    .status-inprogress {
+    .status-bugfix {
       background: #e0f2fe;
       color: #0369a1;
     }
 
-    .status-done {
+    .status-database {
       background: #dcfce7;
       color: #166534;
     }
@@ -202,16 +202,14 @@
             <div class="flex gap-1.5 sm:gap-2 flex-wrap">
               <button data-filter="all"
                 class="filter-btn px-2.5 sm:px-3 py-1 rounded-full text-[10px] sm:text-xs font-semibold bg-primary text-white">All</button>
-              <button data-filter="Plan"
-                class="filter-btn px-2.5 sm:px-3 py-1 rounded-full text-[10px] sm:text-xs font-semibold bg-slate-100 text-slate-600 hover:bg-blue-100">Plan</button>
-              <button data-filter="To Do"
-                class="filter-btn px-2.5 sm:px-3 py-1 rounded-full text-[10px] sm:text-xs font-semibold bg-slate-100 text-slate-600 hover:bg-yellow-100">To
-                Do</button>
-              <button data-filter="In Progress"
-                class="filter-btn px-2.5 sm:px-3 py-1 rounded-full text-[10px] sm:text-xs font-semibold bg-slate-100 text-slate-600 hover:bg-sky-100">In
-                Progress</button>
-              <button data-filter="Done"
-                class="filter-btn px-2.5 sm:px-3 py-1 rounded-full text-[10px] sm:text-xs font-semibold bg-slate-100 text-slate-600 hover:bg-green-100">Done</button>
+              <button data-filter="Backend"
+                class="filter-btn px-2.5 sm:px-3 py-1 rounded-full text-[10px] sm:text-xs font-semibold bg-slate-100 text-slate-600 hover:bg-blue-100">Backend</button>
+              <button data-filter="Frontend"
+                class="filter-btn px-2.5 sm:px-3 py-1 rounded-full text-[10px] sm:text-xs font-semibold bg-slate-100 text-slate-600 hover:bg-yellow-100">Frontend</button>
+              <button data-filter="Bug Fix"
+                class="filter-btn px-2.5 sm:px-3 py-1 rounded-full text-[10px] sm:text-xs font-semibold bg-slate-100 text-slate-600 hover:bg-sky-100">Bug Fix</button>
+              <button data-filter="Database"
+                class="filter-btn px-2.5 sm:px-3 py-1 rounded-full text-[10px] sm:text-xs font-semibold bg-slate-100 text-slate-600 hover:bg-green-100">Database</button>
             </div>
           </div>
           <div class="overflow-x-auto">
@@ -281,10 +279,10 @@
             <select id="log-category" name="task_category" required
               class="bg-surface-container-low border border-outline-variant/30 rounded-xl px-4 py-3 text-on-surface text-sm focus:outline-none focus:ring-2 focus:ring-primary/40 cursor-pointer">
               <option value="" disabled selected>Select...</option>
-              <option value="Plan">Plan</option>
-              <option value="To Do">To Do</option>
-              <option value="In Progress">In Progress</option>
-              <option value="Done">Done</option>
+              <option value="Backend">Backend</option>
+              <option value="Frontend">Frontend</option>
+              <option value="Bug Fix">Bug Fix</option>
+              <option value="Database">Database</option>
             </select>
           </div>
           <div class="flex flex-col space-y-1.5">
@@ -292,10 +290,10 @@
               for="log-status">Progress Status</label>
             <select id="log-status" name="status"
               class="bg-surface-container-low border border-outline-variant/30 rounded-xl px-4 py-3 text-on-surface text-sm focus:outline-none focus:ring-2 focus:ring-primary/40 cursor-pointer">
-              <option value="Plan">Plan</option>
-              <option value="To Do">To Do</option>
-              <option value="In Progress">In Progress</option>
-              <option value="Done">Done</option>
+              <option value="Backend">Backend</option>
+              <option value="Frontend">Frontend</option>
+              <option value="Bug Fix">Bug Fix</option>
+              <option value="Database">Database</option>
             </select>
           </div>
         </div>

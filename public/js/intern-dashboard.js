@@ -182,8 +182,8 @@ document.addEventListener('DOMContentLoaded', async () => {
             if (logList) {
                 logList.innerHTML = '';
                 const STATUS_STYLE = {
-                    'Plan': 'bg-blue-50 text-blue-700', 'To Do': 'bg-yellow-50 text-yellow-700',
-                    'In Progress': 'bg-sky-50 text-sky-700', 'Done': 'bg-green-50 text-green-700',
+                    'Backend': 'bg-blue-50 text-blue-700', 'Frontend': 'bg-yellow-50 text-yellow-700',
+                    'Bug Fix': 'bg-sky-50 text-sky-700', 'Database': 'bg-green-50 text-green-700',
                 };
                 data.logs.slice(0, 3).forEach(log => {
                     const statusCls = STATUS_STYLE[log.status] || 'bg-slate-50 text-slate-700';

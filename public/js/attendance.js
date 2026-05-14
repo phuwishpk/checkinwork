@@ -28,7 +28,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             title.textContent = 'Edit Task';
             editingId.value = log.id;
             document.getElementById('log-description').value = log.description || '';
-            document.getElementById('log-category').value = log.task_category || 'Plan';
+            document.getElementById('log-category').value = log.task_category || 'Backend';
             document.getElementById('log-color').value = log.color || '#3e76fe';
             document.getElementById('log-date-start').value = log.date_start || '';
             document.getElementById('log-date-finish').value = log.date_finish || '';
@@ -67,7 +67,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                     task_category: document.getElementById('log-category').value,
                     description:   document.getElementById('log-description').value,
                     color:         document.getElementById('log-color').value,
-                    status:        'Plan'
+                    status:        'Backend'
                 };
                 try {
                     if (editingId) await apiCall(`/api/intern/log/${editingId}`, 'PUT', payload);
