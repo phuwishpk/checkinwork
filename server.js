@@ -196,7 +196,7 @@ app.post('/api/intern/log', requireAuth, async (req, res) => {
   try {
     await db.execute(
       'INSERT INTO daily_logs (user_id, date, date_start, date_finish, task_category, description, status, color) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
-      [userId, date_start || new Date().toISOString().slice(0, 10), date_start, date_finish, task_category, description, status || 'Plan', color || '#3e76fe']
+      [userId, date_start || new Date().toISOString().slice(0, 10), date_start, date_finish, task_category, description, status || 'Backend', color || '#3e76fe']
     );
     res.json({ message: 'Log created successfully' });
   } catch (error) {
@@ -347,7 +347,7 @@ app.post('/api/manager/attendance/manual', requireSuperAdmin, async (req, res) =
     if (task_category) {
       const [logResult] = await db.execute(
         'INSERT INTO daily_logs (user_id, date, date_start, date_finish, task_category, description, status) VALUES (?, ?, ?, ?, ?, ?, ?)',
-        [user_id, date, date, date, task_category, task_description, 'Done']
+        [user_id, date, date, date, task_category, task_description, 'Database']
       );
       logId = logResult.insertId;
     }
@@ -420,7 +420,7 @@ app.put('/api/manager/attendance/manual/:id', requireSuperAdmin, async (req, res
       } else {
         const [newLog] = await db.execute(
           'INSERT INTO daily_logs (user_id, date, date_start, date_finish, task_category, description, status) VALUES (?, ?, ?, ?, ?, ?, ?)',
-          [user_id, date, date, date, task_category, task_description, 'Done']
+          [user_id, date, date, date, task_category, task_description, 'Database']
         );
         await db.execute('UPDATE attendance SET log_id = ? WHERE id = ?', [newLog.insertId, id]);
       }
