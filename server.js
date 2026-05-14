@@ -498,7 +498,6 @@ app.get('/api/manager/attendance', requireAdmin, async (req, res) => {
       ORDER BY a.date DESC, a.clock_in_time DESC
     `);
     res.json({ attendance });
-    res.status(500).json({ error: 'Internal server error: ' + error.message });
   } catch (error) {
     console.error('Manager attendance list error:', error);
     res.status(500).json({ error: 'Internal server error: ' + error.message });
@@ -513,7 +512,6 @@ app.get('/api/logs/all', requireAdmin, async (req, res) => {
       ORDER BY dl.date DESC, dl.id DESC
     `);
     res.json({ logs });
-    res.status(500).json({ error: 'Internal server error: ' + error.message });
   } catch (error) {
     console.error('Get all logs error:', error);
     res.status(500).json({ error: 'Internal server error: ' + error.message });
