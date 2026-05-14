@@ -16,7 +16,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             filteredLogs = [...allLogs];
             updateStats();
             populateInternFilter(dashData.roster || []);
-            displayLogs();
+            applyFilters(); // Apply default filters (like This Month) and display logs
         } catch (error) {
             console.error('Error loading logs management:', error);
         }
@@ -99,7 +99,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 if (dateFilter === 'month' && (logDate.getMonth() !== now.getMonth() || logDate.getFullYear() !== now.getFullYear())) return false;
             }
             if (internFilter !== 'all' && log.user_id != internFilter) return false;
-            if (statusFilter !== 'all' && log.status !== statusFilter) return false;
+            if (statusFilter !== 'all' && log.task_category !== statusFilter) return false;
             return true;
         });
         displayLogs();
