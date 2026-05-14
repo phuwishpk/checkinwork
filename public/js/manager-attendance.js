@@ -239,11 +239,11 @@ document.addEventListener('DOMContentLoaded', async () => {
             row.className = 'grid grid-cols-2 gap-4 time-entry relative items-end';
             row.innerHTML = `
                 <div class="space-y-2">
-                  <label class="text-[10px] font-black uppercase tracking-wider text-on-surface-variant ml-1">Clock In (OT)</label>
+                  <label class="text-[10px] font-black uppercase tracking-wider text-on-surface-variant ml-1">Clock In</label>
                   <input type="time" name="clock_in_time[]" class="w-full bg-surface-container-low border-none rounded-2xl px-4 py-3 text-sm font-bold focus:ring-2 focus:ring-primary/40 shadow-sm" required>
                 </div>
                 <div class="space-y-2">
-                  <label class="text-[10px] font-black uppercase tracking-wider text-on-surface-variant ml-1">Clock Out (OT)</label>
+                  <label class="text-[10px] font-black uppercase tracking-wider text-on-surface-variant ml-1">Clock Out</label>
                   <div class="flex gap-2">
                     <input type="time" name="clock_out_time[]" class="flex-1 w-full bg-surface-container-low border-none rounded-2xl px-4 py-3 text-sm font-bold focus:ring-2 focus:ring-primary/40 shadow-sm" required>
                     <button type="button" class="remove-time-row p-3 text-red-500 hover:bg-red-50 rounded-xl transition-colors"><span class="material-symbols-outlined text-[18px]">delete</span></button>
