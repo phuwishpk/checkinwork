@@ -23,10 +23,10 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     function updateStats() {
-        document.getElementById('countBackend').textContent   = allLogs.filter(l => l.status === 'Backend' || l.task_category === 'Backend').length;
-        document.getElementById('countFrontend').textContent  = allLogs.filter(l => l.status === 'Frontend' || l.task_category === 'Frontend').length;
-        document.getElementById('countBugFix').textContent    = allLogs.filter(l => l.status === 'Bug Fix' || l.task_category === 'Bug Fix').length;
-        document.getElementById('countDatabase').textContent  = allLogs.filter(l => l.status === 'Database' || l.task_category === 'Database').length;
+        document.getElementById('countBackend').textContent   = allLogs.filter(l => l.task_category === 'Backend').length;
+        document.getElementById('countFrontend').textContent  = allLogs.filter(l => l.task_category === 'Frontend').length;
+        document.getElementById('countBugFix').textContent    = allLogs.filter(l => l.task_category === 'Bug Fix').length;
+        document.getElementById('countDatabase').textContent  = allLogs.filter(l => l.task_category === 'Database').length;
     }
 
     function populateInternFilter(roster) {
@@ -50,11 +50,16 @@ document.addEventListener('DOMContentLoaded', async () => {
         document.getElementById('logsContainer').innerHTML = filteredLogs.map(log => {
             const duration = computeDuration(log.date_start, log.date_finish);
             const statusCls =
-                log.status === 'Backend'  ? 'bg-surface-container-highest text-on-surface' :
-                log.status === 'Frontend' ? 'bg-tertiary-container text-on-tertiary-container' :
-                log.status === 'Bug Fix'  ? 'bg-primary text-on-primary' :
-                log.status === 'Database' ? 'bg-secondary-fixed text-on-secondary-container' :
-                                            'bg-outline text-on-surface';
+                log.status === 'Done'        ? 'status-done' :
+                log.status === 'In Progress' ? 'status-inprogress' :
+                log.status === 'Plan'        ? 'status-plan' :
+                                             'status-plan';
+            const catCls =
+                log.task_category === 'Backend'  ? 'status-backend' :
+                log.task_category === 'Frontend' ? 'status-frontend' :
+                log.task_category === 'Bug Fix'  ? 'status-bugfix' :
+                log.task_category === 'Database' ? 'status-database' :
+                                                   '';
             return `
             <div class="bg-surface-container-lowest p-6 rounded-xl ambient-shadow">
                 <div class="flex justify-between items-start mb-4">
@@ -67,9 +72,9 @@ document.addEventListener('DOMContentLoaded', async () => {
                             <p class="font-label text-xs text-on-surface-variant">${new Date(log.date_start || log.date).toLocaleDateString()}</p>
                         </div>
                     </div>
-                    <span class="px-3 py-1 rounded-full text-xs font-label font-medium ${statusCls}">${log.status}</span>
+                    <span class="px-3 py-1 rounded-full text-xs font-label font-medium ${statusCls}">${log.status || 'Plan'}</span>
                 </div>
-                <h4 class="font-headline font-semibold text-on-surface mb-2">${log.task_category}</h4>
+                <h4 class="font-headline font-semibold text-on-surface mb-2"><span class="px-2 py-0.5 rounded-lg text-xs font-bold ${catCls}">${log.task_category}</span></h4>
                 <p class="text-sm font-label text-on-surface-variant line-clamp-2 mb-4">${log.description}</p>
                 <div class="flex items-center justify-between pt-4 border-t border-outline-variant/15">
                     <span class="text-sm font-label font-medium text-on-surface">${duration}</span>

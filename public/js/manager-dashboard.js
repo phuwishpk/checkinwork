@@ -78,7 +78,12 @@ document.addEventListener('DOMContentLoaded', async () => {
                             </div>
                             <span class="text-xs font-bold text-on-surface">${act.full_name}</span>
                         </div>
-                        ${act.status ? `<span class="text-[10px] font-bold uppercase py-1 px-2 rounded bg-slate-100 text-slate-600">${act.status}</span>` : ''}
+                        ${act.status ? (
+                            act.status === 'Done' ? `<span class="text-[10px] font-bold uppercase py-1 px-2 rounded bg-emerald-100 text-emerald-700">Done</span>` :
+                            act.status === 'In Progress' ? `<span class="text-[10px] font-bold uppercase py-1 px-2 rounded bg-amber-100 text-amber-700">In Progress</span>` :
+                            act.status === 'Plan' ? `<span class="text-[10px] font-bold uppercase py-1 px-2 rounded bg-slate-100 text-slate-600">Plan</span>` :
+                            `<span class="text-[10px] font-bold uppercase py-1 px-2 rounded bg-slate-100 text-slate-600">${act.status}</span>`
+                        ) : ''}
                     </div>
                 </div>
             `).join('');

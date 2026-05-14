@@ -7,6 +7,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     const STATUS_STYLE = {
         'Backend': 'status-backend', 'Frontend': 'status-frontend',
         'Bug Fix': 'status-bugfix', 'Database': 'status-database',
+        'Plan': 'status-plan', 'Done': 'status-done',
+        'In Progress': 'status-inprogress'
     };
     let allLogs = [];
     let currentFilter = 'all';
@@ -26,7 +28,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             editingId.value = log.id;
             document.getElementById('log-description').value = log.description || '';
             document.getElementById('log-category').value = log.task_category || 'Backend';
-            document.getElementById('log-status').value = log.status || 'Backend';
+            document.getElementById('log-status').value = log.status || 'Plan';
             document.getElementById('log-date-start').value = log.date_start || '';
             document.getElementById('log-date-finish').value = log.date_finish || '';
         } else {
@@ -110,7 +112,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 <td class="px-5 py-3.5 max-w-[200px]">
                     <span class="text-[10px] px-2 py-0.5 rounded-full font-semibold ${catCls}">${log.task_category}</span>
                 </td>
-                <td class="px-5 py-3.5"><span class="px-2.5 py-1 rounded-full text-xs font-semibold ${cls}">${log.status}</span></td>
+                <td class="px-5 py-3.5"><span class="px-2.5 py-1 rounded-full text-xs font-semibold ${cls}">${log.status || 'Plan'}</span></td>
                 <td class="px-5 py-3.5 text-on-surface-variant text-xs">${formatDate(log.date_start)}</td>
                 <td class="px-5 py-3.5 text-on-surface-variant text-xs">${formatDate(log.date_finish)}</td>
                 <td class="px-5 py-3.5 text-on-surface-variant text-xs">${dur}</td>
