@@ -306,14 +306,50 @@ app.get('/api/manager/dashboard', requireAdmin, async (req, res) => {
 });
 
 app.post('/api/manager/attendance/manual', requireSuperAdmin, async (req, res) => {
-  const { user_id, date, task_category, task_description, times } = req.body;
-  const timeEntries = times || [{ in: req.body.clock_in_time, out: req.body.clock_out_time }];
-  
-  if (!user_id || !date || timeEntries.length === 0 || !timeEntries[0].in || !timeEntries[0].out) {
+  const { user_id, date, clock_in_time, clock_out_time, task_category, task_description } = req.body;
+  if (!user_id || !date || !clock_in_time || !clock_out_time) {
     return res.status(400).json({ error: 'All attendance fields are required' });
   }
-  
   try {
+    const timeIn = new Date(`1970-01-01T${clock_in_time}Z`);
+    const timeOut = new Date(`1970-01-01T${clock_out_time}Z`);
+    let diff = (timeOut - timeIn) / (1000 * 60 * 60);
+    if (diff < 0) diff += 24;
+
+    const dayOfWeek = new Date(date).getDay();
+    const isWeekend = (dayOfWeek === 0 || dayOfWeek === 6);
+    const limit17 = new Date(`1970-01-01T17:00:00Z`);
+    let normalDiff = diff;
+    let otDiff = 0;
+
+    if (isWeekend) {
+      normalDiff = 0;
+      otDiff = diff;
+    } else {
+      if (timeIn < limit17) {
+        if (timeOut > limit17) {
+          normalDiff = (limit17 - timeIn) / (1000 * 60 * 60);
+          otDiff = (timeOut - limit17) / (1000 * 60 * 60);
+        } else {
+          normalDiff = diff;
+          otDiff = 0;
+        }
+      } else {
+        normalDiff = 0;
+        otDiff = diff;
+      }
+      const [todayTotal] = await db.execute(
+        'SELECT SUM(total_hours) as total FROM attendance WHERE user_id = ? AND date = ?',
+        [user_id, date]
+      );
+      const hoursAlreadyLogged = todayTotal[0].total || 0;
+      const remainingNormalCap = Math.max(0, 8 - hoursAlreadyLogged);
+      const cappedNormal = Math.min(normalDiff, remainingNormalCap);
+      const excessFromCap = normalDiff - cappedNormal;
+      normalDiff = cappedNormal;
+      otDiff += excessFromCap;
+    }
+
     let logId = null;
     if (task_category) {
       const colorMap = {
@@ -328,54 +364,12 @@ app.post('/api/manager/attendance/manual', requireSuperAdmin, async (req, res) =
       logId = logResult.insertId;
     }
 
-    for (const t of timeEntries) {
-      if (!t.in || !t.out) continue;
-      const timeIn = new Date(`1970-01-01T${t.in}Z`);
-      const timeOut = new Date(`1970-01-01T${t.out}Z`);
-      let diff = (timeOut - timeIn) / (1000 * 60 * 60);
-      if (diff < 0) diff += 24;
+    const [result] = await db.execute(
+      'INSERT INTO attendance (user_id, date, clock_in_time, clock_out_time, total_hours, ot_hours, log_id) VALUES (?, ?, ?, ?, ?, ?, ?)',
+      [user_id, date, clock_in_time, clock_out_time, normalDiff.toFixed(2), otDiff.toFixed(2), logId]
+    );
 
-      const dayOfWeek = new Date(date).getDay();
-      const isWeekend = (dayOfWeek === 0 || dayOfWeek === 6);
-      const limit17 = new Date(`1970-01-01T17:00:00Z`);
-      let normalDiff = diff;
-      let otDiff = 0;
-
-      if (isWeekend) {
-        normalDiff = 0;
-        otDiff = diff;
-      } else {
-        if (timeIn < limit17) {
-          if (timeOut > limit17) {
-            normalDiff = (limit17 - timeIn) / (1000 * 60 * 60);
-            otDiff = (timeOut - limit17) / (1000 * 60 * 60);
-          } else {
-            normalDiff = diff;
-            otDiff = 0;
-          }
-        } else {
-          normalDiff = 0;
-          otDiff = diff;
-        }
-        const [todayTotal] = await db.execute(
-          'SELECT SUM(total_hours) as total FROM attendance WHERE user_id = ? AND date = ?',
-          [user_id, date]
-        );
-        const hoursAlreadyLogged = todayTotal[0].total || 0;
-        const remainingNormalCap = Math.max(0, 8 - hoursAlreadyLogged);
-        const cappedNormal = Math.min(normalDiff, remainingNormalCap);
-        const excessFromCap = normalDiff - cappedNormal;
-        normalDiff = cappedNormal;
-        otDiff += excessFromCap;
-      }
-
-      await db.execute(
-        'INSERT INTO attendance (user_id, date, clock_in_time, clock_out_time, total_hours, ot_hours, log_id) VALUES (?, ?, ?, ?, ?, ?, ?)',
-        [user_id, date, t.in, t.out, normalDiff.toFixed(2), otDiff.toFixed(2), logId]
-      );
-    }
-
-    res.json({ message: 'Manual attendance and task recorded successfully' });
+    res.json({ message: 'Manual attendance and task recorded successfully', id: result.insertId });
   } catch (error) {
     console.error('Manual attendance error:', error);
     res.status(500).json({ error: 'Internal server error: ' + error.message });

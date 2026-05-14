@@ -190,15 +190,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         document.getElementById('modal-record-id').value = data.id;
         document.getElementById('modal-intern-select').value = data.userId;
         document.querySelector('#manual-attendance-form input[name="date"]').value = data.date;
-        
-        // Populate first time row
-        const timeContainer = document.getElementById('time-entries-container');
-        if (timeContainer) {
-            const rows = timeContainer.querySelectorAll('.time-entry');
-            for (let i = 1; i < rows.length; i++) rows[i].remove(); // clear extra rows
-            document.querySelector('#manual-attendance-form input[name="clock_in_time[]"]').value = (data.in && data.in !== 'null') ? data.in.slice(0, 5) : '';
-            document.querySelector('#manual-attendance-form input[name="clock_out_time[]"]').value = (data.out && data.out !== 'null') ? data.out.slice(0, 5) : '';
-        }
+        document.querySelector('#manual-attendance-form input[name="clock_in_time"]').value = (data.in && data.in !== 'null') ? data.in.slice(0, 5) : '';
+        document.querySelector('#manual-attendance-form input[name="clock_out_time"]').value = (data.out && data.out !== 'null') ? data.out.slice(0, 5) : '';
 
         // Populate task fields
         const catValue = data.taskCategory || 'Done';
@@ -219,41 +212,9 @@ document.addEventListener('DOMContentLoaded', async () => {
         document.getElementById('modal-title').textContent = 'Add Manual Attendance';
         document.getElementById('modal-record-id').value = '';
         form.reset();
-        
-        // Reset time entries container to only have one row
-        const timeContainer = document.getElementById('time-entries-container');
-        if (timeContainer) {
-            const rows = timeContainer.querySelectorAll('.time-entry');
-            for (let i = 1; i < rows.length; i++) rows[i].remove();
-        }
-        
         if (taskFields) taskFields.classList.remove('hidden'); // Show task fields for new entry
         if (deleteBtn) deleteBtn.classList.add('hidden');
     };
-
-    const addTimeRowBtn = document.getElementById('add-time-row-btn');
-    if (addTimeRowBtn) {
-        addTimeRowBtn.addEventListener('click', () => {
-            const container = document.getElementById('time-entries-container');
-            const row = document.createElement('div');
-            row.className = 'grid grid-cols-2 gap-4 time-entry relative items-end';
-            row.innerHTML = `
-                <div class="space-y-2">
-                  <label class="text-[10px] font-black uppercase tracking-wider text-on-surface-variant ml-1">Clock In</label>
-                  <input type="time" name="clock_in_time[]" class="w-full bg-surface-container-low border-none rounded-2xl px-4 py-3 text-sm font-bold focus:ring-2 focus:ring-primary/40 shadow-sm" required>
-                </div>
-                <div class="space-y-2">
-                  <label class="text-[10px] font-black uppercase tracking-wider text-on-surface-variant ml-1">Clock Out</label>
-                  <div class="flex gap-2">
-                    <input type="time" name="clock_out_time[]" class="flex-1 w-full bg-surface-container-low border-none rounded-2xl px-4 py-3 text-sm font-bold focus:ring-2 focus:ring-primary/40 shadow-sm" required>
-                    <button type="button" class="remove-time-row p-3 text-red-500 hover:bg-red-50 rounded-xl transition-colors"><span class="material-symbols-outlined text-[18px]">delete</span></button>
-                  </div>
-                </div>
-            `;
-            row.querySelector('.remove-time-row').addEventListener('click', () => row.remove());
-            container.appendChild(row);
-        });
-    }
 
 
     if (user.role === 'superadmin') {
@@ -271,24 +232,11 @@ document.addEventListener('DOMContentLoaded', async () => {
                 const formData = new FormData(form);
                 const data = Object.fromEntries(formData.entries());
                 
-                // Extract times array for OT support
-                const ins = formData.getAll('clock_in_time[]');
-                const outs = formData.getAll('clock_out_time[]');
-                data.times = [];
-                for (let i = 0; i < ins.length; i++) {
-                    if (ins[i] && outs[i]) {
-                        data.times.push({ in: ins[i], out: outs[i] });
-                    }
-                }
-                
                 const recordId = document.getElementById('modal-record-id').value; // Get recordId from hidden input
 
                 try {
                     let res;
                     if (recordId) {
-                        // PUT uses the first time for now, or you can update backend for PUT arrays too
-                        data.clock_in_time = data.times.length > 0 ? data.times[0].in : '';
-                        data.clock_out_time = data.times.length > 0 ? data.times[0].out : '';
                         res = await apiCall(`/api/manager/attendance/manual/${recordId}`, 'PUT', data);
                     } else {
                         res = await apiCall('/api/manager/attendance/manual', 'POST', data);
