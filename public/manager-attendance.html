@@ -266,23 +266,32 @@
 
             <div id="task-fields" class="pt-4 border-t border-outline-variant/10 space-y-4">
               <p class="text-[10px] font-black uppercase tracking-widest text-primary">Daily Task (Optional)</p>
-              <div class="space-y-2">
-                <label class="text-[10px] font-black uppercase tracking-wider text-on-surface-variant ml-1">Task</label>
-                <select name="task_category"
-                  class="w-full bg-surface-container-low border-none rounded-2xl px-4 py-3 text-sm font-bold focus:ring-2 focus:ring-primary/40 shadow-sm cursor-pointer">
-                  <optgroup label="Categories">
-                    <option value="Backend">Backend</option>
-                    <option value="Frontend">Frontend</option>
-                    <option value="Bug Fix">Bug Fix</option>
-                    <option value="Database">Database</option>
-                  </optgroup>
-                  <optgroup label="Statuses (Injected)">
-                    <option value="Plan">Plan</option>
-                    <option value="To Do">To Do</option>
-                    <option value="In Progress">In Progress</option>
-                    <option value="Done" selected>Done</option>
-                  </optgroup>
-                </select>
+              <div class="grid grid-cols-2 gap-4">
+                <div class="space-y-2">
+                  <label class="text-[10px] font-black uppercase tracking-wider text-on-surface-variant ml-1">Task</label>
+                  <select name="task_category" id="modal-task-category"
+                    class="w-full bg-surface-container-low border-none rounded-2xl px-4 py-3 text-sm font-bold focus:ring-2 focus:ring-primary/40 shadow-sm cursor-pointer">
+                    <optgroup label="Categories">
+                      <option value="Backend">Backend</option>
+                      <option value="Frontend">Frontend</option>
+                      <option value="Bug Fix">Bug Fix</option>
+                      <option value="Database">Database</option>
+                    </optgroup>
+                    <optgroup label="Statuses (Injected)">
+                      <option value="Plan">Plan</option>
+                      <option value="To Do">To Do</option>
+                      <option value="In Progress">In Progress</option>
+                      <option value="Done" selected>Done</option>
+                    </optgroup>
+                  </select>
+                </div>
+                <div class="space-y-2">
+                  <label class="text-[10px] font-black uppercase tracking-wider text-on-surface-variant ml-1">Color</label>
+                  <div class="bg-surface-container-low rounded-2xl p-1 shadow-sm h-[44px] flex items-center">
+                    <input type="color" name="color" id="modal-task-color" value="#3e76fe"
+                      class="w-full h-full rounded-xl cursor-pointer border-none bg-transparent p-0">
+                  </div>
+                </div>
               </div>
               <div class="space-y-2">
                 <label

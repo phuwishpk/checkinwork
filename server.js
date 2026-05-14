@@ -356,7 +356,7 @@ app.post('/api/manager/attendance/manual', requireSuperAdmin, async (req, res) =
         'Backend': '#8b5cf6', 'Frontend': '#3e76fe', 'Database': '#f59e0b', 'Bug Fix': '#ef4444',
         'Plan': '#94a3b8', 'To Do': '#94a3b8', 'In Progress': '#10b981', 'Done': '#10b981'
       };
-      const catColor = colorMap[task_category] || '#3e76fe';
+      const catColor = req.body.color || colorMap[task_category] || '#3e76fe';
       const [logResult] = await db.execute(
         'INSERT INTO daily_logs (user_id, date, date_start, date_finish, task_category, description, status, color) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
         [user_id, date, date, date, task_category, task_description, 'Done', catColor]
@@ -428,7 +428,7 @@ app.put('/api/manager/attendance/manual/:id', requireSuperAdmin, async (req, res
         'Backend': '#8b5cf6', 'Frontend': '#3e76fe', 'Database': '#f59e0b', 'Bug Fix': '#ef4444',
         'Plan': '#94a3b8', 'To Do': '#94a3b8', 'In Progress': '#10b981', 'Done': '#10b981'
       };
-      const catColor = colorMap[task_category] || '#3e76fe';
+      const catColor = req.body.color || colorMap[task_category] || '#3e76fe';
       
       if (existingLogId) {
         await db.execute(
@@ -469,7 +469,7 @@ app.get('/api/manager/calendar-data', requireAdmin, async (req, res) => {
   try {
     const [users] = await db.execute("SELECT id, full_name, username, role FROM users");
     const [attendance] = await db.execute(`
-      SELECT a.*, u.full_name, u.username, dl.task_category, dl.description as task_description
+      SELECT a.*, u.full_name, u.username, dl.task_category, dl.description as task_description, dl.color as task_color
       FROM attendance a
       JOIN users u ON a.user_id = u.id
       LEFT JOIN daily_logs dl ON a.log_id = dl.id

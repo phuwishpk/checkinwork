@@ -122,7 +122,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                     contentHtml += `</div>`;
                 }
                 if (uAtts.length > 0) {
-                    contentHtml += `<div class="mt-auto pt-1 border-t border-dashed border-outline-variant/20"><p class="text-[7px] font-black uppercase text-slate-400 mb-0.5">Attendance (${uAtts.length})</p>${uAtts.map(a => `<div class="attendance-item cursor-pointer flex items-center gap-1 text-[9px] font-bold text-primary bg-primary/5 hover:bg-primary/10 transition-colors px-1 rounded mb-0.5" data-id="${a.id}" data-user-id="${a.user_id}" data-date="${(a.date || '').slice(0, 10)}" data-in="${a.clock_in_time || ''}" data-out="${a.clock_out_time || ''}" data-task-category="${a.task_category || ''}" data-task-description="${a.task_description || ''}"><span class="material-symbols-outlined text-[10px]">login</span>${a.clock_in_time ? a.clock_in_time.slice(0, 5) : '--'}<span class="material-symbols-outlined text-[10px]">logout</span>${a.clock_out_time ? a.clock_out_time.slice(0, 5) : '...'}</div>`).join('')}</div>`;
+                    contentHtml += `<div class="mt-auto pt-1 border-t border-dashed border-outline-variant/20"><p class="text-[7px] font-black uppercase text-slate-400 mb-0.5">Attendance (${uAtts.length})</p>${uAtts.map(a => `<div class="attendance-item cursor-pointer flex items-center gap-1 text-[9px] font-bold text-primary bg-primary/5 hover:bg-primary/10 transition-colors px-1 rounded mb-0.5" data-id="${a.id}" data-user-id="${a.user_id}" data-date="${(a.date || '').slice(0, 10)}" data-in="${a.clock_in_time || ''}" data-out="${a.clock_out_time || ''}" data-task-category="${a.task_category || ''}" data-task-description="${a.task_description || ''}" data-task-color="${a.task_color || ''}"><span class="material-symbols-outlined text-[10px]">login</span>${a.clock_in_time ? a.clock_in_time.slice(0, 5) : '--'}<span class="material-symbols-outlined text-[10px]">logout</span>${a.clock_out_time ? a.clock_out_time.slice(0, 5) : '...'}</div>`).join('')}</div>`;
                 }
             }
 
@@ -194,7 +194,13 @@ document.addEventListener('DOMContentLoaded', async () => {
         document.querySelector('#manual-attendance-form input[name="clock_out_time"]').value = (data.out && data.out !== 'null') ? data.out.slice(0, 5) : '';
 
         // Populate task fields
-        document.querySelector('#manual-attendance-form [name="task_category"]').value = data.taskCategory || 'Done';
+        const catValue = data.taskCategory || 'Done';
+        const colorMap = {
+            'Backend': '#8b5cf6', 'Frontend': '#3e76fe', 'Database': '#f59e0b', 'Bug Fix': '#ef4444',
+            'Plan': '#94a3b8', 'To Do': '#94a3b8', 'In Progress': '#10b981', 'Done': '#10b981'
+        };
+        document.querySelector('#manual-attendance-form [name="task_category"]').value = catValue;
+        document.querySelector('#manual-attendance-form [name="color"]').value = data.taskColor || colorMap[catValue] || '#3e76fe';
         document.querySelector('#manual-attendance-form [name="task_description"]').value = data.taskDescription || '';
 
         if (taskFields) taskFields.classList.remove('hidden'); // Show task fields for editing too
@@ -274,8 +280,20 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     const filter1 = document.getElementById('intern-filter');
     const filter2 = document.getElementById('view-mode');
+    const taskCatSelect = document.getElementById('modal-task-category');
+    const taskColorInput = document.getElementById('modal-task-color');
+
     if (filter1) filter1.addEventListener('change', renderManagerCalendar);
     if (filter2) filter2.addEventListener('change', renderManagerCalendar);
+    if (taskCatSelect && taskColorInput) {
+        taskCatSelect.addEventListener('change', (e) => {
+            const colorMap = {
+                'Backend': '#8b5cf6', 'Frontend': '#3e76fe', 'Database': '#f59e0b', 'Bug Fix': '#ef4444',
+                'Plan': '#94a3b8', 'To Do': '#94a3b8', 'In Progress': '#10b981', 'Done': '#10b981'
+            };
+            taskColorInput.value = colorMap[e.target.value] || '#3e76fe';
+        });
+    }
 
     document.getElementById('prev-month').addEventListener('click', () => {
         currentDate.setMonth(currentDate.getMonth() - 1);
