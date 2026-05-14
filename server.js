@@ -352,9 +352,14 @@ app.post('/api/manager/attendance/manual', requireSuperAdmin, async (req, res) =
 
     let logId = null;
     if (task_category) {
+      const colorMap = {
+        'Backend': '#8b5cf6', 'Frontend': '#3e76fe', 'Database': '#f59e0b', 'Bug Fix': '#ef4444',
+        'Plan': '#94a3b8', 'To Do': '#94a3b8', 'In Progress': '#10b981', 'Done': '#10b981'
+      };
+      const catColor = colorMap[task_category] || '#3e76fe';
       const [logResult] = await db.execute(
-        'INSERT INTO daily_logs (user_id, date, date_start, date_finish, task_category, description, status) VALUES (?, ?, ?, ?, ?, ?, ?)',
-        [user_id, date, date, date, task_category, task_description, 'Done']
+        'INSERT INTO daily_logs (user_id, date, date_start, date_finish, task_category, description, status, color) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
+        [user_id, date, date, date, task_category, task_description, 'Done', catColor]
       );
       logId = logResult.insertId;
     }
@@ -419,15 +424,21 @@ app.put('/api/manager/attendance/manual/:id', requireSuperAdmin, async (req, res
     const existingLogId = current[0]?.log_id;
 
     if (task_category) {
+      const colorMap = {
+        'Backend': '#8b5cf6', 'Frontend': '#3e76fe', 'Database': '#f59e0b', 'Bug Fix': '#ef4444',
+        'Plan': '#94a3b8', 'To Do': '#94a3b8', 'In Progress': '#10b981', 'Done': '#10b981'
+      };
+      const catColor = colorMap[task_category] || '#3e76fe';
+      
       if (existingLogId) {
         await db.execute(
-          'UPDATE daily_logs SET task_category = ?, description = ?, date = ?, date_start = ?, date_finish = ? WHERE id = ?',
-          [task_category, task_description, date, date, date, existingLogId]
+          'UPDATE daily_logs SET task_category = ?, description = ?, date = ?, date_start = ?, date_finish = ?, color = ? WHERE id = ?',
+          [task_category, task_description, date, date, date, catColor, existingLogId]
         );
       } else {
         const [newLog] = await db.execute(
-          'INSERT INTO daily_logs (user_id, date, date_start, date_finish, task_category, description, status) VALUES (?, ?, ?, ?, ?, ?, ?)',
-          [user_id, date, date, date, task_category, task_description, 'Done']
+          'INSERT INTO daily_logs (user_id, date, date_start, date_finish, task_category, description, status, color) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
+          [user_id, date, date, date, task_category, task_description, 'Done', catColor]
         );
         await db.execute('UPDATE attendance SET log_id = ? WHERE id = ?', [newLog.insertId, id]);
       }

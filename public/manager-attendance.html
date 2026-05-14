@@ -270,10 +270,18 @@
                 <label class="text-[10px] font-black uppercase tracking-wider text-on-surface-variant ml-1">Task</label>
                 <select name="task_category"
                   class="w-full bg-surface-container-low border-none rounded-2xl px-4 py-3 text-sm font-bold focus:ring-2 focus:ring-primary/40 shadow-sm cursor-pointer">
-                  <option value="Backend">Backend</option>
-                  <option value="Frontend">Frontend</option>
-                  <option value="Bug Fix">Bug Fix</option>
-                  <option value="Database" selected>Database</option>
+                  <optgroup label="Categories">
+                    <option value="Backend">Backend</option>
+                    <option value="Frontend">Frontend</option>
+                    <option value="Bug Fix">Bug Fix</option>
+                    <option value="Database">Database</option>
+                  </optgroup>
+                  <optgroup label="Statuses (Injected)">
+                    <option value="Plan">Plan</option>
+                    <option value="To Do">To Do</option>
+                    <option value="In Progress">In Progress</option>
+                    <option value="Done" selected>Done</option>
+                  </optgroup>
                 </select>
               </div>
               <div class="space-y-2">
