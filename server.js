@@ -277,7 +277,8 @@ app.get('/api/manager/dashboard', requireAdmin, async (req, res) => {
       SELECT u.id, u.full_name, u.username,
         (SELECT CASE WHEN COUNT(*) > 0 THEN 'online' ELSE 'offline' END
          FROM attendance a
-         WHERE a.user_id = u.id AND a.clock_out_time IS NULL) as status
+         WHERE a.user_id = u.id AND a.clock_out_time IS NULL) as status,
+        (SELECT a.id FROM attendance a WHERE a.user_id = u.id AND a.clock_out_time IS NULL ORDER BY a.id DESC LIMIT 1) as active_att_id
       FROM users u
     `);
     const [attendanceLogs] = await db.execute(`
@@ -461,6 +462,29 @@ app.delete('/api/manager/attendance/manual/:id', requireSuperAdmin, async (req, 
     res.json({ message: 'Attendance record deleted successfully' });
   } catch (error) {
     console.error('Delete attendance error:', error);
+    res.status(500).json({ error: 'Internal server error: ' + error.message });
+  }
+});
+
+// Force clock-out (superadmin only) — closes active session without counting hours
+app.post('/api/manager/force-clockout/:userId', requireSuperAdmin, async (req, res) => {
+  const { userId } = req.params;
+  try {
+    const [active] = await db.execute(
+      'SELECT id FROM attendance WHERE user_id = ? AND clock_out_time IS NULL ORDER BY id DESC LIMIT 1',
+      [userId]
+    );
+    if (active.length === 0) {
+      return res.status(400).json({ error: 'No active clock-in record found for this user' });
+    }
+    const nowTime = new Date().toTimeString().slice(0, 8);
+    await db.execute(
+      'UPDATE attendance SET clock_out_time = ?, total_hours = 0, ot_hours = 0 WHERE id = ?',
+      [nowTime, active[0].id]
+    );
+    res.json({ message: 'Force clock-out successful' });
+  } catch (error) {
+    console.error('Force clockout error:', error);
     res.status(500).json({ error: 'Internal server error: ' + error.message });
   }
 });

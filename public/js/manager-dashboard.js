@@ -23,10 +23,14 @@ document.addEventListener('DOMContentLoaded', async () => {
                             <p class="font-label text-[10px] text-on-surface-variant uppercase tracking-wider font-bold">${intern.username}</p>
                         </div>
                     </div>
-                    <div class="flex flex-col items-end">
-                        <span class="text-[9px] font-bold uppercase tracking-widest ${intern.status === 'online' ? 'text-green-600' : 'text-slate-400'} mb-1">
+                    <div class="flex flex-col items-end gap-2">
+                        <span class="text-[9px] font-bold uppercase tracking-widest ${intern.status === 'online' ? 'text-green-600' : 'text-slate-400'}">
                             ${intern.status === 'online' ? 'Clocked In' : 'Offline'}
                         </span>
+                        ${intern.status === 'online' && user.role === 'superadmin' ? `
+                        <button onclick="forceClockOut(${intern.id}, this)" class="text-[9px] font-bold uppercase tracking-widest text-red-500 hover:bg-red-50 px-2 py-1 rounded-lg border border-red-200 transition-colors flex items-center gap-1">
+                            <span class="material-symbols-outlined text-[12px]">logout</span> Force Out
+                        </button>` : ''}
                     </div>
                 </div>
             `).join('');
@@ -94,4 +98,18 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     loadDashboard();
+
+    window.forceClockOut = async (userId, btn) => {
+        if (!confirm('Force clock-out this user? Hours will NOT be counted.')) return;
+        btn.disabled = true;
+        btn.textContent = 'Processing...';
+        try {
+            await apiCall(`/api/manager/force-clockout/${userId}`, 'POST');
+            loadDashboard(); // Reload to update status
+        } catch (err) {
+            alert('Force clock-out failed: ' + err.message);
+            btn.disabled = false;
+            btn.innerHTML = '<span class="material-symbols-outlined text-[12px]">logout</span> Force Out';
+        }
+    };
 });
