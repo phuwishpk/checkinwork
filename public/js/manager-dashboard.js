@@ -27,13 +27,19 @@ document.addEventListener('DOMContentLoaded', async () => {
                         <span class="text-[9px] font-bold uppercase tracking-widest ${intern.status === 'online' ? 'text-green-600' : 'text-slate-400'}">
                             ${intern.status === 'online' ? 'Clocked In' : 'Offline'}
                         </span>
-                        ${intern.status === 'online' && user.role === 'superadmin' ? `
-                        <button onclick="forceClockOut(${intern.id}, this)" class="text-[9px] font-bold uppercase tracking-widest text-red-500 hover:bg-red-50 px-2 py-1 rounded-lg border border-red-200 transition-colors flex items-center gap-1">
+                        ${user.role === 'superadmin' ? `
+                        <button onclick="forceClockOut(${intern.id}, this)"
+                            ${intern.status !== 'online' ? 'disabled' : ''}
+                            class="text-[9px] font-bold uppercase tracking-widest px-2 py-1 rounded-lg border transition-colors flex items-center gap-1
+                            ${intern.status === 'online'
+                                ? 'text-red-500 hover:bg-red-50 border-red-200 cursor-pointer'
+                                : 'text-slate-300 border-slate-200 cursor-not-allowed'}">
                             <span class="material-symbols-outlined text-[12px]">logout</span> Force Out
                         </button>` : ''}
                     </div>
                 </div>
             `).join('');
+
 
             const attendanceActivity = data.recentAttendance.map(log => ({
                 ...log,
