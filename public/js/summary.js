@@ -59,13 +59,14 @@ function initSummary() {
             const userId = session.user.id;
             console.log('[summary.js] Current user ID:', userId);
 
-            // Load my attendance
-            const [attendance] = await apiCall(`/api/attendance?user_id=${userId}`);
-            myData.attendance = Array.isArray(attendance) ? attendance : [];
+            // Load my data from intern calendar endpoint
+            const data = await apiCall('/api/intern/calendar');
+            myData.attendance = data.attendance || [];
+            myData.logs = data.logs || [];
             
-            // Load my logs
-            const [logs] = await apiCall(`/api/logs?user_id=${userId}`);
-            myData.logs = Array.isArray(logs) ? logs : [];
+            // Filter to only current user's data
+            myData.attendance = myData.attendance.filter(a => a.user_id === userId);
+            myData.logs = myData.logs.filter(l => l.user_id === userId);
             
             console.log('[summary.js] Data loaded:', myData);
 
