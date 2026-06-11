@@ -1,8 +1,12 @@
-document.addEventListener('DOMContentLoaded', async () => {
-    const user = await protectRoute();
-    if (!user) return;
-    setupLogout();
+// Manager Summary - Standalone script (no DOMContentLoaded wrapper)
+// Immediately attach to window for debugging
+window.managerSummaryReady = false;
+console.log('[manager-summary.js] Script loaded');
 
+// Wait for DOM to be ready
+function initManagerSummary() {
+    console.log('[manager-summary.js] initManagerSummary called');
+    
     const colors = ['#0053dc', '#10b981', '#f59e0b', '#8b5cf6', '#ec4899', '#06b6d4', '#f43f5e'];
     
     // State
@@ -23,6 +27,14 @@ document.addEventListener('DOMContentLoaded', async () => {
     const statAvgHours = document.getElementById('stat-avg-hours');
     const statTotalTasks = document.getElementById('stat-total-tasks');
 
+    console.log('[manager-summary.js] Elements found:', {
+        userFilter: !!userFilter,
+        dateFrom: !!dateFrom,
+        dateTo: !!dateTo,
+        resetBtn: !!resetBtn,
+        tableBody: !!tableBody
+    });
+
     // URL params helpers
     const getUrlParams = () => new URLSearchParams(window.location.search);
     const updateUrl = (userId, from, to) => {
@@ -34,14 +46,16 @@ document.addEventListener('DOMContentLoaded', async () => {
         const baseUrl = window.location.origin + window.location.pathname;
         const newUrl = params.toString() ? `${baseUrl}?${params.toString()}` : baseUrl;
         
-        console.log('Updating URL to:', newUrl);
+        console.log('[manager-summary.js] Updating URL to:', newUrl);
         window.history.replaceState({}, '', newUrl);
     };
 
     // Load all data from API
     const loadData = async () => {
+        console.log('[manager-summary.js] Loading data...');
         try {
             allData = await apiCall('/api/manager/calendar-data');
+            console.log('[manager-summary.js] Data loaded:', allData);
             
             // Normalize dates to YYYY-MM-DD
             const toLocalDate = (dateStr) => {
@@ -67,8 +81,10 @@ document.addEventListener('DOMContentLoaded', async () => {
             // Load filters from URL and apply
             loadFiltersFromUrl();
             applyFilter();
+            
+            console.log('[manager-summary.js] Initial load complete');
         } catch (err) {
-            console.error('Failed to load data:', err);
+            console.error('[manager-summary.js] Failed to load data:', err);
             tableBody.innerHTML = `<tr><td colspan="7" class="px-6 py-10 text-center text-red-400">Failed to load data. Please try again.</td></tr>`;
         }
     };
@@ -82,6 +98,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             opt.textContent = `${u.full_name} (${u.role})`;
             userFilter.appendChild(opt);
         });
+        console.log('[manager-summary.js] User filter populated with', allData.users.length, 'users');
     };
 
     // Set default date range
@@ -94,6 +111,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         
         dateFrom.value = firstDate;
         dateTo.value = today;
+        console.log('[manager-summary.js] Default date range set:', firstDate, 'to', today);
     };
 
     // Load filters from URL params
@@ -105,15 +123,24 @@ document.addEventListener('DOMContentLoaded', async () => {
         
         if (userId) {
             const option = userFilter.querySelector(`option[value="${userId}"]`);
-            if (option) userFilter.value = userId;
+            if (option) {
+                userFilter.value = userId;
+                console.log('[manager-summary.js] Loaded user from URL:', userId);
+            }
         }
-        if (from) dateFrom.value = from;
-        if (to) dateTo.value = to;
+        if (from) {
+            dateFrom.value = from;
+            console.log('[manager-summary.js] Loaded from date from URL:', from);
+        }
+        if (to) {
+            dateTo.value = to;
+            console.log('[manager-summary.js] Loaded to date from URL:', to);
+        }
     };
 
     // Apply filter and render
     const applyFilter = () => {
-        console.log('applyFilter called');
+        console.log('[manager-summary.js] applyFilter called, user:', userFilter.value, 'from:', dateFrom.value, 'to:', dateTo.value);
         const selectedUserId = userFilter.value;
         const fromDate = dateFrom.value;
         const toDate = dateTo.value;
@@ -128,6 +155,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         const targetUsers = selectedUserId === 'all'
             ? allData.users
             : allData.users.filter(u => u.id === parseInt(selectedUserId));
+
+        console.log('[manager-summary.js] Filtering for', targetUsers.length, 'users');
 
         // Build a map of user colors
         const userColorMap = {};
@@ -223,6 +252,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         const workingDays = workingDaysSet.size;
         const totalHoursWithOT = totalHours + totalOtHours;
         const avgHrs = workingDays > 0 ? (totalHoursWithOT / workingDays) : 0;
+        
+        console.log('[manager-summary.js] Stats:', { workingDays, totalHoursWithOT, avgHrs, totalTasks });
         updateStats(workingDays, totalHoursWithOT, avgHrs, totalTasks);
 
         // Render all rows
@@ -239,6 +270,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // Render table (all rows, no pagination)
     const renderTable = () => {
+        console.log('[manager-summary.js] Rendering table with', filteredRows.length, 'rows');
         if (filteredRows.length === 0) {
             tableBody.innerHTML = `<tr><td colspan="7" class="px-6 py-20 text-center">
                 <div class="flex flex-col items-center gap-3">
@@ -287,19 +319,25 @@ document.addEventListener('DOMContentLoaded', async () => {
     };
 
     // Event listeners - auto-apply on change and update URL
-    userFilter.addEventListener('change', () => {
-        console.log('User changed:', userFilter.value);
+    console.log('[manager-summary.js] Attaching event listeners');
+    
+    userFilter.addEventListener('change', (e) => {
+        console.log('[manager-summary.js] User dropdown changed to:', e.target.value);
         applyFilter();
     });
-    dateFrom.addEventListener('change', () => {
-        console.log('Date from changed:', dateFrom.value);
+    
+    dateFrom.addEventListener('change', (e) => {
+        console.log('[manager-summary.js] Date from changed to:', e.target.value);
         applyFilter();
     });
-    dateTo.addEventListener('change', () => {
-        console.log('Date to changed:', dateTo.value);
+    
+    dateTo.addEventListener('change', (e) => {
+        console.log('[manager-summary.js] Date to changed to:', e.target.value);
         applyFilter();
     });
+    
     resetBtn.addEventListener('click', () => {
+        console.log('[manager-summary.js] Reset button clicked');
         window.history.replaceState({}, '', window.location.pathname);
         userFilter.value = 'all';
         setDefaultDateRange();
@@ -307,5 +345,16 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
 
     // Load data on page load
-    await loadData();
-});
+    loadData();
+    
+    window.managerSummaryReady = true;
+    console.log('[manager-summary.js] Initialization complete');
+}
+
+// Initialize when DOM is ready
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initManagerSummary);
+} else {
+    // DOM is already ready
+    initManagerSummary();
+}
