@@ -30,9 +30,11 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (userId && userId !== 'all') params.set('user', userId);
         if (from) params.set('from', from);
         if (to) params.set('to', to);
-        const newUrl = params.toString() 
-            ? `${window.location.pathname}?${params.toString()}`
-            : window.location.pathname;
+        
+        const baseUrl = window.location.origin + window.location.pathname;
+        const newUrl = params.toString() ? `${baseUrl}?${params.toString()}` : baseUrl;
+        
+        console.log('Updating URL to:', newUrl);
         window.history.replaceState({}, '', newUrl);
     };
 
@@ -111,6 +113,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // Apply filter and render
     const applyFilter = () => {
+        console.log('applyFilter called');
         const selectedUserId = userFilter.value;
         const fromDate = dateFrom.value;
         const toDate = dateTo.value;
@@ -284,9 +287,18 @@ document.addEventListener('DOMContentLoaded', async () => {
     };
 
     // Event listeners - auto-apply on change and update URL
-    userFilter.addEventListener('change', applyFilter);
-    dateFrom.addEventListener('change', applyFilter);
-    dateTo.addEventListener('change', applyFilter);
+    userFilter.addEventListener('change', () => {
+        console.log('User changed:', userFilter.value);
+        applyFilter();
+    });
+    dateFrom.addEventListener('change', () => {
+        console.log('Date from changed:', dateFrom.value);
+        applyFilter();
+    });
+    dateTo.addEventListener('change', () => {
+        console.log('Date to changed:', dateTo.value);
+        applyFilter();
+    });
     resetBtn.addEventListener('click', () => {
         window.history.replaceState({}, '', window.location.pathname);
         userFilter.value = 'all';
