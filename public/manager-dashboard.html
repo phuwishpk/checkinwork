@@ -54,6 +54,10 @@
     .custom-scrollbar::-webkit-scrollbar { width: 4px; }
     .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
     .custom-scrollbar::-webkit-scrollbar-thumb { background: #eaeff2; border-radius: 10px; }
+    @media print {
+      nav#side-nav { display: none !important; }
+      main { margin-left: 0 !important; }
+    }
   </style>
 </head>
 

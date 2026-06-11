@@ -66,6 +66,11 @@
     .ambient-shadow {
       box-shadow: 0 8px 32px rgba(44, 52, 55, 0.06);
     }
+
+    @media print {
+      nav#side-nav { display: none !important; }
+      main { margin-left: 0 !important; }
+    }
   </style>
 </head>
 
