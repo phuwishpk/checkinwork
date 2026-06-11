@@ -239,6 +239,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             });
             filter.value = currentVal;
             renderManagerCalendar();
+            renderSummaryTable();
         } catch (err) { console.error(err); }
     };
 
