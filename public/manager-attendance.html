@@ -216,6 +216,80 @@
         </div>
         <div id="calendar-grid" class="calendar-grid"></div>
       </div>
+
+      <!-- Monthly Summary Section -->
+      <div class="bg-white rounded-[2rem] shadow-sm border border-outline-variant/10 overflow-hidden ambient-shadow">
+        <div
+          class="flex items-center justify-between px-6 py-4 border-b border-outline-variant/10 bg-surface-container-low/30">
+          <div class="flex items-center gap-3">
+            <span class="material-symbols-outlined text-primary text-[20px]"
+              style="font-variation-settings:'FILL' 1">summarize</span>
+            <h3 class="text-base font-black font-headline text-on-surface">Monthly Summary</h3>
+          </div>
+          <span class="text-[10px] font-black uppercase tracking-widest text-on-surface-variant/60"
+            id="summary-month-name">--</span>
+        </div>
+
+        <!-- Stats Bar -->
+        <div id="summary-stats" class="grid grid-cols-2 md:grid-cols-4 gap-4 px-6 py-4 border-b border-outline-variant/5">
+          <div class="flex items-center gap-3 p-3 bg-blue-50 rounded-2xl">
+            <div class="w-9 h-9 rounded-xl bg-primary/10 flex items-center justify-center">
+              <span class="material-symbols-outlined text-primary text-[18px]">calendar_month</span>
+            </div>
+            <div>
+              <p class="text-[10px] font-black uppercase tracking-wider text-on-surface-variant/60">Working Days</p>
+              <p class="text-lg font-black text-on-surface" id="stat-working-days">0</p>
+            </div>
+          </div>
+          <div class="flex items-center gap-3 p-3 bg-emerald-50 rounded-2xl">
+            <div class="w-9 h-9 rounded-xl bg-emerald-500/10 flex items-center justify-center">
+              <span class="material-symbols-outlined text-emerald-600 text-[18px]">schedule</span>
+            </div>
+            <div>
+              <p class="text-[10px] font-black uppercase tracking-wider text-on-surface-variant/60">Total Hours</p>
+              <p class="text-lg font-black text-on-surface" id="stat-total-hours">0h</p>
+            </div>
+          </div>
+          <div class="flex items-center gap-3 p-3 bg-amber-50 rounded-2xl">
+            <div class="w-9 h-9 rounded-xl bg-amber-500/10 flex items-center justify-center">
+              <span class="material-symbols-outlined text-amber-600 text-[18px]">avg_pace</span>
+            </div>
+            <div>
+              <p class="text-[10px] font-black uppercase tracking-wider text-on-surface-variant/60">Avg Hours/Day</p>
+              <p class="text-lg font-black text-on-surface" id="stat-avg-hours">0h</p>
+            </div>
+          </div>
+          <div class="flex items-center gap-3 p-3 bg-purple-50 rounded-2xl">
+            <div class="w-9 h-9 rounded-xl bg-purple-500/10 flex items-center justify-center">
+              <span class="material-symbols-outlined text-purple-600 text-[18px]">task_alt</span>
+            </div>
+            <div>
+              <p class="text-[10px] font-black uppercase tracking-wider text-on-surface-variant/60">Total Tasks</p>
+              <p class="text-lg font-black text-on-surface" id="stat-total-tasks">0</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Summary Table -->
+        <div class="overflow-x-auto">
+          <table class="w-full text-sm text-left min-w-[640px]">
+            <thead>
+              <tr
+                class="text-[9px] font-black uppercase tracking-widest text-on-surface-variant/60 border-b border-outline-variant/10">
+                <th class="px-6 py-4">Date</th>
+                <th class="px-6 py-4">User</th>
+                <th class="px-6 py-4">Clock In</th>
+                <th class="px-6 py-4">Clock Out</th>
+                <th class="px-6 py-4">Total Hours</th>
+                <th class="px-6 py-4">Tasks</th>
+              </tr>
+            </thead>
+            <tbody id="summary-table-body" class="divide-y divide-outline-variant/10">
+              <!-- Rows populated by JS -->
+            </tbody>
+          </table>
+        </div>
+      </div>
     </div>
   </main>
 
