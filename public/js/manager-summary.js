@@ -252,19 +252,14 @@ document.addEventListener('DOMContentLoaded', async () => {
         return d.toLocaleDateString('en-GB', { weekday: 'short', day: '2-digit', month: 'short', year: 'numeric' });
     };
 
-    // Event listeners
-    filterBtn.addEventListener('click', applyFilter);
+    // Event listeners - auto-apply on change
+    userFilter.addEventListener('change', applyFilter);
+    dateFrom.addEventListener('change', applyFilter);
+    dateTo.addEventListener('change', applyFilter);
     resetBtn.addEventListener('click', () => {
         userFilter.value = 'all';
         setDefaultDateRange();
         applyFilter();
-    });
-
-    // Enter key to filter
-    [dateFrom, dateTo].forEach(input => {
-        input.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') applyFilter();
-        });
     });
 
     // Load data on page load
