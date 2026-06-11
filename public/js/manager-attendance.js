@@ -144,47 +144,34 @@ document.addEventListener('DOMContentLoaded', async () => {
         renderSummaryTable();
     };
 
-    const renderSummaryTable = async () => {
+    const renderSummaryTable = () => {
         const tableBody = document.getElementById('summary-table-body');
         if (!tableBody) return;
         const summaryMonth = document.getElementById('summary-month-name');
         const header = document.getElementById('calendar-month-year');
         if (summaryMonth && header) summaryMonth.textContent = header.textContent;
-        tableBody.innerHTML = '<tr><td colspan="6" class="px-6 py-8 text-center text-on-surface-variant/40"><span class="material-symbols-outlined animate-spin text-primary">progress_activity</span></td></tr>';
 
         try {
-            // Fetch all data directly from the existing calendar-data API
-            const raw = await apiCall('/api/manager/calendar-data');
-
-            // Normalize dates
-            const toLocalDate = (dateStr) => {
-                if (!dateStr) return null;
-                const d = new Date(dateStr);
-                return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
-            };
-            raw.attendance.forEach(a => { a.date = toLocalDate(a.date); });
-            raw.logs.forEach(l => {
-                l.date_start = toLocalDate(l.date_start);
-                l.date_finish = toLocalDate(l.date_finish);
-            });
+            if (!allData || !allData.users) {
+                tableBody.innerHTML = `<tr><td colspan="6" class="px-6 py-10 text-center text-on-surface-variant/40 italic">Loading data...</td></tr>`;
+                return;
+            }
 
             const year = currentDate.getFullYear();
             const month = currentDate.getMonth() + 1;
-            const monthPrefix = `${year}-${String(month).padStart(2, '0')}`;
             const daysInMonth = new Date(year, month, 0).getDate();
 
             const summaryFilter = document.getElementById('summary-user-filter');
             const selectedUserId = summaryFilter ? summaryFilter.value : 'all';
             const targetUsers = selectedUserId === 'all'
-                ? raw.users
-                : raw.users.filter(u => u.id === parseInt(selectedUserId));
+                ? allData.users
+                : allData.users.filter(u => u.id === parseInt(selectedUserId));
 
-            tableBody.innerHTML = '';
             let totalWorkingDays = new Set();
             let totalHoursSum = 0;
             let totalOtHoursSum = 0;
             let totalTaskCount = 0;
-            let hasRows = false;
+            let htmlStr = '';
 
             for (let day = 1; day <= daysInMonth; day++) {
                 const dateStr = `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
@@ -193,12 +180,12 @@ document.addEventListener('DOMContentLoaded', async () => {
                     const userColor = colors[idx % colors.length];
 
                     // Filter attendance for this user on this date
-                    const dayAtts = raw.attendance.filter(a =>
+                    const dayAtts = allData.attendance.filter(a =>
                         a.user_id === u.id && a.date === dateStr
                     );
 
                     // Filter logs (tasks) for this user active on this date
-                    const dayLogs = raw.logs.filter(l =>
+                    const dayLogs = allData.logs.filter(l =>
                         l.user_id === u.id &&
                         l.date_start &&
                         dateStr >= l.date_start &&
@@ -207,7 +194,6 @@ document.addEventListener('DOMContentLoaded', async () => {
 
                     if (dayAtts.length === 0 && dayLogs.length === 0) return;
 
-                    hasRows = true;
                     totalWorkingDays.add(`${u.id}_${dateStr}`);
                     totalTaskCount += dayLogs.length;
 
@@ -224,7 +210,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                     const roleBadge = u.role !== 'intern' ? `<span class="ml-1 text-[8px] px-1.5 py-0.5 rounded-full bg-primary/10 text-primary font-black uppercase">${u.role}</span>` : '';
                     const tasks = dayLogs.map(l => `<span class="inline-block px-2 py-0.5 rounded-lg text-[9px] font-bold text-white mr-1 mb-1" style="background-color:${l.color || userColor}">${l.task_category}</span>`).join('');
 
-                    tableBody.innerHTML += `<tr class="hover:bg-surface-container-low/50 transition-colors">
+                    htmlStr += `<tr class="hover:bg-surface-container-low/50 transition-colors">
                         <td class="px-6 py-3 font-bold text-on-surface text-xs">${dateDisplay}</td>
                         <td class="px-6 py-3"><span class="text-[10px] font-black uppercase tracking-wider" style="color:${userColor}">${u.full_name}</span>${roleBadge}</td>
                         <td class="px-6 py-3 text-on-surface-variant font-medium text-xs">${clockIn}</td>
@@ -235,9 +221,11 @@ document.addEventListener('DOMContentLoaded', async () => {
                 });
             }
 
-            if (!hasRows) {
-                tableBody.innerHTML = `<tr><td colspan="6" class="px-6 py-10 text-center text-on-surface-variant/40 italic">No records for this month</td></tr>`;
+            if (htmlStr === '') {
+                htmlStr = `<tr><td colspan="6" class="px-6 py-10 text-center text-on-surface-variant/40 italic">No records for this month</td></tr>`;
             }
+            
+            tableBody.innerHTML = htmlStr;
 
             // Update stats
             const workingDays = totalWorkingDays.size;
@@ -248,7 +236,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             if (el('stat-avg-hours')) el('stat-avg-hours').textContent = avgHrs + 'h';
             if (el('stat-total-tasks')) el('stat-total-tasks').textContent = totalTaskCount;
         } catch (err) {
-            console.error('Summary fetch error:', err);
+            console.error('Summary render error:', err);
             tableBody.innerHTML = `<tr><td colspan="6" class="px-6 py-10 text-center text-red-400 italic">Failed to load summary: ${err.message}</td></tr>`;
         }
     };
