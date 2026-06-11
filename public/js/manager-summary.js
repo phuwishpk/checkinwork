@@ -32,6 +32,7 @@ function initManagerSummary() {
         userFilter: !!userFilter,
         dateFrom: !!dateFrom,
         dateTo: !!dateTo,
+        filterBtn: !!filterBtn, // เพิ่มเช็ค filterBtn
         resetBtn: !!resetBtn,
         tableBody: !!tableBody
     });
@@ -92,6 +93,7 @@ function initManagerSummary() {
 
     // Populate user filter dropdown
     const populateUserFilter = () => {
+        if (!userFilter) return;
         userFilter.innerHTML = '<option value="all">All Users</option>';
         allData.users.forEach(u => {
             const opt = document.createElement('option');
@@ -104,7 +106,7 @@ function initManagerSummary() {
 
     // Set default date range
     const setDefaultDateRange = () => {
-        if (allData.attendance.length === 0) return;
+        if (allData.attendance.length === 0 || !dateFrom || !dateTo) return;
         
         const dates = allData.attendance.map(a => a.date).filter(Boolean).sort();
         const firstDate = dates[0];
@@ -122,18 +124,18 @@ function initManagerSummary() {
         const from = params.get('from');
         const to = params.get('to');
         
-        if (userId) {
+        if (userId && userFilter) {
             const option = userFilter.querySelector(`option[value="${userId}"]`);
             if (option) {
                 userFilter.value = userId;
                 console.log('[manager-summary.js] Loaded user from URL:', userId);
             }
         }
-        if (from) {
+        if (from && dateFrom) {
             dateFrom.value = from;
             console.log('[manager-summary.js] Loaded from date from URL:', from);
         }
-        if (to) {
+        if (to && dateTo) {
             dateTo.value = to;
             console.log('[manager-summary.js] Loaded to date from URL:', to);
         }
@@ -141,6 +143,8 @@ function initManagerSummary() {
 
     // Apply filter and render
     const applyFilter = () => {
+        if (!userFilter || !dateFrom || !dateTo) return;
+
         console.log('[manager-summary.js] applyFilter called, user:', userFilter.value, 'from:', dateFrom.value, 'to:', dateTo.value);
         const selectedUserId = userFilter.value;
         const fromDate = dateFrom.value;
@@ -152,10 +156,10 @@ function initManagerSummary() {
         // Build filtered rows
         filteredRows = [];
         
-        // Get target users
+        // Get target users - ✅ แก้ไขให้เทียบเป็น String
         const targetUsers = selectedUserId === 'all'
             ? allData.users
-            : allData.users.filter(u => u.id === parseInt(selectedUserId));
+            : allData.users.filter(u => String(u.id) === String(selectedUserId));
 
         console.log('[manager-summary.js] Filtering for', targetUsers.length, 'users');
 
@@ -183,7 +187,9 @@ function initManagerSummary() {
         }
 
         // Update period label
-        summaryPeriod.textContent = `${formatDate(startDate)} — ${formatDate(endDate)}`;
+        if (summaryPeriod) {
+            summaryPeriod.textContent = `${formatDate(startDate)} — ${formatDate(endDate)}`;
+        }
 
         // Iterate through each day
         const current = new Date(startDate + 'T00:00:00');
@@ -200,14 +206,14 @@ function initManagerSummary() {
             const dateStr = `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
 
             targetUsers.forEach(u => {
-                // Get attendance for this user on this date
+                // Get attendance for this user on this date - ✅ แก้ไขให้เทียบเป็น String
                 const dayAtts = allData.attendance.filter(a =>
-                    a.user_id === u.id && a.date === dateStr
+                    String(a.user_id) === String(u.id) && a.date === dateStr
                 );
 
-                // Get tasks for this user on this date
+                // Get tasks for this user on this date - ✅ แก้ไขให้เทียบเป็น String
                 const dayLogs = allData.logs.filter(l =>
-                    l.user_id === u.id &&
+                    String(l.user_id) === String(u.id) &&
                     l.date_start &&
                     dateStr >= l.date_start &&
                     dateStr <= (l.date_finish || l.date_start)
@@ -271,6 +277,8 @@ function initManagerSummary() {
 
     // Render table (all rows, no pagination)
     const renderTable = () => {
+        if (!tableBody) return;
+        
         console.log('[manager-summary.js] Rendering table with', filteredRows.length, 'rows');
         if (filteredRows.length === 0) {
             tableBody.innerHTML = `<tr><td colspan="7" class="px-6 py-20 text-center">
@@ -323,19 +331,23 @@ function initManagerSummary() {
     console.log('[manager-summary.js] Attaching event listeners');
     
     // Filter button - apply when clicked
-    filterBtn.addEventListener('click', () => {
-        console.log('[manager-summary.js] Filter button clicked');
-        applyFilter();
-    });
+    if (filterBtn) {
+        filterBtn.addEventListener('click', () => {
+            console.log('[manager-summary.js] Filter button clicked');
+            applyFilter();
+        });
+    }
     
     // Reset button
-    resetBtn.addEventListener('click', () => {
-        console.log('[manager-summary.js] Reset button clicked');
-        window.history.replaceState({}, '', window.location.pathname);
-        userFilter.value = 'all';
-        setDefaultDateRange();
-        applyFilter();
-    });
+    if (resetBtn) {
+        resetBtn.addEventListener('click', () => {
+            console.log('[manager-summary.js] Reset button clicked');
+            window.history.replaceState({}, '', window.location.pathname);
+            if (userFilter) userFilter.value = 'all';
+            setDefaultDateRange();
+            applyFilter();
+        });
+    }
 
     // Load data on page load
     loadData();
