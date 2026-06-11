@@ -372,6 +372,10 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     if (filter1) filter1.addEventListener('change', renderManagerCalendar);
     if (filter2) filter2.addEventListener('change', renderManagerCalendar);
+
+    // Summary filter — independent from calendar filter
+    const summaryUserFilter = document.getElementById('summary-user-filter');
+    if (summaryUserFilter) summaryUserFilter.addEventListener('change', renderSummaryTable);
     if (taskCatSelect && taskColorInput) {
         taskCatSelect.addEventListener('change', (e) => {
             const colorMap = {
