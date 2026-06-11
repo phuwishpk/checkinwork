@@ -144,12 +144,27 @@ document.addEventListener('DOMContentLoaded', async () => {
         renderSummaryTable();
     };
 
+    // Get date range for a specific user or all users
+    const getDateRange = (userId = 'all') => {
+        const targetAtts = userId === 'all'
+            ? allData.attendance
+            : allData.attendance.filter(a => a.user_id === parseInt(userId));
+
+        if (targetAtts.length === 0) {
+            return { startDate: null, endDate: null };
+        }
+
+        const dates = targetAtts.map(a => a.date).filter(Boolean).sort();
+        return {
+            startDate: dates[0],
+            endDate: dates[dates.length - 1]
+        };
+    };
+
     const renderSummaryTable = () => {
         const tableBody = document.getElementById('summary-table-body');
         if (!tableBody) return;
         const summaryMonth = document.getElementById('summary-month-name');
-        const header = document.getElementById('calendar-month-year');
-        if (summaryMonth && header) summaryMonth.textContent = header.textContent;
 
         try {
             if (!allData || !allData.users) {
@@ -157,15 +172,36 @@ document.addEventListener('DOMContentLoaded', async () => {
                 return;
             }
 
-            const year = currentDate.getFullYear();
-            const month = currentDate.getMonth() + 1;
-            const daysInMonth = new Date(year, month, 0).getDate();
-
             const summaryFilter = document.getElementById('summary-user-filter');
             const selectedUserId = summaryFilter ? summaryFilter.value : 'all';
             const targetUsers = selectedUserId === 'all'
                 ? allData.users
                 : allData.users.filter(u => u.id === parseInt(selectedUserId));
+
+            // Get date range based on selected user
+            const { startDate, endDate } = getDateRange(selectedUserId);
+
+            // Update header to show date range
+            if (summaryMonth) {
+                if (startDate && endDate) {
+                    const start = new Date(startDate + 'T00:00:00').toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+                    const end = new Date(endDate + 'T00:00:00').toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+                    summaryMonth.textContent = `${start} — ${end}`;
+                } else {
+                    summaryMonth.textContent = '--';
+                }
+            }
+
+            if (!startDate || !endDate) {
+                tableBody.innerHTML = `<tr><td colspan="6" class="px-6 py-10 text-center text-on-surface-variant/40 italic">No attendance records found</td></tr>`;
+                // Reset stats
+                const el = (id) => document.getElementById(id);
+                if (el('stat-working-days')) el('stat-working-days').textContent = '0';
+                if (el('stat-total-hours')) el('stat-total-hours').textContent = '0h';
+                if (el('stat-avg-hours')) el('stat-avg-hours').textContent = '0h';
+                if (el('stat-total-tasks')) el('stat-total-tasks').textContent = '0';
+                return;
+            }
 
             let totalWorkingDays = new Set();
             let totalHoursSum = 0;
@@ -173,7 +209,14 @@ document.addEventListener('DOMContentLoaded', async () => {
             let totalTaskCount = 0;
             let htmlStr = '';
 
-            for (let day = 1; day <= daysInMonth; day++) {
+            // Iterate through all days in the date range
+            const current = new Date(startDate + 'T00:00:00');
+            const end = new Date(endDate + 'T00:00:00');
+
+            while (current <= end) {
+                const year = current.getFullYear();
+                const month = current.getMonth() + 1;
+                const day = current.getDate();
                 const dateStr = `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
 
                 targetUsers.forEach((u, idx) => {
@@ -219,12 +262,14 @@ document.addEventListener('DOMContentLoaded', async () => {
                         <td class="px-6 py-3">${tasks || '<span class="text-on-surface-variant/40 text-xs italic">—</span>'}</td>
                     </tr>`;
                 });
+
+                current.setDate(current.getDate() + 1);
             }
 
             if (htmlStr === '') {
-                htmlStr = `<tr><td colspan="6" class="px-6 py-10 text-center text-on-surface-variant/40 italic">No records for this month</td></tr>`;
+                htmlStr = `<tr><td colspan="6" class="px-6 py-10 text-center text-on-surface-variant/40 italic">No records found in selected period</td></tr>`;
             }
-            
+
             tableBody.innerHTML = htmlStr;
 
             // Update stats
