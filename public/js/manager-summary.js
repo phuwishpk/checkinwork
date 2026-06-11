@@ -197,10 +197,11 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // Update stats display
     const updateStats = (workingDays, totalHours, avgHours, totalTasks) => {
-        statWorkingDays.textContent = workingDays;
-        statTotalHours.textContent = `${totalHours.toFixed(1)}h`;
-        statAvgHours.textContent = `${avgHours.toFixed(1)}h`;
-        statTotalTasks.textContent = totalTasks;
+        console.log('Updating stats:', { workingDays, totalHours, avgHours, totalTasks });
+        if (statWorkingDays) statWorkingDays.textContent = workingDays;
+        if (statTotalHours) statTotalHours.textContent = `${totalHours.toFixed(1)}h`;
+        if (statAvgHours) statAvgHours.textContent = `${avgHours.toFixed(1)}h`;
+        if (statTotalTasks) statTotalTasks.textContent = totalTasks;
     };
 
     // Render table (all rows, no pagination)
@@ -253,9 +254,18 @@ document.addEventListener('DOMContentLoaded', async () => {
     };
 
     // Event listeners - auto-apply on change
-    userFilter.addEventListener('change', applyFilter);
-    dateFrom.addEventListener('change', applyFilter);
-    dateTo.addEventListener('change', applyFilter);
+    userFilter.addEventListener('change', () => {
+        console.log('User filter changed:', userFilter.value);
+        applyFilter();
+    });
+    dateFrom.addEventListener('change', () => {
+        console.log('Date from changed:', dateFrom.value);
+        applyFilter();
+    });
+    dateTo.addEventListener('change', () => {
+        console.log('Date to changed:', dateTo.value);
+        applyFilter();
+    });
     resetBtn.addEventListener('click', () => {
         userFilter.value = 'all';
         setDefaultDateRange();
