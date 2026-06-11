@@ -695,6 +695,7 @@ app.get('/attendance', (req, res) => res.sendFile(path.join(__dirname, 'public/a
 app.get('/manager', (req, res) => res.sendFile(path.join(__dirname, 'public/manager-dashboard.html')));
 app.get('/manager/logs', (req, res) => res.sendFile(path.join(__dirname, 'public/manager-loge.html')));
 app.get('/manager/attendance', (req, res) => res.sendFile(path.join(__dirname, 'public/manager-attendance.html')));
+app.get('/manager/summary', (req, res) => res.sendFile(path.join(__dirname, 'public/manager-summary.html')));
 
 // Health check — also shows env config (no secrets)
 app.get('/health', async (req, res) => {
