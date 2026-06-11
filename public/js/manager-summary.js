@@ -13,7 +13,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     const userFilter = document.getElementById('user-filter');
     const dateFrom = document.getElementById('date-from');
     const dateTo = document.getElementById('date-to');
-    const filterBtn = document.getElementById('filter-btn');
     const resetBtn = document.getElementById('reset-btn');
     const tableBody = document.getElementById('summary-table-body');
     const summaryPeriod = document.getElementById('summary-period');
@@ -23,6 +22,19 @@ document.addEventListener('DOMContentLoaded', async () => {
     const statTotalHours = document.getElementById('stat-total-hours');
     const statAvgHours = document.getElementById('stat-avg-hours');
     const statTotalTasks = document.getElementById('stat-total-tasks');
+
+    // URL params helpers
+    const getUrlParams = () => new URLSearchParams(window.location.search);
+    const updateUrl = (userId, from, to) => {
+        const params = new URLSearchParams();
+        if (userId && userId !== 'all') params.set('user', userId);
+        if (from) params.set('from', from);
+        if (to) params.set('to', to);
+        const newUrl = params.toString() 
+            ? `${window.location.pathname}?${params.toString()}`
+            : window.location.pathname;
+        window.history.replaceState({}, '', newUrl);
+    };
 
     // Load all data from API
     const loadData = async () => {
@@ -50,7 +62,8 @@ document.addEventListener('DOMContentLoaded', async () => {
             // Set default date range (first clock-in to today)
             setDefaultDateRange();
             
-            // Initial render
+            // Load filters from URL and apply
+            loadFiltersFromUrl();
             applyFilter();
         } catch (err) {
             console.error('Failed to load data:', err);
@@ -81,11 +94,29 @@ document.addEventListener('DOMContentLoaded', async () => {
         dateTo.value = today;
     };
 
+    // Load filters from URL params
+    const loadFiltersFromUrl = () => {
+        const params = getUrlParams();
+        const userId = params.get('user');
+        const from = params.get('from');
+        const to = params.get('to');
+        
+        if (userId) {
+            const option = userFilter.querySelector(`option[value="${userId}"]`);
+            if (option) userFilter.value = userId;
+        }
+        if (from) dateFrom.value = from;
+        if (to) dateTo.value = to;
+    };
+
     // Apply filter and render
     const applyFilter = () => {
         const selectedUserId = userFilter.value;
         const fromDate = dateFrom.value;
         const toDate = dateTo.value;
+
+        // Update URL with current filters
+        updateUrl(selectedUserId, fromDate, toDate);
 
         // Build filtered rows
         filteredRows = [];
@@ -197,7 +228,6 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // Update stats display
     const updateStats = (workingDays, totalHours, avgHours, totalTasks) => {
-        console.log('Updating stats:', { workingDays, totalHours, avgHours, totalTasks });
         if (statWorkingDays) statWorkingDays.textContent = workingDays;
         if (statTotalHours) statTotalHours.textContent = `${totalHours.toFixed(1)}h`;
         if (statAvgHours) statAvgHours.textContent = `${avgHours.toFixed(1)}h`;
@@ -253,20 +283,12 @@ document.addEventListener('DOMContentLoaded', async () => {
         return d.toLocaleDateString('en-GB', { weekday: 'short', day: '2-digit', month: 'short', year: 'numeric' });
     };
 
-    // Event listeners - auto-apply on change
-    userFilter.addEventListener('change', () => {
-        console.log('User filter changed:', userFilter.value);
-        applyFilter();
-    });
-    dateFrom.addEventListener('change', () => {
-        console.log('Date from changed:', dateFrom.value);
-        applyFilter();
-    });
-    dateTo.addEventListener('change', () => {
-        console.log('Date to changed:', dateTo.value);
-        applyFilter();
-    });
+    // Event listeners - auto-apply on change and update URL
+    userFilter.addEventListener('change', applyFilter);
+    dateFrom.addEventListener('change', applyFilter);
+    dateTo.addEventListener('change', applyFilter);
     resetBtn.addEventListener('click', () => {
+        window.history.replaceState({}, '', window.location.pathname);
         userFilter.value = 'all';
         setDefaultDateRange();
         applyFilter();
