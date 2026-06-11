@@ -155,7 +155,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         try {
             const year = currentDate.getFullYear();
             const month = currentDate.getMonth() + 1;
-            const selectedUserId = document.getElementById('intern-filter').value;
+            const summaryFilter = document.getElementById('summary-user-filter');
+            const selectedUserId = summaryFilter ? summaryFilter.value : 'all';
             const url = `/api/manager/monthly-summary?year=${year}&month=${month}${selectedUserId !== 'all' ? `&user_id=${selectedUserId}` : ''}`;
             const data = await apiCall(url);
 
@@ -222,18 +223,23 @@ document.addEventListener('DOMContentLoaded', async () => {
             });
             const filter = document.getElementById('intern-filter');
             const modalFilter = document.getElementById('modal-intern-select');
+            const summaryFilter = document.getElementById('summary-user-filter');
             const currentVal = filter.value;
+            const currentSummaryVal = summaryFilter ? summaryFilter.value : 'all';
 
             filter.innerHTML = '<option value="all">All Participants</option>';
             if (modalFilter) modalFilter.innerHTML = '<option value="">Select User</option>';
+            if (summaryFilter) summaryFilter.innerHTML = '<option value="all">All Users</option>';
 
-            // Populate filter and modal select with all users from allData
+            // Populate all filter dropdowns with users from allData
             allData.users.forEach((u) => {
                 const opt = `<option value="${u.id}">${u.full_name} (${u.role})</option>`;
                 filter.innerHTML += opt;
                 if (modalFilter) modalFilter.innerHTML += opt;
+                if (summaryFilter) summaryFilter.innerHTML += opt;
             });
             filter.value = currentVal;
+            if (summaryFilter) summaryFilter.value = currentSummaryVal;
             renderManagerCalendar();
             renderSummaryTable();
         } catch (err) { console.error(err); }
