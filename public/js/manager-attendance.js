@@ -140,8 +140,6 @@ document.addEventListener('DOMContentLoaded', async () => {
                 });
             });
         }
-
-        renderSummaryTable();
     };
 
     // Get date range for a specific user or all users
@@ -286,6 +284,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     };
 
+    // Load all data first, then render
     const loadManagerCalendar = async () => {
         try {
             allData = await apiCall('/api/manager/calendar-data');
@@ -302,6 +301,13 @@ document.addEventListener('DOMContentLoaded', async () => {
             allData.attendance.forEach(a => {
                 a.date = toLocalDate(a.date);
             });
+
+            // Only proceed if we have data
+            if (!allData.users || allData.users.length === 0) {
+                console.warn('No users found in calendar data');
+                return;
+            }
+
             const filter = document.getElementById('intern-filter');
             const modalFilter = document.getElementById('modal-intern-select');
             const summaryFilter = document.getElementById('summary-user-filter');
@@ -321,6 +327,8 @@ document.addEventListener('DOMContentLoaded', async () => {
             });
             filter.value = currentVal;
             if (summaryFilter) summaryFilter.value = currentSummaryVal;
+
+            // Render calendar and summary after data is loaded
             renderManagerCalendar();
             renderSummaryTable();
         } catch (err) { console.error(err); }
