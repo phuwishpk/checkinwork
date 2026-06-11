@@ -18,11 +18,11 @@ document.addEventListener('DOMContentLoaded', async () => {
     const tableBody = document.getElementById('summary-table-body');
     const summaryPeriod = document.getElementById('summary-period');
 
-        // Stats elements
-        const statWorkingDays = document.getElementById('stat-working-days');
-        const statTotalHours = document.getElementById('stat-total-hours');
-        const statAvgHours = document.getElementById('stat-avg-hours');
-        const statTotalTasks = document.getElementById('stat-total-tasks');
+    // Stats elements
+    const statWorkingDays = document.getElementById('stat-working-days');
+    const statTotalHours = document.getElementById('stat-total-hours');
+    const statAvgHours = document.getElementById('stat-avg-hours');
+    const statTotalTasks = document.getElementById('stat-total-tasks');
 
     // Load all data from API
     const loadData = async () => {
@@ -258,6 +258,13 @@ document.addEventListener('DOMContentLoaded', async () => {
         userFilter.value = 'all';
         setDefaultDateRange();
         applyFilter();
+    });
+
+    // Enter key to filter
+    [dateFrom, dateTo].forEach(input => {
+        input.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') applyFilter();
+        });
     });
 
     // Load data on page load
