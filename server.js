@@ -255,6 +255,21 @@ app.get('/api/intern/dashboard', requireAuth, async (req, res) => {
 });
 
 // Get Intern Calendar data (Unified for specific users)
+// Legacy endpoint for summary page - returns attendance for a specific user
+app.get('/api/attendance', requireAuth, async (req, res) => {
+  try {
+    const userId = req.query.user_id || req.session.user.id;
+    const [attendance] = await db.execute(
+      'SELECT * FROM attendance WHERE user_id = ? ORDER BY date ASC',
+      [userId]
+    );
+    res.json(attendance);
+  } catch (error) {
+    console.error('Attendance error:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
 app.get('/api/intern/calendar', requireAuth, async (req, res) => {
   try {
     const [users] = await db.execute(`SELECT id, full_name, username, role FROM users`);
