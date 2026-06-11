@@ -252,6 +252,14 @@ document.addEventListener('DOMContentLoaded', async () => {
         return d.toLocaleDateString('en-GB', { weekday: 'short', day: '2-digit', month: 'short', year: 'numeric' });
     };
 
+    // Event listeners
+    filterBtn.addEventListener('click', applyFilter);
+    resetBtn.addEventListener('click', () => {
+        userFilter.value = 'all';
+        setDefaultDateRange();
+        applyFilter();
+    });
+
     // Load data on page load
     await loadData();
 });
