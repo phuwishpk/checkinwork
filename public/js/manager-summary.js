@@ -17,6 +17,7 @@ function initManagerSummary() {
     const userFilter = document.getElementById('user-filter');
     const dateFrom = document.getElementById('date-from');
     const dateTo = document.getElementById('date-to');
+    const filterBtn = document.getElementById('filter-btn');
     const resetBtn = document.getElementById('reset-btn');
     const tableBody = document.getElementById('summary-table-body');
     const summaryPeriod = document.getElementById('summary-period');
@@ -318,24 +319,16 @@ function initManagerSummary() {
         return d.toLocaleDateString('en-GB', { weekday: 'short', day: '2-digit', month: 'short', year: 'numeric' });
     };
 
-    // Event listeners - auto-apply on change and update URL
+    // Event listeners
     console.log('[manager-summary.js] Attaching event listeners');
     
-    userFilter.addEventListener('change', (e) => {
-        console.log('[manager-summary.js] User dropdown changed to:', e.target.value);
+    // Filter button - apply when clicked
+    filterBtn.addEventListener('click', () => {
+        console.log('[manager-summary.js] Filter button clicked');
         applyFilter();
     });
     
-    dateFrom.addEventListener('change', (e) => {
-        console.log('[manager-summary.js] Date from changed to:', e.target.value);
-        applyFilter();
-    });
-    
-    dateTo.addEventListener('change', (e) => {
-        console.log('[manager-summary.js] Date to changed to:', e.target.value);
-        applyFilter();
-    });
-    
+    // Reset button
     resetBtn.addEventListener('click', () => {
         console.log('[manager-summary.js] Reset button clicked');
         window.history.replaceState({}, '', window.location.pathname);
