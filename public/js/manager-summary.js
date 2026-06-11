@@ -7,8 +7,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     
     // State
     let allData = { users: [], attendance: [], logs: [] };
-    let currentPage = 1;
-    const recordsPerPage = 50;
     let filteredRows = [];
 
     // DOM Elements
@@ -20,19 +18,11 @@ document.addEventListener('DOMContentLoaded', async () => {
     const tableBody = document.getElementById('summary-table-body');
     const summaryPeriod = document.getElementById('summary-period');
 
-    // Stats elements
-    const statWorkingDays = document.getElementById('stat-working-days');
-    const statTotalHours = document.getElementById('stat-total-hours');
-    const statAvgHours = document.getElementById('stat-avg-hours');
-    const statTotalTasks = document.getElementById('stat-total-tasks');
-
-    // Pagination
-    const paginationControls = document.getElementById('pagination-controls');
-    const prevPage = document.getElementById('prev-page');
-    const nextPage = document.getElementById('next-page');
-    const showingStart = document.getElementById('showing-start');
-    const showingEnd = document.getElementById('showing-end');
-    const totalRecords = document.getElementById('total-records');
+        // Stats elements
+        const statWorkingDays = document.getElementById('stat-working-days');
+        const statTotalHours = document.getElementById('stat-total-hours');
+        const statAvgHours = document.getElementById('stat-avg-hours');
+        const statTotalTasks = document.getElementById('stat-total-tasks');
 
     // Load all data from API
     const loadData = async () => {
@@ -195,13 +185,13 @@ document.addEventListener('DOMContentLoaded', async () => {
         // Sort by date desc
         filteredRows.sort((a, b) => b.date.localeCompare(a.date));
 
-        // Update stats
+        // Update stats - Total Hours includes OT
         const workingDays = workingDaysSet.size;
-        const avgHrs = workingDays > 0 ? (totalHours / workingDays) : 0;
-        updateStats(workingDays, totalHours, avgHrs, totalTasks);
+        const totalHoursWithOT = totalHours + totalOtHours;
+        const avgHrs = workingDays > 0 ? (totalHoursWithOT / workingDays) : 0;
+        updateStats(workingDays, totalHoursWithOT, avgHrs, totalTasks);
 
-        // Reset to page 1 and render
-        currentPage = 1;
+        // Render all rows
         renderTable();
     };
 
@@ -213,7 +203,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         statTotalTasks.textContent = totalTasks;
     };
 
-    // Render table with pagination
+    // Render table (all rows, no pagination)
     const renderTable = () => {
         if (filteredRows.length === 0) {
             tableBody.innerHTML = `<tr><td colspan="7" class="px-6 py-20 text-center">
@@ -222,18 +212,11 @@ document.addEventListener('DOMContentLoaded', async () => {
                     <p class="text-on-surface-variant/60 italic">No records found for selected filters</p>
                 </div>
             </td></tr>`;
-            paginationControls.classList.add('hidden');
             return;
         }
 
-        // Calculate pagination
-        const startIdx = (currentPage - 1) * recordsPerPage;
-        const endIdx = Math.min(startIdx + recordsPerPage, filteredRows.length);
-        const pageRows = filteredRows.slice(startIdx, endIdx);
-
-        // Render rows
         let html = '';
-        pageRows.forEach(row => {
+        filteredRows.forEach(row => {
             const clockInStr = row.clockIn.length > 0 ? row.clockIn.join(', ') : '--';
             const clockOutStr = row.clockOut.length > 0 ? row.clockOut.join(', ') : '--';
             const roleBadge = row.userRole !== 'intern' 
@@ -260,16 +243,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
 
         tableBody.innerHTML = html;
-
-        // Update pagination controls
-        showingStart.textContent = startIdx + 1;
-        showingEnd.textContent = endIdx;
-        totalRecords.textContent = filteredRows.length;
-        
-        prevPage.disabled = currentPage === 1;
-        nextPage.disabled = endIdx >= filteredRows.length;
-        
-        paginationControls.classList.remove('hidden');
     };
 
     // Format date for display
@@ -278,30 +251,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         const d = new Date(dateStr + 'T00:00:00');
         return d.toLocaleDateString('en-GB', { weekday: 'short', day: '2-digit', month: 'short', year: 'numeric' });
     };
-
-    // Event listeners
-    filterBtn.addEventListener('click', applyFilter);
-    
-    resetBtn.addEventListener('click', () => {
-        userFilter.value = 'all';
-        setDefaultDateRange();
-        applyFilter();
-    });
-
-    prevPage.addEventListener('click', () => {
-        if (currentPage > 1) {
-            currentPage--;
-            renderTable();
-        }
-    });
-
-    nextPage.addEventListener('click', () => {
-        const maxPage = Math.ceil(filteredRows.length / recordsPerPage);
-        if (currentPage < maxPage) {
-            currentPage++;
-            renderTable();
-        }
-    });
 
     // Load data on page load
     await loadData();
