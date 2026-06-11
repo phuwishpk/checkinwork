@@ -1,20 +1,14 @@
-// Manager Summary - Standalone script (no DOMContentLoaded wrapper)
-// Immediately attach to window for debugging
-window.managerSummaryReady = false;
-console.log('[manager-summary.js] Script loaded');
+// Intern Summary - My attendance and task summary page
+console.log('[summary.js] Script loaded');
 
-// Wait for DOM to be ready
-function initManagerSummary() {
-    console.log('[manager-summary.js] initManagerSummary called');
-    
-    const colors = ['#0053dc', '#10b981', '#f59e0b', '#8b5cf6', '#ec4899', '#06b6d4', '#f43f5e'];
+function initSummary() {
+    console.log('[summary.js] initSummary called');
     
     // State
-    let allData = { users: [], attendance: [], logs: [] };
+    let myData = { attendance: [], logs: [] };
     let filteredRows = [];
 
     // DOM Elements
-    const userFilter = document.getElementById('user-filter');
     const dateFrom = document.getElementById('date-from');
     const dateTo = document.getElementById('date-to');
     const filterBtn = document.getElementById('filter-btn');
@@ -28,36 +22,53 @@ function initManagerSummary() {
     const statAvgHours = document.getElementById('stat-avg-hours');
     const statTotalTasks = document.getElementById('stat-total-tasks');
 
-    console.log('[manager-summary.js] Elements found:', {
-        userFilter: !!userFilter,
+    console.log('[summary.js] Elements found:', {
         dateFrom: !!dateFrom,
         dateTo: !!dateTo,
+        filterBtn: !!filterBtn,
         resetBtn: !!resetBtn,
         tableBody: !!tableBody
     });
 
     // URL params helpers
     const getUrlParams = () => new URLSearchParams(window.location.search);
-    const updateUrl = (userId, from, to) => {
+    const updateUrl = (from, to) => {
         const params = new URLSearchParams();
-        if (userId && userId !== 'all') params.set('user', userId);
         if (from) params.set('from', from);
         if (to) params.set('to', to);
         
         const baseUrl = window.location.origin + window.location.pathname;
         const newUrl = params.toString() ? `${baseUrl}?${params.toString()}` : baseUrl;
         
-        console.log('[manager-summary.js] Updating URL to:', newUrl);
+        console.log('[summary.js] Updating URL to:', newUrl);
         window.history.replaceState({}, '', newUrl);
     };
 
-    // Load all data from API
+    // Load data from API
     const loadData = async () => {
-        console.log('[manager-summary.js] Loading data...');
+        console.log('[summary.js] Loading data...');
         try {
-            allData = await apiCall('/api/manager/calendar-data');
-            console.log('[manager-summary.js] Data loaded:', allData);
+            // Get current user from session
+            const session = await apiCall('/api/session');
+            if (!session || !session.user) {
+                console.error('[summary.js] No session found');
+                window.location.href = '/index.html';
+                return;
+            }
             
+            const userId = session.user.id;
+            console.log('[summary.js] Current user ID:', userId);
+
+            // Load my attendance
+            const [attendance] = await apiCall(`/api/attendance?user_id=${userId}`);
+            myData.attendance = Array.isArray(attendance) ? attendance : [];
+            
+            // Load my logs
+            const [logs] = await apiCall(`/api/logs?user_id=${userId}`);
+            myData.logs = Array.isArray(logs) ? logs : [];
+            
+            console.log('[summary.js] Data loaded:', myData);
+
             // Normalize dates to YYYY-MM-DD
             const toLocalDate = (dateStr) => {
                 if (!dateStr) return null;
@@ -65,17 +76,14 @@ function initManagerSummary() {
                 return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
             };
             
-            allData.logs.forEach(l => {
+            myData.logs.forEach(l => {
                 l.date_start = toLocalDate(l.date_start);
                 l.date_finish = toLocalDate(l.date_finish);
             });
-            allData.attendance.forEach(a => {
+            myData.attendance.forEach(a => {
                 a.date = toLocalDate(a.date);
             });
 
-            // Populate user dropdown
-            populateUserFilter();
-            
             // Set default date range (first clock-in to today)
             setDefaultDateRange();
             
@@ -83,95 +91,60 @@ function initManagerSummary() {
             loadFiltersFromUrl();
             applyFilter();
             
-            console.log('[manager-summary.js] Initial load complete');
+            console.log('[summary.js] Initial load complete');
         } catch (err) {
-            console.error('[manager-summary.js] Failed to load data:', err);
-            tableBody.innerHTML = `<tr><td colspan="7" class="px-6 py-10 text-center text-red-400">Failed to load data. Please try again.</td></tr>`;
+            console.error('[summary.js] Failed to load data:', err);
+            tableBody.innerHTML = `<tr><td colspan="6" class="px-6 py-10 text-center text-red-400">Failed to load data. Please try again.</td></tr>`;
         }
-    };
-
-    // Populate user filter dropdown
-    const populateUserFilter = () => {
-        userFilter.innerHTML = '<option value="all">All Users</option>';
-        allData.users.forEach(u => {
-            const opt = document.createElement('option');
-            opt.value = u.id;
-            opt.textContent = `${u.full_name} (${u.role})`;
-            userFilter.appendChild(opt);
-        });
-        console.log('[manager-summary.js] User filter populated with', allData.users.length, 'users');
     };
 
     // Set default date range
     const setDefaultDateRange = () => {
-        if (allData.attendance.length === 0) return;
+        if (myData.attendance.length === 0) return;
         
-        const dates = allData.attendance.map(a => a.date).filter(Boolean).sort();
+        const dates = myData.attendance.map(a => a.date).filter(Boolean).sort();
         const firstDate = dates[0];
         const today = new Date().toISOString().slice(0, 10);
         
         dateFrom.value = firstDate;
         dateTo.value = today;
-        console.log('[manager-summary.js] Default date range set:', firstDate, 'to', today);
+        console.log('[summary.js] Default date range set:', firstDate, 'to', today);
     };
 
     // Load filters from URL params
     const loadFiltersFromUrl = () => {
         const params = getUrlParams();
-        const userId = params.get('user');
         const from = params.get('from');
         const to = params.get('to');
         
-        if (userId) {
-            const option = userFilter.querySelector(`option[value="${userId}"]`);
-            if (option) {
-                userFilter.value = userId;
-                console.log('[manager-summary.js] Loaded user from URL:', userId);
-            }
-        }
         if (from) {
             dateFrom.value = from;
-            console.log('[manager-summary.js] Loaded from date from URL:', from);
+            console.log('[summary.js] Loaded from date from URL:', from);
         }
         if (to) {
             dateTo.value = to;
-            console.log('[manager-summary.js] Loaded to date from URL:', to);
+            console.log('[summary.js] Loaded to date from URL:', to);
         }
     };
 
     // Apply filter and render
     const applyFilter = () => {
-        console.log('[manager-summary.js] applyFilter called, user:', userFilter.value, 'from:', dateFrom.value, 'to:', dateTo.value);
-        const selectedUserId = userFilter.value;
+        console.log('[summary.js] applyFilter called, from:', dateFrom.value, 'to:', dateTo.value);
         const fromDate = dateFrom.value;
         const toDate = dateTo.value;
 
         // Update URL with current filters
-        updateUrl(selectedUserId, fromDate, toDate);
+        updateUrl(fromDate, toDate);
 
         // Build filtered rows
         filteredRows = [];
-        
-        // Get target users
-        const targetUsers = selectedUserId === 'all'
-            ? allData.users
-            : allData.users.filter(u => u.id === parseInt(selectedUserId));
-
-        console.log('[manager-summary.js] Filtering for', targetUsers.length, 'users');
-
-        // Build a map of user colors
-        const userColorMap = {};
-        targetUsers.forEach((u, idx) => {
-            userColorMap[u.id] = colors[idx % colors.length];
-        });
 
         // Get date range
         let startDate = fromDate;
         let endDate = toDate;
 
         if (!startDate || !endDate) {
-            // If no date range, use all data
-            const allDates = allData.attendance.map(a => a.date).filter(Boolean).sort();
+            const allDates = myData.attendance.map(a => a.date).filter(Boolean).sort();
             startDate = allDates[0] || '';
             endDate = allDates[allDates.length - 1] || '';
         }
@@ -188,10 +161,10 @@ function initManagerSummary() {
         // Iterate through each day
         const current = new Date(startDate + 'T00:00:00');
         const end = new Date(endDate + 'T00:00:00');
-        const workingDaysSet = new Set();
         let totalHours = 0;
         let totalOtHours = 0;
         let totalTasks = 0;
+        let workingDays = 0;
 
         while (current <= end) {
             const year = current.getFullYear();
@@ -199,49 +172,40 @@ function initManagerSummary() {
             const day = current.getDate();
             const dateStr = `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
 
-            targetUsers.forEach(u => {
-                // Get attendance for this user on this date
-                const dayAtts = allData.attendance.filter(a =>
-                    a.user_id === u.id && a.date === dateStr
-                );
+            // Get attendance for this date
+            const dayAtts = myData.attendance.filter(a => a.date === dateStr);
 
-                // Get tasks for this user on this date
-                const dayLogs = allData.logs.filter(l =>
-                    l.user_id === u.id &&
-                    l.date_start &&
-                    dateStr >= l.date_start &&
-                    dateStr <= (l.date_finish || l.date_start)
-                );
+            // Get tasks for this date
+            const dayLogs = myData.logs.filter(l =>
+                l.date_start &&
+                dateStr >= l.date_start &&
+                dateStr <= (l.date_finish || l.date_start)
+            );
 
-                if (dayAtts.length === 0 && dayLogs.length === 0) return;
+            // Calculate hours
+            const dayHrs = dayAtts.reduce((sum, a) => sum + parseFloat(a.total_hours || 0), 0);
+            const dayOtHrs = dayAtts.reduce((sum, a) => sum + parseFloat(a.ot_hours || 0), 0);
 
-                // Track working days
-                workingDaysSet.add(`${u.id}_${dateStr}`);
-
-                // Calculate hours
-                const dayHrs = dayAtts.reduce((sum, a) => sum + parseFloat(a.total_hours || 0), 0);
-                const dayOtHrs = dayAtts.reduce((sum, a) => sum + parseFloat(a.ot_hours || 0), 0);
+            // Only add row if there's data
+            if (dayAtts.length > 0 || dayLogs.length > 0) {
+                workingDays++;
                 totalHours += dayHrs;
                 totalOtHours += dayOtHrs;
                 totalTasks += dayLogs.length;
 
-                // Build row data
+                // Get clock times
                 const clockIn = dayAtts.map(a => a.clock_in_time ? String(a.clock_in_time).slice(0, 5) : null).filter(Boolean);
                 const clockOut = dayAtts.map(a => a.clock_out_time ? String(a.clock_out_time).slice(0, 5) : null).filter(Boolean);
 
                 filteredRows.push({
                     date: dateStr,
-                    userId: u.id,
-                    userName: u.full_name,
-                    userRole: u.role,
-                    userColor: userColorMap[u.id],
                     clockIn: clockIn,
                     clockOut: clockOut,
                     totalHours: dayHrs,
                     otHours: dayOtHrs,
                     tasks: dayLogs.map(l => ({ category: l.task_category, color: l.color }))
                 });
-            });
+            }
 
             current.setDate(current.getDate() + 1);
         }
@@ -249,15 +213,14 @@ function initManagerSummary() {
         // Sort by date desc
         filteredRows.sort((a, b) => b.date.localeCompare(a.date));
 
-        // Update stats - Total Hours includes OT
-        const workingDays = workingDaysSet.size;
+        // Update stats
         const totalHoursWithOT = totalHours + totalOtHours;
         const avgHrs = workingDays > 0 ? (totalHoursWithOT / workingDays) : 0;
         
-        console.log('[manager-summary.js] Stats:', { workingDays, totalHoursWithOT, avgHrs, totalTasks });
+        console.log('[summary.js] Stats:', { workingDays, totalHoursWithOT, avgHrs, totalTasks });
         updateStats(workingDays, totalHoursWithOT, avgHrs, totalTasks);
 
-        // Render all rows
+        // Render table
         renderTable();
     };
 
@@ -269,42 +232,37 @@ function initManagerSummary() {
         if (statTotalTasks) statTotalTasks.textContent = totalTasks;
     };
 
-    // Render table (all rows, no pagination)
+    // Render table
     const renderTable = () => {
-        console.log('[manager-summary.js] Rendering table with', filteredRows.length, 'rows');
+        console.log('[summary.js] Rendering table with', filteredRows.length, 'rows');
         if (filteredRows.length === 0) {
-            tableBody.innerHTML = `<tr><td colspan="7" class="px-6 py-20 text-center">
+            tableBody.innerHTML = `<tr><td colspan="6" class="px-6 py-20 text-center">
                 <div class="flex flex-col items-center gap-3">
                     <span class="material-symbols-outlined text-[48px] text-outline-variant">hourglass_empty</span>
-                    <p class="text-on-surface-variant/60 italic">No records found for selected filters</p>
+                    <p class="text-on-surface-variant/60 italic">No records found for selected period</p>
                 </div>
             </td></tr>`;
             return;
         }
 
+        const primaryColor = '#0053dc';
         let html = '';
         filteredRows.forEach(row => {
             const clockInStr = row.clockIn.length > 0 ? row.clockIn.join(', ') : '--';
             const clockOutStr = row.clockOut.length > 0 ? row.clockOut.join(', ') : '--';
-            const roleBadge = row.userRole !== 'intern' 
-                ? `<span class="ml-1 text-[8px] px-1.5 py-0.5 rounded-full bg-primary/10 text-primary font-black uppercase">${row.userRole}</span>` 
-                : '';
             const otBadge = row.otHours > 0 
                 ? `<span class="text-amber-500 text-[10px] font-bold">+${row.otHours.toFixed(1)}h OT</span>` 
-                : '';
+                : '<span class="text-on-surface-variant/40">--</span>';
             const tasksHtml = row.tasks.length > 0
-                ? row.tasks.map(t => `<span class="inline-block px-2 py-0.5 rounded-lg text-[9px] font-bold text-white mr-1 mb-1" style="background-color:${t.color || row.userColor}">${t.category}</span>`).join('')
+                ? row.tasks.map(t => `<span class="inline-block px-2 py-0.5 rounded-lg text-[9px] font-bold text-white mr-1 mb-1" style="background-color:${t.color || primaryColor}">${t.category}</span>`).join('')
                 : '<span class="text-on-surface-variant/40 italic">--</span>';
 
             html += `<tr class="hover:bg-surface-container-low/50 transition-colors">
                 <td class="px-6 py-4 font-bold text-on-surface text-xs whitespace-nowrap">${formatDate(row.date)}</td>
-                <td class="px-6 py-4">
-                    <span class="text-[11px] font-black uppercase tracking-wider" style="color:${row.userColor}">${row.userName}</span>${roleBadge}
-                </td>
                 <td class="px-6 py-4 text-on-surface-variant font-medium text-xs">${clockInStr}</td>
                 <td class="px-6 py-4 text-on-surface-variant font-medium text-xs">${clockOutStr}</td>
                 <td class="px-6 py-4 font-black text-primary text-xs">${row.totalHours.toFixed(1)}h</td>
-                <td class="px-6 py-4 ${row.otHours > 0 ? 'text-amber-600' : 'text-on-surface-variant/40'} font-bold text-xs">${otBadge || '--'}</td>
+                <td class="px-6 py-4 font-bold text-xs">${otBadge}</td>
                 <td class="px-6 py-4">${tasksHtml}</td>
             </tr>`;
         });
@@ -320,19 +278,16 @@ function initManagerSummary() {
     };
 
     // Event listeners
-    console.log('[manager-summary.js] Attaching event listeners');
+    console.log('[summary.js] Attaching event listeners');
     
-    // Filter button - apply when clicked
     filterBtn.addEventListener('click', () => {
-        console.log('[manager-summary.js] Filter button clicked');
+        console.log('[summary.js] Filter button clicked');
         applyFilter();
     });
     
-    // Reset button
     resetBtn.addEventListener('click', () => {
-        console.log('[manager-summary.js] Reset button clicked');
+        console.log('[summary.js] Reset button clicked');
         window.history.replaceState({}, '', window.location.pathname);
-        userFilter.value = 'all';
         setDefaultDateRange();
         applyFilter();
     });
@@ -340,14 +295,12 @@ function initManagerSummary() {
     // Load data on page load
     loadData();
     
-    window.managerSummaryReady = true;
-    console.log('[manager-summary.js] Initialization complete');
+    console.log('[summary.js] Initialization complete');
 }
 
 // Initialize when DOM is ready
 if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initManagerSummary);
+    document.addEventListener('DOMContentLoaded', initSummary);
 } else {
-    // DOM is already ready
-    initManagerSummary();
+    initSummary();
 }
