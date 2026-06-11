@@ -144,68 +144,64 @@ document.addEventListener('DOMContentLoaded', async () => {
         renderSummaryTable();
     };
 
-    const renderSummaryTable = () => {
+    const renderSummaryTable = async () => {
         const tableBody = document.getElementById('summary-table-body');
         if (!tableBody) return;
         const summaryMonth = document.getElementById('summary-month-name');
         const header = document.getElementById('calendar-month-year');
         if (summaryMonth && header) summaryMonth.textContent = header.textContent;
-        tableBody.innerHTML = '';
+        tableBody.innerHTML = '<tr><td colspan="6" class="px-6 py-8 text-center text-on-surface-variant/40"><span class="material-symbols-outlined animate-spin text-primary">progress_activity</span></td></tr>';
 
-        const year = currentDate.getFullYear(), month = currentDate.getMonth();
-        const daysInMonth = new Date(year, month + 1, 0).getDate();
-        const selectedUserId = document.getElementById('intern-filter').value;
-        const filteredUsers = selectedUserId === 'all' ? allData.users : allData.users.filter(u => u.id === parseInt(selectedUserId));
+        try {
+            const year = currentDate.getFullYear();
+            const month = currentDate.getMonth() + 1;
+            const selectedUserId = document.getElementById('intern-filter').value;
+            const url = `/api/manager/monthly-summary?year=${year}&month=${month}${selectedUserId !== 'all' ? `&user_id=${selectedUserId}` : ''}`;
+            const data = await apiCall(url);
 
-        let totalWorkingDays = new Set();
-        let totalHoursSum = 0;
-        let totalTaskCount = 0;
+            tableBody.innerHTML = '';
 
-        for (let day = 1; day <= daysInMonth; day++) {
-            const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-            filteredUsers.forEach((u, idx) => {
-                const userColor = colors[idx % colors.length];
-                const dayAtts = allData.attendance.filter(a => a.user_id === u.id && a.date && a.date.startsWith(dateStr));
-                const dayLogs = allData.logs.filter(l => l.user_id === u.id && dateStr >= l.date_start && dateStr <= (l.date_finish || l.date_start));
-                if (dayAtts.length === 0 && dayLogs.length === 0) return;
+            // Render rows
+            if (data.rows && data.rows.length > 0) {
+                data.rows.forEach((row, idx) => {
+                    const userColor = colors[idx % colors.length];
+                    const dateDisplay = new Date(row.date + 'T00:00:00').toLocaleDateString('en-GB', { weekday: 'short', day: '2-digit', month: 'short' });
+                    const clockIn = row.clock_in.length > 0 ? row.clock_in.join(', ') : '--';
+                    const clockOut = row.clock_out.length > 0 ? row.clock_out.join(', ') : '--';
+                    const totalHrs = row.total_hours.toFixed(2);
+                    const otHrs = row.ot_hours > 0 ? ` <span class="text-amber-500 text-[9px]">(+${row.ot_hours.toFixed(1)} OT)</span>` : '';
+                    const roleBadge = row.role !== 'intern' ? `<span class="ml-1 text-[8px] px-1.5 py-0.5 rounded-full bg-primary/10 text-primary font-black uppercase">${row.role}</span>` : '';
+                    const tasks = row.tasks.map(t => `<span class="inline-block px-2 py-0.5 rounded-lg text-[9px] font-bold text-white mr-1 mb-1" style="background-color:${t.color || '#3e76fe'}">${t.category}</span>`).join('');
 
-                totalWorkingDays.add(`${u.id}_${dateStr}`);
-                totalTaskCount += dayLogs.length;
+                    tableBody.innerHTML += `<tr class="hover:bg-surface-container-low/50 transition-colors">
+                        <td class="px-6 py-3 font-bold text-on-surface text-xs">${dateDisplay}</td>
+                        <td class="px-6 py-3"><span class="text-[10px] font-black uppercase tracking-wider" style="color:${userColor}">${row.full_name}</span>${roleBadge}</td>
+                        <td class="px-6 py-3 text-on-surface-variant font-medium text-xs">${clockIn}</td>
+                        <td class="px-6 py-3 text-on-surface-variant font-medium text-xs">${clockOut}</td>
+                        <td class="px-6 py-3 font-black text-primary text-xs">${totalHrs}h${otHrs}</td>
+                        <td class="px-6 py-3">${tasks || '<span class="text-on-surface-variant/40 text-xs italic">—</span>'}</td>
+                    </tr>`;
+                });
+            } else {
+                tableBody.innerHTML = `<tr><td colspan="6" class="px-6 py-10 text-center text-on-surface-variant/40 italic">No records for this month</td></tr>`;
+            }
 
-                const dateDisplay = new Date(dateStr + 'T00:00:00').toLocaleDateString('en-GB', { weekday: 'short', day: '2-digit', month: 'short' });
-                const clockIn = dayAtts.map(a => a.clock_in_time?.slice(0, 5)).filter(Boolean).join(', ') || '--';
-                const clockOut = dayAtts.map(a => a.clock_out_time?.slice(0, 5)).filter(Boolean).join(', ') || '--';
-                const dayHrs = dayAtts.reduce((acc, a) => acc + parseFloat(a.total_hours || 0), 0);
-                totalHoursSum += dayHrs;
-                const totalHrs = dayHrs.toFixed(2);
-                const tasks = dayLogs.map(l => `<span class="inline-block px-2 py-0.5 rounded-lg text-[9px] font-bold text-white mr-1 mb-1" style="background-color:${l.color || userColor}">${l.task_category}</span>`).join('');
-
-                tableBody.innerHTML += `<tr class="hover:bg-surface-container-low/50 transition-colors">
-                    <td class="px-6 py-3 font-bold text-on-surface text-xs">${dateDisplay}</td>
-                    <td class="px-6 py-3"><span class="text-[10px] font-black uppercase tracking-wider" style="color:${userColor}">${u.full_name}</span></td>
-                    <td class="px-6 py-3 text-on-surface-variant font-medium text-xs">${clockIn}</td>
-                    <td class="px-6 py-3 text-on-surface-variant font-medium text-xs">${clockOut}</td>
-                    <td class="px-6 py-3 font-black text-primary text-xs">${totalHrs}h</td>
-                    <td class="px-6 py-3">${tasks || '<span class="text-on-surface-variant/40 text-xs italic">—</span>'}</td>
-                </tr>`;
-            });
+            // Update stats from server
+            if (data.stats) {
+                const s = data.stats;
+                const statDays = document.getElementById('stat-working-days');
+                const statHours = document.getElementById('stat-total-hours');
+                const statAvg = document.getElementById('stat-avg-hours');
+                const statTasks = document.getElementById('stat-total-tasks');
+                if (statDays) statDays.textContent = s.working_days;
+                if (statHours) statHours.textContent = s.total_hours.toFixed(1) + 'h';
+                if (statAvg) statAvg.textContent = s.avg_hours_per_day + 'h';
+                if (statTasks) statTasks.textContent = s.total_tasks;
+            }
+        } catch (err) {
+            console.error('Summary fetch error:', err);
+            tableBody.innerHTML = `<tr><td colspan="6" class="px-6 py-10 text-center text-red-400 italic">Failed to load summary</td></tr>`;
         }
-
-        if (tableBody.innerHTML === '') {
-            tableBody.innerHTML = `<tr><td colspan="6" class="px-6 py-10 text-center text-on-surface-variant/40 italic">No records for this month</td></tr>`;
-        }
-
-        // Update stats
-        const workingDays = totalWorkingDays.size;
-        const avgHrs = workingDays > 0 ? (totalHoursSum / workingDays).toFixed(1) : '0';
-        const statDays = document.getElementById('stat-working-days');
-        const statHours = document.getElementById('stat-total-hours');
-        const statAvg = document.getElementById('stat-avg-hours');
-        const statTasks = document.getElementById('stat-total-tasks');
-        if (statDays) statDays.textContent = workingDays;
-        if (statHours) statHours.textContent = totalHoursSum.toFixed(1) + 'h';
-        if (statAvg) statAvg.textContent = avgHrs + 'h';
-        if (statTasks) statTasks.textContent = totalTaskCount;
     };
 
     const loadManagerCalendar = async () => {

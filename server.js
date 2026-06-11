@@ -512,6 +512,132 @@ app.get('/api/manager/calendar-data', requireAdmin, async (req, res) => {
   }
 });
 
+// Monthly summary — pulls attendance + tasks directly from DB for a given month
+app.get('/api/manager/monthly-summary', requireAdmin, async (req, res) => {
+  try {
+    const year = parseInt(req.query.year) || new Date().getFullYear();
+    const month = parseInt(req.query.month) || (new Date().getMonth() + 1);
+    const userId = req.query.user_id || 'all';
+
+    const startDate = `${year}-${String(month).padStart(2, '0')}-01`;
+    const endDate = `${year}-${String(month).padStart(2, '0')}-${new Date(year, month, 0).getDate()}`;
+
+    // Get all users
+    const [users] = await db.execute("SELECT id, full_name, username, role FROM users");
+
+    // Get attendance for the month
+    let attQuery = `
+      SELECT a.id, a.user_id, a.date, a.clock_in_time, a.clock_out_time,
+             a.total_hours, a.ot_hours, u.full_name, u.role
+      FROM attendance a
+      JOIN users u ON a.user_id = u.id
+      WHERE a.date >= ? AND a.date <= ?
+    `;
+    const attParams = [startDate, endDate];
+    if (userId !== 'all') {
+      attQuery += ' AND a.user_id = ?';
+      attParams.push(parseInt(userId));
+    }
+    attQuery += ' ORDER BY a.date ASC, u.full_name ASC, a.clock_in_time ASC';
+    const [attendance] = await db.execute(attQuery, attParams);
+
+    // Get daily logs (tasks) for the month — includes tasks that span into this month
+    let logQuery = `
+      SELECT dl.id, dl.user_id, dl.date_start, dl.date_finish, dl.task_category,
+             dl.description, dl.color, dl.status, u.full_name, u.role
+      FROM daily_logs dl
+      JOIN users u ON dl.user_id = u.id
+      WHERE dl.date_start <= ? AND (dl.date_finish >= ? OR dl.date_finish IS NULL AND dl.date_start >= ?)
+    `;
+    const logParams = [endDate, startDate, startDate];
+    if (userId !== 'all') {
+      logQuery += ' AND dl.user_id = ?';
+      logParams.push(parseInt(userId));
+    }
+    logQuery += ' ORDER BY dl.date_start ASC, u.full_name ASC';
+    const [logs] = await db.execute(logQuery, logParams);
+
+    // Build per-day summary rows
+    const daysInMonth = new Date(year, month, 0).getDate();
+    const rows = [];
+    const targetUsers = userId !== 'all'
+      ? users.filter(u => u.id === parseInt(userId))
+      : users;
+
+    let totalWorkingDays = 0;
+    let totalHoursSum = 0;
+    let totalOtHoursSum = 0;
+    let totalTaskCount = 0;
+    const workingDaysSet = new Set();
+
+    for (let day = 1; day <= daysInMonth; day++) {
+      const dateStr = `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+      targetUsers.forEach(u => {
+        const dayAtts = attendance.filter(a => {
+          const aDate = a.date instanceof Date
+            ? `${a.date.getFullYear()}-${String(a.date.getMonth()+1).padStart(2,'0')}-${String(a.date.getDate()).padStart(2,'0')}`
+            : String(a.date).slice(0, 10);
+          return a.user_id === u.id && aDate === dateStr;
+        });
+        const dayLogs = logs.filter(l => {
+          const lStart = l.date_start instanceof Date
+            ? `${l.date_start.getFullYear()}-${String(l.date_start.getMonth()+1).padStart(2,'0')}-${String(l.date_start.getDate()).padStart(2,'0')}`
+            : String(l.date_start).slice(0, 10);
+          const lEnd = l.date_finish
+            ? (l.date_finish instanceof Date
+              ? `${l.date_finish.getFullYear()}-${String(l.date_finish.getMonth()+1).padStart(2,'0')}-${String(l.date_finish.getDate()).padStart(2,'0')}`
+              : String(l.date_finish).slice(0, 10))
+            : lStart;
+          return l.user_id === u.id && dateStr >= lStart && dateStr <= lEnd;
+        });
+
+        if (dayAtts.length === 0 && dayLogs.length === 0) return;
+
+        workingDaysSet.add(`${u.id}_${dateStr}`);
+        const dayHours = dayAtts.reduce((sum, a) => sum + parseFloat(a.total_hours || 0), 0);
+        const dayOtHours = dayAtts.reduce((sum, a) => sum + parseFloat(a.ot_hours || 0), 0);
+        totalHoursSum += dayHours;
+        totalOtHoursSum += dayOtHours;
+        totalTaskCount += dayLogs.length;
+
+        rows.push({
+          date: dateStr,
+          user_id: u.id,
+          full_name: u.full_name,
+          role: u.role,
+          clock_in: dayAtts.map(a => a.clock_in_time ? String(a.clock_in_time).slice(0, 5) : null).filter(Boolean),
+          clock_out: dayAtts.map(a => a.clock_out_time ? String(a.clock_out_time).slice(0, 5) : null).filter(Boolean),
+          total_hours: parseFloat(dayHours.toFixed(2)),
+          ot_hours: parseFloat(dayOtHours.toFixed(2)),
+          tasks: dayLogs.map(l => ({
+            category: l.task_category,
+            color: l.color,
+            description: l.description
+          }))
+        });
+      });
+    }
+
+    totalWorkingDays = workingDaysSet.size;
+
+    res.json({
+      month: month,
+      year: year,
+      rows,
+      stats: {
+        working_days: totalWorkingDays,
+        total_hours: parseFloat(totalHoursSum.toFixed(2)),
+        total_ot_hours: parseFloat(totalOtHoursSum.toFixed(2)),
+        avg_hours_per_day: totalWorkingDays > 0 ? parseFloat((totalHoursSum / totalWorkingDays).toFixed(1)) : 0,
+        total_tasks: totalTaskCount
+      }
+    });
+  } catch (error) {
+    console.error('Monthly summary error:', error);
+    res.status(500).json({ error: 'Database error: ' + error.message });
+  }
+});
+
 // Review/Attendance endpoints for manager
 app.get('/api/manager/attendance', requireAdmin, async (req, res) => {
   try {

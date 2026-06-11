@@ -226,8 +226,14 @@
               style="font-variation-settings:'FILL' 1">summarize</span>
             <h3 class="text-base font-black font-headline text-on-surface">Monthly Summary</h3>
           </div>
-          <span class="text-[10px] font-black uppercase tracking-widest text-on-surface-variant/60"
-            id="summary-month-name">--</span>
+          <div class="flex items-center gap-3">
+            <select id="summary-user-filter"
+              class="bg-white border border-outline-variant/20 rounded-xl px-4 py-2 text-xs font-bold focus:ring-2 focus:ring-primary/40 shadow-sm min-w-[180px]">
+              <option value="all">All Users</option>
+            </select>
+            <span class="text-[10px] font-black uppercase tracking-widest text-on-surface-variant/60"
+              id="summary-month-name">--</span>
+          </div>
         </div>
 
         <!-- Stats Bar -->
